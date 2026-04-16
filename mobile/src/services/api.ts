@@ -1,8 +1,8 @@
 import axios from 'axios';
 import * as SecureStore from 'expo-secure-store';
 
-// ⚠️ Cambia esta URL cuando despliegues el API
-export const API_BASE_URL = 'http://localhost:5050/api';
+// ⚠️ URL hacia el API de Producción en Easypanel
+export const API_BASE_URL = 'https://softsport77-api-pichanga.scuiaw.easypanel.host/api';
 
 const apiClient = axios.create({
   baseURL: API_BASE_URL,
