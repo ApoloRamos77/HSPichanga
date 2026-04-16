@@ -24,4 +24,14 @@ public class CanchasController : ControllerBase
         var result = await _mediator.Send(new GetCanchasQuery(zonaId, modalidad), ct);
         return Ok(result);
     }
+
+    /// <summary>Crear una nueva cancha en el sistema</summary>
+    [HttpPost]
+    [Authorize(Roles = "Administrador")]
+    [ProducesResponseType(typeof(HSPichanga.Application.Features.Canchas.Commands.CrearCancha.CrearCanchaResult), 201)]
+    public async Task<IActionResult> CrearCancha([FromBody] HSPichanga.Application.Features.Canchas.Commands.CrearCancha.CrearCanchaCommand command, CancellationToken ct)
+    {
+        var result = await _mediator.Send(command, ct);
+        return CreatedAtAction(nameof(GetCanchas), new { }, result);
+    }
 }

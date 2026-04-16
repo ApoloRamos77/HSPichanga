@@ -57,6 +57,8 @@ export type CanchaDto = {
 export const canchasService = {
   getAll: (zonaId?: string, modalidad?: string) =>
     apiClient.get<CanchaDto[]>('/Canchas', { params: { zonaId, modalidad } }),
+  crearCancha: (data: any) =>
+    apiClient.post('/Canchas', data),
 };
 
 // ─── Partidos ─────────────────────────────────────────────────────────────────
@@ -70,6 +72,8 @@ export type PartidoDto = {
 export const partidosService = {
   getAbiertos: (categoria?: string, zonaId?: string, modalidad?: string) =>
     apiClient.get<PartidoDto[]>('/Partidos', { params: { categoria, zonaId, modalidad } }),
+  crearPartido: (data: any) =>
+    apiClient.post('/Partidos', data),
 };
 
 // ─── Reservas ─────────────────────────────────────────────────────────────────

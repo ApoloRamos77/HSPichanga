@@ -112,4 +112,7 @@ public class ZonaRepository : IZonaRepository
 
     public async Task<IEnumerable<Zona>> GetAllActivasAsync(CancellationToken cancellationToken)
         => await _ctx.Zonas.Where(z => z.Activo).OrderBy(z => z.Nombre).ToListAsync(cancellationToken);
+
+    public async Task<Zona?> GetByIdAsync(Guid id, CancellationToken cancellationToken)
+        => await _ctx.Zonas.FirstOrDefaultAsync(z => z.Id == id, cancellationToken);
 }

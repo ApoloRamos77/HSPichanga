@@ -42,4 +42,5 @@ public interface IUsuarioRepository
 public interface IZonaRepository
 {
     Task<IEnumerable<Zona>> GetAllActivasAsync(CancellationToken cancellationToken = default);
+    Task<Zona?> GetByIdAsync(Guid id, CancellationToken cancellationToken = default);
 }

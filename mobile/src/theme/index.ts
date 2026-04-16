@@ -1,10 +1,10 @@
 // Paleta corporativa ADHSOFT SPORT
 export const Colors = {
-  // Identidad principal
-  primary:         '#1A3C5E',   // Azul marino profundo
-  primaryLight:    '#2A5C8E',   // Azul marino acento
-  accent:          '#F5A623',   // Naranja dorado (CTAs)
-  accentDark:      '#D4891A',   // Naranja oscuro hover
+  // Identidad principal (ADHSOFT SPORT LOGO)
+  primary:         '#1C4A85',   // Azul marino (Logo texto)
+  primaryLight:    '#15ADE5',   // Azul Cyan/Celeste (Logo interno)
+  accent:          '#50AB46',   // Verde Suave (Estrellas / Borde externo)
+  accentDark:      '#3F8737',   // Verde oscuro hover
 
   // Estado
   success:         '#27AE60',
@@ -12,12 +12,12 @@ export const Colors = {
   danger:          '#E74C3C',
   info:            '#3498DB',
 
-  // Fondos (Dark Mode Premium)
-  background:      '#0D1B2A',   // Fondo principal
-  surface:         '#162236',   // Superficie de tarjetas
-  surfaceHover:    '#1E2F45',   // Tarjeta hover
-  border:          '#243B55',   // Bordes sutiles
-  borderLight:     '#2E4F70',   // Bordes más visibles
+  // Fondos (Dark Mode Premium adaptado al logo)
+  background:      '#05111F',   // Fondo principal azul super oscuro
+  surface:         '#10243C',   // Superficie de tarjetas azul marino
+  surfaceHover:    '#183350',   // Tarjeta hover
+  border:          '#1C4A85',   // Bordes sutiles (Color Primario puro)
+  borderLight:     '#2963A8',   // Bordes visibles
 
   // Texto
   textPrimary:     '#FFFFFF',
@@ -26,10 +26,10 @@ export const Colors = {
   textInverse:     '#0D1B2A',
 
   // Gradientes
-  gradientMain:    ['#1A3C5E', '#0D1B2A'] as const,
-  gradientAccent:  ['#F5A623', '#D4891A'] as const,
-  gradientCard:    ['#162236', '#0D1B2A'] as const,
-  gradientHero:    ['#1A3C5E', '#162236', '#0D1B2A'] as const,
+  gradientMain:    ['#1C4A85', '#05111F'] as const,
+  gradientAccent:  ['#50AB46', '#3F8737'] as const,
+  gradientCard:    ['#10243C', '#05111F'] as const,
+  gradientHero:    ['#15ADE5', '#1C4A85', '#05111F'] as const,
 
   // Badges de categoría
   categoryColors: {
@@ -94,14 +94,14 @@ export const Radius = {
 
 export const Shadows = {
   card: {
-    shadowColor: '#000',
+    shadowColor: '#15ADE5',
     shadowOffset: { width: 0, height: 4 },
-    shadowOpacity: 0.3,
+    shadowOpacity: 0.15,
     shadowRadius: 12,
     elevation: 8,
   },
   button: {
-    shadowColor: '#F5A623',
+    shadowColor: '#50AB46',
     shadowOffset: { width: 0, height: 4 },
     shadowOpacity: 0.4,
     shadowRadius: 8,

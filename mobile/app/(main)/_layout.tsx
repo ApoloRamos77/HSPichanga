@@ -20,6 +20,14 @@ export default function MainLayout() {
         name="reservas/[id]"
         options={{ title: 'Detalle de Reserva', headerBackTitle: 'Atrás' }}
       />
+      <Stack.Screen
+        name="admin-canchas"
+        options={{ title: 'Backoffice: Canchas', headerBackTitle: 'Atrás' }}
+      />
+      <Stack.Screen
+        name="admin-partidos"
+        options={{ title: 'Backoffice: Amistosos', headerBackTitle: 'Atrás' }}
+      />
     </Stack>
   );
 }

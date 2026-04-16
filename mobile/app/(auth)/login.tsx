@@ -1,7 +1,7 @@
 import React, { useState } from 'react';
 import {
   View, Text, TextInput, StyleSheet, ScrollView,
-  TouchableOpacity, KeyboardAvoidingView, Platform, Alert,
+  TouchableOpacity, KeyboardAvoidingView, Platform, Alert, Image
 } from 'react-native';
 import { LinearGradient } from 'expo-linear-gradient';
 import { Ionicons } from '@expo/vector-icons';
@@ -57,7 +57,11 @@ export default function LoginScreen() {
           {/* Logo / Marca */}
           <View style={styles.logoSection}>
             <View style={styles.logoContainer}>
-              <Ionicons name="football" size={48} color={Colors.accent} />
+              <Image 
+                source={require('../../assets/icon.png')} 
+                style={{ width: 80, height: 80, borderRadius: 40, overflow: 'hidden' }}
+                resizeMode="cover"
+              />
             </View>
             <Text style={styles.brandName}>ADHSOFT SPORT</Text>
             <Text style={styles.tagline}>Reserva tu cancha · Únete a la pichanga</Text>
@@ -157,12 +161,13 @@ const styles = StyleSheet.create({
   logoSection: { alignItems: 'center', marginBottom: Spacing.xl },
   logoContainer: {
     width: 90, height: 90, borderRadius: 45,
-    backgroundColor: Colors.surface,
+    backgroundColor: '#FFF',
     borderWidth: 2,
     borderColor: Colors.accent,
     justifyContent: 'center',
     alignItems: 'center',
     marginBottom: Spacing.md,
+    overflow: 'hidden',
   },
   brandName: {
     fontSize: Typography.size.xl,

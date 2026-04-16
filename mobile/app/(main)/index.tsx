@@ -57,8 +57,18 @@ export default function HomeScreen() {
             <Text style={styles.heroSubtitle}>¿A qué hora juegas hoy?</Text>
           </View>
           <View style={{ flexDirection: 'row', gap: 12 }}>
+            {usuario?.rol === 'Administrador' && (
+              <>
+                <TouchableOpacity onPress={() => router.push('/(main)/admin-canchas')} style={styles.logoutBtn}>
+                  <Ionicons name="business-outline" size={22} color={Colors.accent} />
+                </TouchableOpacity>
+                <TouchableOpacity onPress={() => router.push('/(main)/admin-partidos')} style={styles.logoutBtn}>
+                  <Ionicons name="calendar-sharp" size={22} color={Colors.accent} />
+                </TouchableOpacity>
+              </>
+            )}
             <TouchableOpacity onPress={() => router.push('/(main)/mis-reservas')} style={styles.logoutBtn}>
-              <Ionicons name="calendar-outline" size={22} color={Colors.textSecondary} />
+              <Ionicons name="stopwatch-outline" size={22} color={Colors.textSecondary} />
             </TouchableOpacity>
             <TouchableOpacity onPress={handleLogout} style={styles.logoutBtn}>
               <Ionicons name="log-out-outline" size={22} color={Colors.textSecondary} />
