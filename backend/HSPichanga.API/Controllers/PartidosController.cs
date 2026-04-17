@@ -1,5 +1,8 @@
+using HSPichanga.Application.Features.Partidos.Commands.CambiarEstadoPartido;
 using HSPichanga.Application.Features.Partidos.Commands.CrearPartido;
+using HSPichanga.Application.Features.Partidos.Commands.ReprogramarPartido;
 using HSPichanga.Application.Features.Partidos.Queries.GetPartidosAbiertos;
+using HSPichanga.Application.Features.Partidos.Queries.GetPartidosAdmin;
 using HSPichanga.Domain.Enums;
 using MediatR;
 using Microsoft.AspNetCore.Authorization;
@@ -27,6 +30,18 @@ public class PartidosController : ControllerBase
         return Ok(result);
     }
 
+    /// <summary>Listado administrativo de TODOS los partidos (Admin/Delegado)</summary>
+    [HttpGet("admin")]
+    [Authorize(Roles = "Administrador,Delegado")]
+    [ProducesResponseType(typeof(IEnumerable<PartidoAdminDto>), 200)]
+    public async Task<IActionResult> GetPartidosAdmin(
+        [FromQuery] TipoPartido? tipoPartido,
+        CancellationToken ct)
+    {
+        var result = await _mediator.Send(new GetPartidosAdminQuery(tipoPartido), ct);
+        return Ok(result);
+    }
+
     /// <summary>Crear un nuevo partido (Admin o Delegado)</summary>
     [HttpPost]
     [Authorize(Roles = "Administrador,Delegado")]
@@ -36,4 +51,27 @@ public class PartidosController : ControllerBase
         var result = await _mediator.Send(command, ct);
         return CreatedAtAction(nameof(GetPartidos), new { }, result);
     }
+
+    /// <summary>Reprogramar un partido existente (Admin o Delegado)</summary>
+    [HttpPut("{id:guid}/reprogramar")]
+    [Authorize(Roles = "Administrador,Delegado")]
+    [ProducesResponseType(typeof(ReprogramarPartidoResult), 200)]
+    public async Task<IActionResult> Reprogramar(Guid id, [FromBody] ReprogramarRequest request, CancellationToken ct)
+    {
+        var result = await _mediator.Send(new ReprogramarPartidoCommand(id, request.NuevaFechaHora, request.Notas), ct);
+        return Ok(result);
+    }
+
+    /// <summary>Cambiar estado de un partido (Admin o Delegado)</summary>
+    [HttpPut("{id:guid}/estado")]
+    [Authorize(Roles = "Administrador,Delegado")]
+    [ProducesResponseType(typeof(CambiarEstadoPartidoResult), 200)]
+    public async Task<IActionResult> CambiarEstado(Guid id, [FromBody] CambiarEstadoPartidoRequest request, CancellationToken ct)
+    {
+        var result = await _mediator.Send(new CambiarEstadoPartidoCommand(id, request.NuevoEstado), ct);
+        return Ok(result);
+    }
 }
+
+public record ReprogramarRequest(DateTime NuevaFechaHora, string? Notas);
+public record CambiarEstadoPartidoRequest(EstadoPartido NuevoEstado);

@@ -41,6 +41,7 @@ public class CanchaConfiguration : IEntityTypeConfiguration<Cancha>
         builder.Property(x => x.Nombre).HasMaxLength(200).IsRequired();
         builder.Property(x => x.Descripcion).HasMaxLength(500);
         builder.Property(x => x.Modalidad).HasConversion<int>();
+        builder.Property(x => x.EstadoCancha).HasConversion<int>().HasSentinel(HSPichanga.Domain.Enums.EstadoCancha.Activa);
         builder.Property(x => x.CostoTotal).HasColumnType("decimal(10,2)");
         builder.Property(x => x.Direccion).HasMaxLength(300);
         builder.Property(x => x.FotoUrl).HasMaxLength(500);
@@ -79,6 +80,8 @@ public class PartidoConfiguration : IEntityTypeConfiguration<Partido>
         builder.Property(x => x.CuotaIndividual).HasColumnType("decimal(10,2)");
         builder.Property(x => x.TarifaEquipo).HasColumnType("decimal(10,2)");
         builder.Property(x => x.Notas).HasMaxLength(500);
+        builder.Property(x => x.HorarioId).IsRequired(false);          // Nullable: amistosos sin slot
+        builder.Property(x => x.FechaReprogramada).IsRequired(false);  // Nueva columna nullable
 
         builder.HasOne(x => x.Cancha)
                .WithMany(c => c.Partidos)
@@ -88,6 +91,7 @@ public class PartidoConfiguration : IEntityTypeConfiguration<Partido>
         builder.HasOne(x => x.Horario)
                .WithMany(h => h.Partidos)
                .HasForeignKey(x => x.HorarioId)
+               .IsRequired(false)
                .OnDelete(DeleteBehavior.Restrict);
 
         builder.HasOne(x => x.Organizador)

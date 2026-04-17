@@ -27,6 +27,19 @@ public class PartidoRepository : IPartidoRepository
         return await query.OrderBy(p => p.FechaHora).ToListAsync(cancellationToken);
     }
 
+    public async Task<IEnumerable<Partido>> GetAllAdminAsync(
+        TipoPartido? tipoPartido, CancellationToken cancellationToken)
+    {
+        var query = _ctx.Partidos
+            .Include(p => p.Cancha).ThenInclude(c => c.Zona)
+            .Include(p => p.Organizador)
+            .AsQueryable();
+
+        if (tipoPartido.HasValue) query = query.Where(p => p.TipoPartido == tipoPartido);
+
+        return await query.OrderByDescending(p => p.FechaHora).ToListAsync(cancellationToken);
+    }
+
     public async Task<Partido?> GetByIdAsync(Guid id, CancellationToken cancellationToken)
         => await _ctx.Partidos
             .Include(p => p.Cancha).ThenInclude(c => c.Zona)
@@ -54,12 +67,24 @@ public class CanchaRepository : ICanchaRepository
         return await query.OrderBy(c => c.Nombre).ToListAsync(cancellationToken);
     }
 
+    public async Task<IEnumerable<Cancha>> GetAllAdminAsync(CancellationToken cancellationToken)
+        => await _ctx.Canchas.Include(c => c.Zona)
+            .OrderBy(c => c.Nombre)
+            .ToListAsync(cancellationToken);
+
     public async Task<Cancha?> GetByIdAsync(Guid id, CancellationToken cancellationToken)
         => await _ctx.Canchas.Include(c => c.Zona).Include(c => c.Horarios)
             .FirstOrDefaultAsync(c => c.Id == id && c.Activo, cancellationToken);
 
+    public async Task<Cancha?> GetByIdIncludingInactiveAsync(Guid id, CancellationToken cancellationToken)
+        => await _ctx.Canchas.Include(c => c.Zona).Include(c => c.Horarios)
+            .FirstOrDefaultAsync(c => c.Id == id, cancellationToken);
+
     public async Task AddAsync(Cancha cancha, CancellationToken cancellationToken)
         => await _ctx.Canchas.AddAsync(cancha, cancellationToken);
+
+    public void Update(Cancha cancha)
+        => _ctx.Canchas.Update(cancha);
 }
 
 public class ReservaRepository : IReservaRepository

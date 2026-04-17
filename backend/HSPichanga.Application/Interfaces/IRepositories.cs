@@ -11,6 +11,10 @@ public interface IPartidoRepository
         Modalidad? modalidad = null,
         CancellationToken cancellationToken = default);
 
+    Task<IEnumerable<Partido>> GetAllAdminAsync(
+        TipoPartido? tipoPartido = null,
+        CancellationToken cancellationToken = default);
+
     Task<Partido?> GetByIdAsync(Guid id, CancellationToken cancellationToken = default);
     Task AddAsync(Partido partido, CancellationToken cancellationToken = default);
     void Update(Partido partido);
@@ -19,8 +23,11 @@ public interface IPartidoRepository
 public interface ICanchaRepository
 {
     Task<IEnumerable<Cancha>> GetAllAsync(Guid? zonaId = null, Modalidad? modalidad = null, CancellationToken cancellationToken = default);
+    Task<IEnumerable<Cancha>> GetAllAdminAsync(CancellationToken cancellationToken = default);
     Task<Cancha?> GetByIdAsync(Guid id, CancellationToken cancellationToken = default);
+    Task<Cancha?> GetByIdIncludingInactiveAsync(Guid id, CancellationToken cancellationToken = default);
     Task AddAsync(Cancha cancha, CancellationToken cancellationToken = default);
+    void Update(Cancha cancha);
 }
 
 public interface IReservaRepository

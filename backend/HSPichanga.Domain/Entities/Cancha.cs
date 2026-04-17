@@ -16,6 +16,7 @@ public class Cancha
     public bool TieneLuz { get; private set; }
     public bool TieneEstacionamiento { get; private set; }
     public bool Activo { get; private set; }
+    public EstadoCancha EstadoCancha { get; private set; }
 
     // Navigation
     public Zona Zona { get; private set; } = null!;
@@ -46,11 +47,44 @@ public class Cancha
             Direccion = direccion,
             TieneLuz = tieneLuz,
             TieneEstacionamiento = tieneEstacionamiento,
-            Activo = true
+            Activo = true,
+            EstadoCancha = EstadoCancha.Activa
         };
     }
 
     public void ActualizarFoto(string url) => FotoUrl = url;
-    public void ActualizarCosto(decimal nuevoCosto) => CostoTotal = nuevoCosto;
-    public void Desactivar() => Activo = false;
+
+    public void Actualizar(
+        string nombre,
+        string descripcion,
+        decimal costoTotal,
+        string direccion,
+        bool tieneLuz,
+        bool tieneEstacionamiento)
+    {
+        Nombre = nombre;
+        Descripcion = descripcion;
+        CostoTotal = costoTotal;
+        Direccion = direccion;
+        TieneLuz = tieneLuz;
+        TieneEstacionamiento = tieneEstacionamiento;
+    }
+
+    public void Activar()
+    {
+        Activo = true;
+        EstadoCancha = EstadoCancha.Activa;
+    }
+
+    public void Desactivar()
+    {
+        Activo = false;
+        EstadoCancha = EstadoCancha.Inactiva;
+    }
+
+    public void Anular()
+    {
+        Activo = false;
+        EstadoCancha = EstadoCancha.Anulada;
+    }
 }

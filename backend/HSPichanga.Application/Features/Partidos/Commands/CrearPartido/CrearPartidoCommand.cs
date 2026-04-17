@@ -7,7 +7,7 @@ namespace HSPichanga.Application.Features.Partidos.Commands.CrearPartido;
 
 public record CrearPartidoCommand(
     Guid CanchaId,
-    Guid HorarioId,
+    Guid? HorarioId,
     Guid OrganizadorId,
     DateTime FechaHora,
     TipoPartido TipoPartido,

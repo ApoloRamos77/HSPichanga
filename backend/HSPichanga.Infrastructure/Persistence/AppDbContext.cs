@@ -74,7 +74,8 @@ public class AppDbContext : DbContext
             FotoUrl = (string?)null,
             TieneLuz = true,
             TieneEstacionamiento = true,
-            Activo = true
+            Activo = true,
+            EstadoCancha = EstadoCancha.Activa
         });
 
         // Horarios demo - Lunes a Viernes 18:00-20:00

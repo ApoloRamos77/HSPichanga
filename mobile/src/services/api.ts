@@ -45,7 +45,7 @@ export const authService = {
   registro:(data: RegistroRequest)=> apiClient.post('/Auth/registro', data),
 };
 
-// ─── Canchas ──────────────────────────────────────────────────────────────────
+// ─── Canchas (público) ────────────────────────────────────────────────────────
 export type CanchaDto = {
   id: string; nombre: string; descripcion: string;
   zonaNombre: string; modalidad: string;
@@ -54,14 +54,32 @@ export type CanchaDto = {
   fotoUrl?: string; tieneLuz: boolean; tieneEstacionamiento: boolean;
 };
 
+// ─── Canchas (admin) ─────────────────────────────────────────────────────────
+export type CanchaAdminDto = {
+  id: string; nombre: string; descripcion: string;
+  zonaNombre: string; modalidad: string;
+  jugadoresRequeridos: number; costoTotal: number; direccion: string;
+  fotoUrl?: string; tieneLuz: boolean; tieneEstacionamiento: boolean;
+  activo: boolean;
+  estadoCancha: 'Activa' | 'Inactiva' | 'Anulada';
+};
+
 export const canchasService = {
   getAll: (zonaId?: string, modalidad?: string) =>
     apiClient.get<CanchaDto[]>('/Canchas', { params: { zonaId, modalidad } }),
+  getAllAdmin: () =>
+    apiClient.get<CanchaAdminDto[]>('/Canchas/admin'),
   crearCancha: (data: any) =>
     apiClient.post('/Canchas', data),
+  editarCancha: (id: string, data: {
+    nombre: string; descripcion: string; costoTotal: number;
+    direccion: string; tieneLuz: boolean; tieneEstacionamiento: boolean;
+  }) => apiClient.put(`/Canchas/${id}`, data),
+  cambiarEstado: (id: string, nuevoEstado: 1 | 2 | 3) =>
+    apiClient.put(`/Canchas/${id}/estado`, { nuevoEstado }),
 };
 
-// ─── Partidos ─────────────────────────────────────────────────────────────────
+// ─── Partidos (público) ───────────────────────────────────────────────────────
 export type PartidoDto = {
   id: string; canchaId: string; canchaNombre: string; zonaNombre: string;
   fechaHora: string; tipoPartido: string; categoria: string; estado: string;
@@ -69,11 +87,31 @@ export type PartidoDto = {
   modalidad: string; notas?: string; organizadorNombre: string;
 };
 
+// ─── Partidos (admin) ─────────────────────────────────────────────────────────
+export type PartidoAdminDto = {
+  id: string; canchaId: string; canchaNombre: string; zonaNombre: string;
+  fechaHora: string; fechaReprogramada?: string;
+  tipoPartido: string; categoria: string;
+  estado: 'Abierto' | 'Completo' | 'Cancelado' | 'Finalizado' | 'Reprogramado';
+  cuotaIndividual: number; cuposDisponibles: number; cuposTotales: number;
+  modalidad: string; notas?: string; organizadorNombre: string;
+  fechaCreacion: string;
+};
+
 export const partidosService = {
   getAbiertos: (categoria?: string, zonaId?: string, modalidad?: string) =>
     apiClient.get<PartidoDto[]>('/Partidos', { params: { categoria, zonaId, modalidad } }),
-  crearPartido: (data: any) =>
-    apiClient.post('/Partidos', data),
+  getAllAdmin: (tipoPartido?: number) =>
+    apiClient.get<PartidoAdminDto[]>('/Partidos/admin', { params: { tipoPartido } }),
+  crearPartido: (data: {
+    canchaId: string; horarioId?: string; organizadorId: string;
+    fechaHora: string; tipoPartido: number; categoria: number;
+    tarifaEquipoOverride?: number; notas?: string;
+  }) => apiClient.post('/Partidos', data),
+  reprogramar: (id: string, nuevaFechaHora: string, notas?: string) =>
+    apiClient.put(`/Partidos/${id}/reprogramar`, { nuevaFechaHora, notas }),
+  cambiarEstado: (id: string, nuevoEstado: number) =>
+    apiClient.put(`/Partidos/${id}/estado`, { nuevoEstado }),
 };
 
 // ─── Reservas ─────────────────────────────────────────────────────────────────

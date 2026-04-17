@@ -45,8 +45,16 @@ export const Colors = {
   estadoColors: {
     Abierto:    '#27AE60',
     Completo:   '#E74C3C',
-    Cancelado:  '#95A5A6',
+    Cancelado:  '#E74C3C', // Red for Cancelado instead of grey which is used for Finalizado
     Finalizado: '#3498DB',
+    Reprogramado: '#F39C12'
+  } as Record<string, string>,
+
+  // Estados de cancha
+  estadoCanchaColors: {
+    Activa: '#27AE60',
+    Inactiva: '#F39C12',
+    Anulada: '#E74C3C'
   } as Record<string, string>,
 };
 

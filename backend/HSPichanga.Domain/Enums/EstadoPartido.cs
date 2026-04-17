@@ -2,8 +2,9 @@ namespace HSPichanga.Domain.Enums;
 
 public enum EstadoPartido
 {
-    Abierto = 1,
-    Completo = 2,
-    Cancelado = 3,
-    Finalizado = 4
+    Abierto      = 1,
+    Completo     = 2,
+    Cancelado    = 3,
+    Finalizado   = 4,
+    Reprogramado = 5
 }

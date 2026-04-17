@@ -7,9 +7,10 @@ public class Partido
 {
     public Guid Id { get; private set; }
     public Guid CanchaId { get; private set; }
-    public Guid HorarioId { get; private set; }
+    public Guid? HorarioId { get; private set; }          // Nullable: amistosos no requieren slot fijo
     public Guid OrganizadorId { get; private set; }
     public DateTime FechaHora { get; private set; }
+    public DateTime? FechaReprogramada { get; private set; } // Nueva: fecha tras reprogramar
     public TipoPartido TipoPartido { get; private set; }
     public CategoriaPartido Categoria { get; private set; }
     public EstadoPartido Estado { get; private set; }
@@ -22,7 +23,7 @@ public class Partido
 
     // Navigation
     public Cancha Cancha { get; private set; } = null!;
-    public HorarioDisponible Horario { get; private set; } = null!;
+    public HorarioDisponible? Horario { get; private set; }  // Nullable navigation
     public Usuario Organizador { get; private set; } = null!;
     public ICollection<Reserva> Reservas { get; private set; } = new List<Reserva>();
 
@@ -34,7 +35,7 @@ public class Partido
     /// </summary>
     public static Partido Crear(
         Guid canchaId,
-        Guid horarioId,
+        Guid? horarioId,
         Guid organizadorId,
         DateTime fechaHora,
         TipoPartido tipoPartido,
@@ -92,6 +93,20 @@ public class Partido
             if (Estado == EstadoPartido.Completo)
                 Estado = EstadoPartido.Abierto;
         }
+    }
+
+    public void Reprogramar(DateTime nuevaFechaHora, string? notas = null)
+    {
+        FechaReprogramada = nuevaFechaHora;
+        FechaHora = nuevaFechaHora;
+        Estado = EstadoPartido.Reprogramado;
+        if (notas is not null) Notas = notas;
+    }
+
+    public void Activar()
+    {
+        if (Estado == EstadoPartido.Reprogramado || Estado == EstadoPartido.Cancelado)
+            Estado = EstadoPartido.Abierto;
     }
 
     public void Cancelar() => Estado = EstadoPartido.Cancelado;
