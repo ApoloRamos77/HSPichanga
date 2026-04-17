@@ -22,6 +22,7 @@ export default function AdminPartidosScreen() {
   const [repDate, setRepDate] = useState(new Date());
   const [repTime, setRepTime] = useState(new Date());
   const [repNotas, setRepNotas] = useState('');
+  const [repEstado, setRepEstado] = useState<number>(1);
   const [showRepDatePicker, setShowRepDatePicker] = useState(false);
   const [showRepTimePicker, setShowRepTimePicker] = useState(false);
 
@@ -85,12 +86,19 @@ export default function AdminPartidosScreen() {
     }
   };
 
+  const getEstadoNumber = (estado: string) => {
+    if(estado === 'Cancelado') return 3;
+    if(estado === 'Finalizado') return 4;
+    return 1; // Abierto por defecto
+  };
+
   const openReprogramar = (p: PartidoAdminDto) => {
     setSelectedPartido(p);
     const existingDate = new Date(p.fechaReprogramada || p.fechaHora);
     setRepDate(existingDate);
     setRepTime(existingDate);
     setRepNotas(p.notas || '');
+    setRepEstado(getEstadoNumber(p.estado));
     setModalReprogramarVisible(true);
   };
 
@@ -102,12 +110,17 @@ export default function AdminPartidosScreen() {
         repTime.getHours(), repTime.getMinutes(), 0
       );
 
+      // Reprogramar fecha
       await partidosService.reprogramar(selectedPartido.id, combinedDate.toISOString(), repNotas);
-      Alert.alert('Éxito', 'Partido reprogramado correctamente');
+      
+      // Actualizar estado si fué modificado (o siempre)
+      await partidosService.cambiarEstado(selectedPartido.id, repEstado);
+
+      Alert.alert('Éxito', 'Partido actualizado correctamente');
       setModalReprogramarVisible(false);
       loadData();
     } catch (e: any) {
-      Alert.alert('Error', e.response?.data?.mensaje || 'Error al reprogramar');
+      Alert.alert('Error', e.response?.data?.mensaje || 'Error al actualizar');
     }
   };
 
@@ -303,6 +316,23 @@ export default function AdminPartidosScreen() {
               onChangeText={setRepNotas}
             />
 
+            <Text style={styles.label}>Estado del Partido</Text>
+            <View style={styles.stateSelector}>
+              {[
+                { label: 'Abierto', value: 1 },
+                { label: 'Cancelado', value: 3 },
+                { label: 'Finalizado', value: 4 }
+              ].map(state => (
+                <TouchableOpacity 
+                  key={state.value}
+                  style={[styles.stateBtn, repEstado === state.value && styles.stateBtnActive]}
+                  onPress={() => setRepEstado(state.value)}
+                >
+                  <Text style={[styles.stateText, repEstado === state.value && styles.stateTextActive]}>{state.label}</Text>
+                </TouchableOpacity>
+              ))}
+            </View>
+
             <View style={[styles.row, {marginTop: Spacing.xl}]}>
               <TouchableOpacity style={[styles.modalBtn, {backgroundColor: Colors.surfaceHover}]} onPress={() => setModalReprogramarVisible(false)}>
                 <Text style={{color: Colors.textPrimary}}>Cancelar</Text>
@@ -375,6 +405,12 @@ const styles = StyleSheet.create({
     ...Shadows.button
   },
   btnText: { color: '#FFF', fontWeight: Typography.weight.bold, fontSize: Typography.size.md },
+
+  stateSelector: { flexDirection: 'row', backgroundColor: Colors.surface, borderRadius: Radius.md, borderWidth: 1, borderColor: Colors.border, padding: 4, marginTop: Spacing.xs, marginBottom: Spacing.sm },
+  stateBtn: { flex: 1, paddingVertical: Spacing.sm, alignItems: 'center', borderRadius: Radius.sm },
+  stateBtnActive: { backgroundColor: Colors.primaryLight },
+  stateText: { color: Colors.textSecondary, fontSize: Typography.size.sm, fontWeight: Typography.weight.medium },
+  stateTextActive: { color: '#FFF', fontWeight: Typography.weight.bold },
 
   modalOverlay: { flex: 1, backgroundColor: 'rgba(0,0,0,0.7)', justifyContent: 'center', padding: Spacing.lg },
   modalContent: { backgroundColor: Colors.background, borderRadius: Radius.lg, padding: Spacing.xl, borderWidth: 1, borderColor: Colors.borderLight },

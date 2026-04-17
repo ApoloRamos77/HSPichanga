@@ -22,7 +22,8 @@ export default function AdminCanchasScreen() {
     costoTotal: '0',
     direccion: '',
     tieneLuz: false,
-    tieneEstacionamiento: false
+    tieneEstacionamiento: false,
+    estadoCancha: 'Activa' // Default to string status
   });
 
   // Tab Nueva Cancha
@@ -74,20 +75,34 @@ export default function AdminCanchasScreen() {
 
   const openEditar = (c: CanchaAdminDto) => {
     setSelectedCancha(c);
+    let stString = 'Activa';
+    // Mapeo inverso si llegara como int (1,2,3) o ya viniera como string.
+    if(c.estadoCancha == 1 || c.estadoCancha === 'Activa') stString = 'Activa';
+    if(c.estadoCancha == 2 || c.estadoCancha === 'Inactiva') stString = 'Inactiva';
+    if(c.estadoCancha == 3 || c.estadoCancha === 'Anulada') stString = 'Anulada';
+
     setEditForm({
       nombre: c.nombre,
       descripcion: c.descripcion || '',
       costoTotal: c.costoTotal.toString(),
       direccion: c.direccion,
       tieneLuz: c.tieneLuz,
-      tieneEstacionamiento: c.tieneEstacionamiento
+      tieneEstacionamiento: c.tieneEstacionamiento,
+      estadoCancha: stString
     });
     setModalEditVisible(true);
+  };
+
+  const mapEstadoToInt = (st: string) => {
+      if(st === 'Activa') return 1;
+      if(st === 'Inactiva') return 2;
+      return 3; // Anulada
   };
 
   const handleEditar = async () => {
     if (!selectedCancha) return;
     try {
+      // 1. Update details
       await canchasService.editarCancha(selectedCancha.id, {
         nombre: editForm.nombre,
         descripcion: editForm.descripcion,
@@ -96,6 +111,10 @@ export default function AdminCanchasScreen() {
         tieneLuz: editForm.tieneLuz,
         tieneEstacionamiento: editForm.tieneEstacionamiento
       });
+      
+      // 2. Update status if changed or just update it anyway
+      await canchasService.cambiarEstado(selectedCancha.id, mapEstadoToInt(editForm.estadoCancha) as 1|2|3);
+
       Alert.alert('Éxito', 'Cancha actualizada correctamente');
       setModalEditVisible(false);
       loadData();
@@ -294,6 +313,23 @@ export default function AdminCanchasScreen() {
                 />
               </View>
 
+              <Text style={styles.label}>Estado de la Cancha</Text>
+              <View style={styles.stateSelector}>
+                {[
+                  { label: 'Activa', value: 'Activa' },
+                  { label: 'Inactiva', value: 'Inactiva' },
+                  { label: 'Anulada', value: 'Anulada' }
+                ].map(state => (
+                  <TouchableOpacity 
+                    key={state.value}
+                    style={[styles.stateBtn, editForm.estadoCancha === state.value && styles.stateBtnActive]}
+                    onPress={() => setEditForm({...editForm, estadoCancha: state.value})}
+                  >
+                    <Text style={[styles.stateText, editForm.estadoCancha === state.value && styles.stateTextActive]}>{state.label}</Text>
+                  </TouchableOpacity>
+                ))}
+              </View>
+
               <View style={[styles.row, {marginTop: Spacing.xl}]}>
                 <TouchableOpacity style={[styles.modalBtn, {backgroundColor: Colors.surfaceHover}]} onPress={() => setModalEditVisible(false)}>
                   <Text style={{color: Colors.textPrimary}}>Cancelar</Text>
@@ -356,6 +392,12 @@ const styles = StyleSheet.create({
     ...Shadows.button
   },
   btnText: { color: '#FFF', fontWeight: Typography.weight.bold, fontSize: Typography.size.md },
+
+  stateSelector: { flexDirection: 'row', backgroundColor: Colors.surface, borderRadius: Radius.md, borderWidth: 1, borderColor: Colors.border, padding: 4, marginTop: Spacing.xs, marginBottom: Spacing.sm },
+  stateBtn: { flex: 1, paddingVertical: Spacing.sm, alignItems: 'center', borderRadius: Radius.sm },
+  stateBtnActive: { backgroundColor: Colors.primaryLight },
+  stateText: { color: Colors.textSecondary, fontSize: Typography.size.sm, fontWeight: Typography.weight.medium },
+  stateTextActive: { color: '#FFF', fontWeight: Typography.weight.bold },
 
   modalOverlay: { flex: 1, backgroundColor: 'rgba(0,0,0,0.7)', justifyContent: 'center', padding: Spacing.lg },
   modalContent: { backgroundColor: Colors.background, borderRadius: Radius.lg, padding: Spacing.xl, borderWidth: 1, borderColor: Colors.borderLight, maxHeight: '80%' },
