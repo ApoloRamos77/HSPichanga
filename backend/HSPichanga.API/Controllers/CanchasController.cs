@@ -10,6 +10,7 @@ using Microsoft.AspNetCore.Mvc;
 
 namespace HSPichanga.API.Controllers;
 
+// Trigger build for Easypanel - Refactor validation
 [ApiController]
 [Route("api/[controller]")]
 public class CanchasController : ControllerBase

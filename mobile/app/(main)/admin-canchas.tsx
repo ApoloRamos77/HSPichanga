@@ -6,6 +6,7 @@ import { Ionicons } from '@expo/vector-icons';
 import { Colors, Spacing, Radius, Typography, Shadows } from '../../src/theme';
 import { canchasService, CanchaAdminDto } from '../../src/services/api';
 
+// Forced UI refresh for domain fields
 export default function AdminCanchasScreen() {
   const [tab, setTab] = useState<'CANCHAS' | 'NUEVA'>('CANCHAS');
   
