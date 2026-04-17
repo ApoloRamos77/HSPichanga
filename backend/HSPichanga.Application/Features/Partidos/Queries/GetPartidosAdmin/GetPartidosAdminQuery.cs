@@ -49,7 +49,7 @@ public class GetPartidosAdminQueryHandler : IRequestHandler<GetPartidosAdminQuer
             p.CuotaIndividual,
             p.CuposDisponibles,
             p.CuposTotales,
-            p.Cancha?.Modalidad.ToString() ?? "",
+            p.Modalidad.ToString(),
             p.Notas,
             p.Organizador?.NombreCompleto ?? "",
             p.FechaCreacion

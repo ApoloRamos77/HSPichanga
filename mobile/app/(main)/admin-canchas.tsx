@@ -19,7 +19,8 @@ export default function AdminCanchasScreen() {
   const [editForm, setEditForm] = useState({
     nombre: '',
     descripcion: '',
-    costoTotal: '0',
+    ubicacionGoogleMaps: '',
+    fotosUrlStr: '',
     direccion: '',
     tieneLuz: false,
     tieneEstacionamiento: false,
@@ -30,8 +31,8 @@ export default function AdminCanchasScreen() {
   const [form, setForm] = useState({
     nombre: '',
     descripcion: '',
-    modalidad: 1, // 1 = Futbol7, etc
-    costoTotal: '0',
+    ubicacionGoogleMaps: '',
+    fotosUrlStr: '',
     direccion: '',
     zonaId: '11111111-1111-1111-1111-111111111111', // Miraflores por defecto
     tieneLuz: true,
@@ -62,10 +63,11 @@ export default function AdminCanchasScreen() {
       }
       await canchasService.crearCancha({
         ...form,
-        costoTotal: parseFloat(form.costoTotal) || 0
+        ubicacionGoogleMaps: form.ubicacionGoogleMaps || null,
+        fotosUrls: form.fotosUrlStr ? form.fotosUrlStr.split(',').map(s=>s.trim()).filter(s=>s.length>0) : []
       });
       Alert.alert('Éxito', 'La cancha ha sido registrada.');
-      setForm({ ...form, nombre: '', descripcion: '', direccion: '', costoTotal: '0' });
+      setForm({ ...form, nombre: '', descripcion: '', direccion: '', ubicacionGoogleMaps: '', fotosUrlStr: '' });
       setTab('CANCHAS');
       loadData();
     } catch (e: any) {
@@ -84,7 +86,8 @@ export default function AdminCanchasScreen() {
     setEditForm({
       nombre: c.nombre,
       descripcion: c.descripcion || '',
-      costoTotal: c.costoTotal.toString(),
+      ubicacionGoogleMaps: c.ubicacionGoogleMaps || '',
+      fotosUrlStr: c.fotosUrls ? c.fotosUrls.join(', ') : '',
       direccion: c.direccion,
       tieneLuz: c.tieneLuz,
       tieneEstacionamiento: c.tieneEstacionamiento,
@@ -106,8 +109,9 @@ export default function AdminCanchasScreen() {
       await canchasService.editarCancha(selectedCancha.id, {
         nombre: editForm.nombre,
         descripcion: editForm.descripcion,
-        costoTotal: parseFloat(editForm.costoTotal) || 0,
         direccion: editForm.direccion,
+        ubicacionGoogleMaps: editForm.ubicacionGoogleMaps || null,
+        fotosUrls: editForm.fotosUrlStr ? editForm.fotosUrlStr.split(',').map(s=>s.trim()).filter(s=>s.length>0) : [],
         tieneLuz: editForm.tieneLuz,
         tieneEstacionamiento: editForm.tieneEstacionamiento
       });
@@ -181,14 +185,15 @@ export default function AdminCanchasScreen() {
               <View style={styles.cardHeader}>
                 <View style={{flex: 1}}>
                   <Text style={styles.cardTitle}>{item.nombre}</Text>
-                  <Text style={styles.cardDetail}>{item.zonaNombre} - {item.modalidad}</Text>
+                  <Text style={styles.cardDetail}>{item.zonaNombre}</Text>
                 </View>
                 <View style={[styles.badge, { backgroundColor: Colors.estadoCanchaColors[item.estadoCancha] }]}>
                   <Text style={styles.badgeText}>{item.estadoCancha}</Text>
                 </View>
               </View>
               <Text style={styles.cardDetail}>📍 {item.direccion}</Text>
-              <Text style={styles.cardDetail}>💰 S/ {item.costoTotal}</Text>
+              {item.ubicacionGoogleMaps ? <Text style={styles.cardDetail}>🌐 Mapa: {item.ubicacionGoogleMaps}</Text> : null}
+              {item.fotosUrls?.length > 0 ? <Text style={styles.cardDetail}>📷 {item.fotosUrls.length} Foto(s)</Text> : null}
               
               <View style={styles.cardActions}>
                 <TouchableOpacity style={styles.actionBtn} onPress={() => openEditar(item)}>
@@ -234,14 +239,23 @@ export default function AdminCanchasScreen() {
             onChangeText={(val) => setForm({ ...form, descripcion: val })}
           />
 
-          <Text style={styles.label}>Costo por Hora total (S/)</Text>
+          <Text style={styles.label}>Ubicación Google Maps (URL)</Text>
           <TextInput
             style={styles.input}
-            placeholder="100.00"
-            keyboardType="numeric"
+            placeholder="https://maps.google.com/..."
             placeholderTextColor={Colors.textMuted}
-            value={form.costoTotal}
-            onChangeText={(val) => setForm({ ...form, costoTotal: val })}
+            value={form.ubicacionGoogleMaps}
+            onChangeText={(val) => setForm({ ...form, ubicacionGoogleMaps: val })}
+          />
+
+          <Text style={styles.label}>Fotos (URLs separadas por coma)</Text>
+          <TextInput
+            style={[styles.input, { height: 60 }]}
+            placeholder="https://imagen1.jpg, https://imagen2.jpg"
+            placeholderTextColor={Colors.textMuted}
+            multiline
+            value={form.fotosUrlStr}
+            onChangeText={(val) => setForm({ ...form, fotosUrlStr: val })}
           />
 
           <View style={styles.switchRow}>
@@ -288,12 +302,19 @@ export default function AdminCanchasScreen() {
                 onChangeText={(val) => setEditForm({ ...editForm, direccion: val })}
               />
 
-              <Text style={styles.label}>Costo Total</Text>
+              <Text style={styles.label}>Ubicación Google Maps (URL)</Text>
               <TextInput
                 style={styles.input}
-                keyboardType="numeric"
-                value={editForm.costoTotal}
-                onChangeText={(val) => setEditForm({ ...editForm, costoTotal: val })}
+                value={editForm.ubicacionGoogleMaps}
+                onChangeText={(val) => setEditForm({ ...editForm, ubicacionGoogleMaps: val })}
+              />
+              
+              <Text style={styles.label}>Fotos (URLs separadas por coma)</Text>
+              <TextInput
+                style={[styles.input, { height: 60 }]}
+                multiline
+                value={editForm.fotosUrlStr}
+                onChangeText={(val) => setEditForm({ ...editForm, fotosUrlStr: val })}
               />
               
               <View style={styles.switchRow}>

@@ -18,11 +18,13 @@ export default function AdminPartidosScreen() {
   const [selectedPartido, setSelectedPartido] = useState<PartidoAdminDto | null>(null);
   const [modalReprogramarVisible, setModalReprogramarVisible] = useState(false);
   
-  // Reprogramación state
+  // Reprogramación / Edición state
   const [repDate, setRepDate] = useState(new Date());
   const [repTime, setRepTime] = useState(new Date());
   const [repNotas, setRepNotas] = useState('');
   const [repEstado, setRepEstado] = useState<number>(1);
+  const [repModalidad, setRepModalidad] = useState<number>(1);
+  const [repCostoTotal, setRepCostoTotal] = useState<string>('0');
   const [showRepDatePicker, setShowRepDatePicker] = useState(false);
   const [showRepTimePicker, setShowRepTimePicker] = useState(false);
 
@@ -32,6 +34,8 @@ export default function AdminPartidosScreen() {
   
   const [newDate, setNewDate] = useState(new Date(new Date().getTime() + 86400000)); // Mañana
   const [newTime, setNewTime] = useState(new Date(new Date().setHours(20, 0, 0, 0))); // 20:00
+  const [newModalidad, setNewModalidad] = useState<number>(1); // 1 = Futbol7
+  const [newCostoTotal, setNewCostoTotal] = useState<string>('120');
   const [showNewDatePicker, setShowNewDatePicker] = useState(false);
   const [showNewTimePicker, setShowNewTimePicker] = useState(false);
   const [notas, setNotas] = useState('Amistoso oficial ADHSOFT SPORT');
@@ -70,11 +74,13 @@ export default function AdminPartidosScreen() {
 
       await partidosService.crearPartido({
         canchaId: canchaId,
-        horarioId: null, // backend will accept null now
+        horarioId: undefined, // backend will accept null now
         organizadorId: usuario?.id as string,
         fechaHora: combinedDate.toISOString(),
         tipoPartido: 3, // Amistoso
         categoria: 1, // AdultosLibre
+        modalidad: newModalidad,
+        costoTotal: parseFloat(newCostoTotal) || 0,
         notas: notas
       });
 
@@ -92,6 +98,17 @@ export default function AdminPartidosScreen() {
     return 1; // Abierto por defecto
   };
 
+  const mapModalidadToInt = (m: string) => {
+    switch (m) {
+        case 'Futbol5': return 0;
+        case 'Futbol6': return 1;
+        case 'Futbol8': return 3;
+        case 'Futbol9': return 4;
+        case 'Futbol11': return 5;
+        default: return 2; // Futbol7
+    }
+  };
+
   const openReprogramar = (p: PartidoAdminDto) => {
     setSelectedPartido(p);
     const existingDate = new Date(p.fechaReprogramada || p.fechaHora);
@@ -99,6 +116,8 @@ export default function AdminPartidosScreen() {
     setRepTime(existingDate);
     setRepNotas(p.notas || '');
     setRepEstado(getEstadoNumber(p.estado));
+    setRepModalidad(mapModalidadToInt(p.modalidad));
+    setRepCostoTotal((p.cuotaIndividual * p.cuposTotales).toString()); // Aproximación
     setModalReprogramarVisible(true);
   };
 
@@ -110,8 +129,8 @@ export default function AdminPartidosScreen() {
         repTime.getHours(), repTime.getMinutes(), 0
       );
 
-      // Reprogramar fecha
-      await partidosService.reprogramar(selectedPartido.id, combinedDate.toISOString(), repNotas);
+      // Editar todo el partido
+      await partidosService.editarPartido(selectedPartido.id, repModalidad, parseFloat(repCostoTotal) || 0, combinedDate.toISOString(), repNotas);
       
       // Actualizar estado si fué modificado (o siempre)
       await partidosService.cambiarEstado(selectedPartido.id, repEstado);
@@ -216,6 +235,18 @@ export default function AdminPartidosScreen() {
               ))}
           </ScrollView>
 
+          {canchas.find(c => c.id === canchaId) && (
+            <View style={{ marginBottom: Spacing.md, padding: Spacing.sm, backgroundColor: Colors.surfaceHover, borderRadius: Radius.md, borderWidth: 1, borderColor: Colors.borderLight}}>
+              <Text style={{color: Colors.textSecondary, fontSize: Typography.size.sm}}>📍 {canchas.find(c => c.id === canchaId)?.direccion}</Text>
+              {canchas.find(c => c.id === canchaId)?.ubicacionGoogleMaps ? (
+                <Text style={{color: Colors.primaryLight, fontSize: Typography.size.sm, marginTop: 4}}>🌐 Mapa: {canchas.find(c => c.id === canchaId)?.ubicacionGoogleMaps}</Text>
+              ) : null}
+              {canchas.find(c => c.id === canchaId)?.fotosUrls?.length > 0 ? (
+                <Text style={{color: Colors.accent, fontSize: Typography.size.sm, marginTop: 4}}>📷 Ver {canchas.find(c => c.id === canchaId)?.fotosUrls?.length} fotos</Text>
+              ) : null}
+            </View>
+          )}
+
           <View style={styles.row}>
             <View style={{flex: 1, marginRight: Spacing.sm}}>
               <Text style={styles.label}>Fecha</Text>
@@ -250,6 +281,36 @@ export default function AdminPartidosScreen() {
               )}
             </View>
           </View>
+
+          <Text style={styles.label}>Modalidad</Text>
+          <View style={styles.stateSelector}>
+            {[
+              { label: 'F7', value: 2 },
+              { label: 'F6', value: 1 },
+              { label: 'F5', value: 0 },
+              { label: 'F8', value: 3 },
+              { label: 'F9', value: 4 },
+              { label: 'F11', value: 5 }
+            ].map(m => (
+              <TouchableOpacity 
+                key={m.value}
+                style={[styles.stateBtn, newModalidad === m.value && styles.stateBtnActive]}
+                onPress={() => setNewModalidad(m.value)}
+              >
+                <Text style={[styles.stateText, newModalidad === m.value && styles.stateTextActive]}>{m.label}</Text>
+              </TouchableOpacity>
+            ))}
+          </View>
+
+          <Text style={styles.label}>Costo Total (S/)</Text>
+          <TextInput
+            style={styles.input}
+            keyboardType="numeric"
+            value={newCostoTotal}
+            onChangeText={setNewCostoTotal}
+            placeholder="120"
+            placeholderTextColor={Colors.textMuted}
+          />
 
           <Text style={styles.label}>Notas adicionales</Text>
           <TextInput
@@ -308,13 +369,46 @@ export default function AdminPartidosScreen() {
               </View>
             </View>
 
-            <Text style={styles.label}>Notas</Text>
-            <TextInput
-              style={[styles.input, { height: 60 }]}
-              multiline
-              value={repNotas}
-              onChangeText={setRepNotas}
-            />
+            <Text style={styles.label}>Modalidad</Text>
+            <View style={styles.stateSelector}>
+              {[
+                { label: 'F7', value: 2 },
+                { label: 'F6', value: 1 },
+                { label: 'F5', value: 0 },
+                { label: 'F8', value: 3 },
+                { label: 'F9', value: 4 },
+                { label: 'F11', value: 5 }
+              ].map(m => (
+                <TouchableOpacity 
+                  key={m.value}
+                  style={[styles.stateBtn, repModalidad === m.value && styles.stateBtnActive]}
+                  onPress={() => setRepModalidad(m.value)}
+                >
+                  <Text style={[styles.stateText, repModalidad === m.value && styles.stateTextActive]}>{m.label}</Text>
+                </TouchableOpacity>
+              ))}
+            </View>
+
+            <View style={styles.row}>
+              <View style={{flex: 1, marginRight: Spacing.sm}}>
+                  <Text style={styles.label}>Costo Total</Text>
+                  <TextInput
+                    style={styles.input}
+                    keyboardType="numeric"
+                    value={repCostoTotal}
+                    onChangeText={setRepCostoTotal}
+                  />
+              </View>
+              <View style={{flex: 1, marginLeft: Spacing.sm}}>
+                  <Text style={styles.label}>Notas</Text>
+                  <TextInput
+                    style={[styles.input, { height: 50 }]}
+                    multiline
+                    value={repNotas}
+                    onChangeText={setRepNotas}
+                  />
+              </View>
+            </View>
 
             <Text style={styles.label}>Estado del Partido</Text>
             <View style={styles.stateSelector}>

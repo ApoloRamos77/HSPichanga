@@ -52,13 +52,13 @@ public class PartidosController : ControllerBase
         return CreatedAtAction(nameof(GetPartidos), new { }, result);
     }
 
-    /// <summary>Reprogramar un partido existente (Admin o Delegado)</summary>
-    [HttpPut("{id:guid}/reprogramar")]
+    /// <summary>Editar un partido existente (Admin o Delegado)</summary>
+    [HttpPut("{id:guid}")]
     [Authorize(Roles = "Administrador,Delegado")]
-    [ProducesResponseType(typeof(ReprogramarPartidoResult), 200)]
-    public async Task<IActionResult> Reprogramar(Guid id, [FromBody] ReprogramarRequest request, CancellationToken ct)
+    [ProducesResponseType(typeof(EditarPartidoResult), 200)]
+    public async Task<IActionResult> EditarPartido(Guid id, [FromBody] EditarPartidoRequest request, CancellationToken ct)
     {
-        var result = await _mediator.Send(new ReprogramarPartidoCommand(id, request.NuevaFechaHora, request.Notas), ct);
+        var result = await _mediator.Send(new EditarPartidoCommand(id, request.Modalidad, request.CostoTotal, request.NuevaFechaHora, request.Notas), ct);
         return Ok(result);
     }
 
@@ -73,5 +73,5 @@ public class PartidosController : ControllerBase
     }
 }
 
-public record ReprogramarRequest(DateTime NuevaFechaHora, string? Notas);
+public record EditarPartidoRequest(Modalidad Modalidad, decimal CostoTotal, DateTime NuevaFechaHora, string? Notas);
 public record CambiarEstadoPartidoRequest(EstadoPartido NuevoEstado);

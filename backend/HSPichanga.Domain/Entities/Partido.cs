@@ -13,7 +13,9 @@ public class Partido
     public DateTime? FechaReprogramada { get; private set; } // Nueva: fecha tras reprogramar
     public TipoPartido TipoPartido { get; private set; }
     public CategoriaPartido Categoria { get; private set; }
+    public Modalidad Modalidad { get; private set; }
     public EstadoPartido Estado { get; private set; }
+    public decimal CostoTotal { get; private set; }
     public decimal CuotaIndividual { get; private set; }
     public decimal TarifaEquipo { get; private set; }
     public int CuposTotales { get; private set; }
@@ -29,7 +31,6 @@ public class Partido
 
     protected Partido() { }
 
-    /// <summary>
     /// Crea un partido y calcula automáticamente la cuota individual.
     /// CuotaIndividual = CostoTotal / JugadoresRequeridos
     /// </summary>
@@ -40,15 +41,16 @@ public class Partido
         DateTime fechaHora,
         TipoPartido tipoPartido,
         CategoriaPartido categoria,
-        decimal costoTotalCancha,
-        int jugadoresRequeridos,
+        Modalidad modalidad,
+        decimal costoTotal,
         decimal tarifaEquipo = 0,
         string? notas = null)
     {
+        var jugadoresRequeridos = modalidad.GetJugadoresRequeridos();
         if (jugadoresRequeridos <= 0)
             throw new DomainException("La cantidad de jugadores requeridos debe ser mayor a cero.");
 
-        var cuotaIndividual = costoTotalCancha / jugadoresRequeridos;
+        var cuotaIndividual = costoTotal / jugadoresRequeridos;
 
         return new Partido
         {
@@ -59,7 +61,9 @@ public class Partido
             FechaHora = fechaHora,
             TipoPartido = tipoPartido,
             Categoria = categoria,
+            Modalidad = modalidad,
             Estado = EstadoPartido.Abierto,
+            CostoTotal = costoTotal,
             CuotaIndividual = Math.Round(cuotaIndividual, 2),
             TarifaEquipo = tarifaEquipo,
             CuposTotales = jugadoresRequeridos,
@@ -101,6 +105,22 @@ public class Partido
         FechaHora = nuevaFechaHora;
         Estado = EstadoPartido.Reprogramado;
         if (notas is not null) Notas = notas;
+    }
+
+    public void ActualizarDetallesAdmin(Modalidad modalidad, decimal costoTotal, DateTime nuevaFechaHora, string? notas)
+    {
+        var jugadoresRequeridos = modalidad.GetJugadoresRequeridos();
+        if (jugadoresRequeridos > 0)
+        {
+            Modalidad = modalidad;
+            CostoTotal = costoTotal;
+            CuposTotales = jugadoresRequeridos;
+            CuotaIndividual = Math.Round(costoTotal / jugadoresRequeridos, 2);
+        }
+        
+        FechaReprogramada = nuevaFechaHora;
+        FechaHora = nuevaFechaHora;
+        Notas = notas;
     }
 
     public void Activar()

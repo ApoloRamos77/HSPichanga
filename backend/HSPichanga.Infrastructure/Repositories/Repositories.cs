@@ -22,7 +22,7 @@ public class PartidoRepository : IPartidoRepository
 
         if (categoria.HasValue) query = query.Where(p => p.Categoria == categoria);
         if (zonaId.HasValue)    query = query.Where(p => p.Cancha.ZonaId == zonaId);
-        if (modalidad.HasValue) query = query.Where(p => p.Cancha.Modalidad == modalidad);
+        if (modalidad.HasValue) query = query.Where(p => p.Modalidad == modalidad);
 
         return await query.OrderBy(p => p.FechaHora).ToListAsync(cancellationToken);
     }
@@ -59,11 +59,10 @@ public class CanchaRepository : ICanchaRepository
     private readonly AppDbContext _ctx;
     public CanchaRepository(AppDbContext ctx) => _ctx = ctx;
 
-    public async Task<IEnumerable<Cancha>> GetAllAsync(Guid? zonaId, Modalidad? modalidad, CancellationToken cancellationToken)
+    public async Task<IEnumerable<Cancha>> GetAllAsync(Guid? zonaId, CancellationToken cancellationToken)
     {
         var query = _ctx.Canchas.Include(c => c.Zona).Where(c => c.Activo);
         if (zonaId.HasValue)    query = query.Where(c => c.ZonaId == zonaId);
-        if (modalidad.HasValue) query = query.Where(c => c.Modalidad == modalidad);
         return await query.OrderBy(c => c.Nombre).ToListAsync(cancellationToken);
     }
 

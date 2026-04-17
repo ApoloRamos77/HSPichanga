@@ -8,8 +8,9 @@ public record EditarCanchaCommand(
     Guid CanchaId,
     string Nombre,
     string Descripcion,
-    decimal CostoTotal,
     string Direccion,
+    string? UbicacionGoogleMaps,
+    List<string> FotosUrls,
     bool TieneLuz,
     bool TieneEstacionamiento
 ) : IRequest<EditarCanchaResult>;
@@ -29,8 +30,9 @@ public class EditarCanchaCommandHandler : IRequestHandler<EditarCanchaCommand, E
         cancha.Actualizar(
             request.Nombre,
             request.Descripcion,
-            request.CostoTotal,
             request.Direccion,
+            request.UbicacionGoogleMaps,
+            request.FotosUrls,
             request.TieneLuz,
             request.TieneEstacionamiento);
 

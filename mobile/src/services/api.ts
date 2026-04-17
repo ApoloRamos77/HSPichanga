@@ -48,32 +48,32 @@ export const authService = {
 // ─── Canchas (público) ────────────────────────────────────────────────────────
 export type CanchaDto = {
   id: string; nombre: string; descripcion: string;
-  zonaNombre: string; modalidad: string;
-  jugadoresRequeridos: number; costoTotal: number;
-  cuotaIndividualEstimada: number; direccion: string;
+  zonaNombre: string; ubicacionGoogleMaps: string | null;
+  direccion: string; fotosUrls: string[];
   fotoUrl?: string; tieneLuz: boolean; tieneEstacionamiento: boolean;
 };
 
 // ─── Canchas (admin) ─────────────────────────────────────────────────────────
 export type CanchaAdminDto = {
   id: string; nombre: string; descripcion: string;
-  zonaNombre: string; modalidad: string;
-  jugadoresRequeridos: number; costoTotal: number; direccion: string;
+  zonaNombre: string; direccion: string;
+  ubicacionGoogleMaps: string | null; fotosUrls: string[];
   fotoUrl?: string; tieneLuz: boolean; tieneEstacionamiento: boolean;
   activo: boolean;
   estadoCancha: 'Activa' | 'Inactiva' | 'Anulada';
 };
 
 export const canchasService = {
-  getAll: (zonaId?: string, modalidad?: string) =>
-    apiClient.get<CanchaDto[]>('/Canchas', { params: { zonaId, modalidad } }),
+  getAll: (zonaId?: string) =>
+    apiClient.get<CanchaDto[]>('/Canchas', { params: { zonaId } }),
   getAllAdmin: () =>
     apiClient.get<CanchaAdminDto[]>('/Canchas/admin'),
   crearCancha: (data: any) =>
     apiClient.post('/Canchas', data),
   editarCancha: (id: string, data: {
-    nombre: string; descripcion: string; costoTotal: number;
-    direccion: string; tieneLuz: boolean; tieneEstacionamiento: boolean;
+    nombre: string; descripcion: string;
+    direccion: string; ubicacionGoogleMaps: string | null; fotosUrls: string[];
+    tieneLuz: boolean; tieneEstacionamiento: boolean;
   }) => apiClient.put(`/Canchas/${id}`, data),
   cambiarEstado: (id: string, nuevoEstado: 1 | 2 | 3) =>
     apiClient.put(`/Canchas/${id}/estado`, { nuevoEstado }),
@@ -106,10 +106,11 @@ export const partidosService = {
   crearPartido: (data: {
     canchaId: string; horarioId?: string; organizadorId: string;
     fechaHora: string; tipoPartido: number; categoria: number;
+    modalidad: number; costoTotal: number;
     tarifaEquipoOverride?: number; notas?: string;
   }) => apiClient.post('/Partidos', data),
-  reprogramar: (id: string, nuevaFechaHora: string, notas?: string) =>
-    apiClient.put(`/Partidos/${id}/reprogramar`, { nuevaFechaHora, notas }),
+  editarPartido: (id: string, modalidad: number, costoTotal: number, nuevaFechaHora: string, notas?: string) =>
+    apiClient.put(`/Partidos/${id}`, { modalidad, costoTotal, nuevaFechaHora, notas }),
   cambiarEstado: (id: string, nuevoEstado: number) =>
     apiClient.put(`/Partidos/${id}/estado`, { nuevoEstado }),
 };

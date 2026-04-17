@@ -18,10 +18,5 @@ public class CrearCanchaCommandValidator : AbstractValidator<CrearCanchaCommand>
         RuleFor(v => v.Direccion)
             .NotEmpty().WithMessage("La dirección es requerida.");
 
-        RuleFor(v => v.CostoTotal)
-            .GreaterThan(0).WithMessage("El costo total debe ser mayor a 0.");
-            
-        RuleFor(v => v.Modalidad)
-            .IsInEnum().WithMessage("La modalidad no es válida.");
     }
 }

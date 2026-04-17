@@ -22,10 +22,9 @@ public class CanchasController : ControllerBase
     [ProducesResponseType(typeof(IEnumerable<CanchaDto>), 200)]
     public async Task<IActionResult> GetCanchas(
         [FromQuery] Guid? zonaId,
-        [FromQuery] Modalidad? modalidad,
         CancellationToken ct)
     {
-        var result = await _mediator.Send(new GetCanchasQuery(zonaId, modalidad), ct);
+        var result = await _mediator.Send(new GetCanchasQuery(zonaId), ct);
         return Ok(result);
     }
 
@@ -59,8 +58,9 @@ public class CanchasController : ControllerBase
             id,
             request.Nombre,
             request.Descripcion,
-            request.CostoTotal,
             request.Direccion,
+            request.UbicacionGoogleMaps,
+            request.FotosUrls,
             request.TieneLuz,
             request.TieneEstacionamiento), ct);
         return Ok(result);
@@ -80,8 +80,9 @@ public class CanchasController : ControllerBase
 public record EditarCanchaRequest(
     string Nombre,
     string Descripcion,
-    decimal CostoTotal,
     string Direccion,
+    string? UbicacionGoogleMaps,
+    List<string> FotosUrls,
     bool TieneLuz,
     bool TieneEstacionamiento
 );

@@ -12,6 +12,8 @@ public record CrearPartidoCommand(
     DateTime FechaHora,
     TipoPartido TipoPartido,
     CategoriaPartido Categoria,
+    Modalidad Modalidad,
+    decimal CostoTotal,
     decimal? TarifaEquipoOverride = null,
     string? Notas = null
 ) : IRequest<CrearPartidoResult>;
@@ -29,7 +31,7 @@ public class CrearPartidoCommandHandler : IRequestHandler<CrearPartidoCommand, C
         var cancha = await _uow.Canchas.GetByIdAsync(request.CanchaId, cancellationToken)
             ?? throw new KeyNotFoundException("Cancha no encontrada.");
 
-        var tarifaEquipo = request.TarifaEquipoOverride ?? cancha.CostoTotal;
+        var tarifaEquipo = request.TarifaEquipoOverride ?? request.CostoTotal;
 
         var partido = Partido.Crear(
             request.CanchaId,
@@ -38,8 +40,8 @@ public class CrearPartidoCommandHandler : IRequestHandler<CrearPartidoCommand, C
             request.FechaHora,
             request.TipoPartido,
             request.Categoria,
-            cancha.CostoTotal,
-            cancha.JugadoresRequeridos,
+            request.Modalidad,
+            request.CostoTotal,
             tarifaEquipo,
             request.Notas);
 

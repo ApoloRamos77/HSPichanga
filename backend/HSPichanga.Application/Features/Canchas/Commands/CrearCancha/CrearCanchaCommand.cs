@@ -9,9 +9,9 @@ public record CrearCanchaCommand(
     Guid ZonaId,
     string Nombre,
     string Descripcion,
-    Modalidad Modalidad,
-    decimal CostoTotal,
     string Direccion,
+    string? UbicacionGoogleMaps,
+    List<string> FotosUrls,
     bool TieneLuz,
     bool TieneEstacionamiento
 ) : IRequest<CrearCanchaResult>;
@@ -33,9 +33,9 @@ public class CrearCanchaCommandHandler : IRequestHandler<CrearCanchaCommand, Cre
             request.ZonaId,
             request.Nombre,
             request.Descripcion,
-            request.Modalidad,
-            request.CostoTotal,
             request.Direccion,
+            request.UbicacionGoogleMaps,
+            request.FotosUrls,
             request.TieneLuz,
             request.TieneEstacionamiento);
 

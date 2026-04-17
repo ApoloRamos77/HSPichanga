@@ -8,11 +8,10 @@ public class Cancha
     public Guid ZonaId { get; private set; }
     public string Nombre { get; private set; } = string.Empty;
     public string Descripcion { get; private set; } = string.Empty;
-    public Modalidad Modalidad { get; private set; }
-    public int JugadoresRequeridos { get; private set; }
-    public decimal CostoTotal { get; private set; }
     public string Direccion { get; private set; } = string.Empty;
-    public string? FotoUrl { get; private set; }
+    public string? UbicacionGoogleMaps { get; private set; }
+    public List<string> FotosUrls { get; private set; } = new();
+    public string? FotoUrl { get; private set; } // Legacy o foto principal rápida
     public bool TieneLuz { get; private set; }
     public bool TieneEstacionamiento { get; private set; }
     public bool Activo { get; private set; }
@@ -29,9 +28,9 @@ public class Cancha
         Guid zonaId,
         string nombre,
         string descripcion,
-        Modalidad modalidad,
-        decimal costoTotal,
         string direccion,
+        string? ubicacionGoogleMaps,
+        List<string> fotosUrls,
         bool tieneLuz = false,
         bool tieneEstacionamiento = false)
     {
@@ -41,10 +40,10 @@ public class Cancha
             ZonaId = zonaId,
             Nombre = nombre,
             Descripcion = descripcion,
-            Modalidad = modalidad,
-            JugadoresRequeridos = modalidad.GetJugadoresRequeridos(),
-            CostoTotal = costoTotal,
             Direccion = direccion,
+            UbicacionGoogleMaps = ubicacionGoogleMaps,
+            FotosUrls = fotosUrls ?? new(),
+            FotoUrl = fotosUrls?.FirstOrDefault(),
             TieneLuz = tieneLuz,
             TieneEstacionamiento = tieneEstacionamiento,
             Activo = true,
@@ -57,15 +56,18 @@ public class Cancha
     public void Actualizar(
         string nombre,
         string descripcion,
-        decimal costoTotal,
         string direccion,
+        string? ubicacionGoogleMaps,
+        List<string> fotosUrls,
         bool tieneLuz,
         bool tieneEstacionamiento)
     {
         Nombre = nombre;
         Descripcion = descripcion;
-        CostoTotal = costoTotal;
         Direccion = direccion;
+        UbicacionGoogleMaps = ubicacionGoogleMaps;
+        FotosUrls = fotosUrls ?? new();
+        if(FotosUrls.Any()) FotoUrl = FotosUrls.First();
         TieneLuz = tieneLuz;
         TieneEstacionamiento = tieneEstacionamiento;
     }

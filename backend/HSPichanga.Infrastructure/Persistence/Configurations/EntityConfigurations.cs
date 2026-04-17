@@ -40,11 +40,12 @@ public class CanchaConfiguration : IEntityTypeConfiguration<Cancha>
         builder.HasKey(x => x.Id);
         builder.Property(x => x.Nombre).HasMaxLength(200).IsRequired();
         builder.Property(x => x.Descripcion).HasMaxLength(500);
-        builder.Property(x => x.Modalidad).HasConversion<int>();
         builder.Property(x => x.EstadoCancha).HasConversion<int>().HasSentinel(HSPichanga.Domain.Enums.EstadoCancha.Activa);
-        builder.Property(x => x.CostoTotal).HasColumnType("decimal(10,2)");
         builder.Property(x => x.Direccion).HasMaxLength(300);
+        builder.Property(x => x.UbicacionGoogleMaps).HasMaxLength(1000);
         builder.Property(x => x.FotoUrl).HasMaxLength(500);
+        // Npgsql mapea nativamente List<string> a text[]
+        builder.Property(x => x.FotosUrls);
 
         builder.HasOne(x => x.Zona)
                .WithMany(z => z.Canchas)
@@ -76,7 +77,9 @@ public class PartidoConfiguration : IEntityTypeConfiguration<Partido>
         builder.HasKey(x => x.Id);
         builder.Property(x => x.TipoPartido).HasConversion<int>();
         builder.Property(x => x.Categoria).HasConversion<int>();
+        builder.Property(x => x.Modalidad).HasConversion<int>();
         builder.Property(x => x.Estado).HasConversion<int>();
+        builder.Property(x => x.CostoTotal).HasColumnType("decimal(10,2)");
         builder.Property(x => x.CuotaIndividual).HasColumnType("decimal(10,2)");
         builder.Property(x => x.TarifaEquipo).HasColumnType("decimal(10,2)");
         builder.Property(x => x.Notas).HasMaxLength(500);

@@ -50,7 +50,7 @@ public class GetPartidosAbiertosQueryHandler : IRequestHandler<GetPartidosAbiert
             p.CuotaIndividual,
             p.CuposDisponibles,
             p.CuposTotales,
-            p.Cancha?.Modalidad.ToString() ?? "",
+            p.Modalidad.ToString(),
             p.Notas,
             p.Organizador?.NombreCompleto ?? ""
         ));

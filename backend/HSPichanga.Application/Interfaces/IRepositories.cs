@@ -22,7 +22,7 @@ public interface IPartidoRepository
 
 public interface ICanchaRepository
 {
-    Task<IEnumerable<Cancha>> GetAllAsync(Guid? zonaId = null, Modalidad? modalidad = null, CancellationToken cancellationToken = default);
+    Task<IEnumerable<Cancha>> GetAllAsync(Guid? zonaId = null, CancellationToken cancellationToken = default);
     Task<IEnumerable<Cancha>> GetAllAdminAsync(CancellationToken cancellationToken = default);
     Task<Cancha?> GetByIdAsync(Guid id, CancellationToken cancellationToken = default);
     Task<Cancha?> GetByIdIncludingInactiveAsync(Guid id, CancellationToken cancellationToken = default);
