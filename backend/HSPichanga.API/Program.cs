@@ -140,10 +140,15 @@ app.UseExceptionHandler(errorApp =>
     });
 });
 
+app.UseForwardedHeaders(new ForwardedHeadersOptions
+{
+    ForwardedHeaders = Microsoft.AspNetCore.HttpOverrides.ForwardedHeaders.XForwardedFor | Microsoft.AspNetCore.HttpOverrides.ForwardedHeaders.XForwardedProto
+});
+
 app.UseCors("ExpoPolicy");
+app.UseStaticFiles(); // Servir archivos desde wwwroot
 app.UseAuthentication();
 app.UseAuthorization();
-app.UseStaticFiles();
 app.MapControllers();
 
 app.MapGet("/", context =>

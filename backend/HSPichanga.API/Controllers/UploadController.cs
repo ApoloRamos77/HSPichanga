@@ -38,7 +38,8 @@ public class UploadController : ControllerBase
                 await file.CopyToAsync(stream);
             }
 
-            var baseUrl = $"{Request.Scheme}://{Request.Host}{Request.PathBase}";
+            var request = HttpContext.Request;
+            var baseUrl = $"{request.Scheme}://{request.Host}{request.PathBase}";
             var fileUrl = $"{baseUrl}/uploads/{fileName}";
 
             return Ok(new UploadResult(fileUrl));
