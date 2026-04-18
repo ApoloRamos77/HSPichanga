@@ -52,6 +52,8 @@ public class UploadController : ControllerBase
         if (!Directory.Exists(uploadsFolder))
             Directory.CreateDirectory(uploadsFolder);
 
+        var results = new List<UploadResult>();
+
         foreach (var file in files)
         {
             var fileName = $"{Guid.NewGuid()}{Path.GetExtension(file.FileName)}";
