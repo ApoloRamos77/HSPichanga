@@ -19,43 +19,17 @@ public class UploadController : ControllerBase
     [ProducesResponseType(typeof(UploadResult), 200)]
     public async Task<IActionResult> Upload(IFormFile file)
     {
-        if (file == null || file.Length == 0)
-            return BadRequest("No se ha seleccionado ningún archivo.");
-
-        var uploadsFolder = Path.Combine(_environment.WebRootPath, "uploads");
-        if (!Directory.Exists(uploadsFolder))
-            Directory.CreateDirectory(uploadsFolder);
-
-        var fileName = $"{Guid.NewGuid()}{Path.GetExtension(file.FileName)}";
-        var filePath = Path.Combine(uploadsFolder, fileName);
-
-        using (var stream = new FileStream(filePath, FileMode.Create))
+        try 
         {
-            await file.CopyToAsync(stream);
-        }
+            if (file == null || file.Length == 0)
+                return BadRequest("No se ha seleccionado ningún archivo.");
 
-        var baseUrl = $"{Request.Scheme}://{Request.Host}{Request.PathBase}";
-        var fileUrl = $"{baseUrl}/uploads/{fileName}";
+            var webRoot = _environment.WebRootPath ?? Path.Combine(_environment.ContentRootPath, "wwwroot");
+            var uploadsFolder = Path.Combine(webRoot, "uploads");
+            
+            if (!Directory.Exists(uploadsFolder))
+                Directory.CreateDirectory(uploadsFolder);
 
-        return Ok(new UploadResult(fileUrl));
-    }
-
-    [HttpPost("multiple")]
-    [Authorize]
-    [ProducesResponseType(typeof(IEnumerable<UploadResult>), 200)]
-    public async Task<IActionResult> UploadMultiple(List<IFormFile> files)
-    {
-        if (files == null || !files.Any())
-            return BadRequest("No se han seleccionado archivos.");
-
-        var uploadsFolder = Path.Combine(_environment.WebRootPath, "uploads");
-        if (!Directory.Exists(uploadsFolder))
-            Directory.CreateDirectory(uploadsFolder);
-
-        var results = new List<UploadResult>();
-
-        foreach (var file in files)
-        {
             var fileName = $"{Guid.NewGuid()}{Path.GetExtension(file.FileName)}";
             var filePath = Path.Combine(uploadsFolder, fileName);
 
@@ -65,10 +39,54 @@ public class UploadController : ControllerBase
             }
 
             var baseUrl = $"{Request.Scheme}://{Request.Host}{Request.PathBase}";
-            results.Add(new UploadResult($"{baseUrl}/uploads/{fileName}"));
-        }
+            var fileUrl = $"{baseUrl}/uploads/{fileName}";
 
-        return Ok(results);
+            return Ok(new UploadResult(fileUrl));
+        }
+        catch (Exception ex)
+        {
+            return StatusCode(500, new { Mensaje = $"Error al procesar la carga: {ex.Message}" });
+        }
+    }
+
+    [HttpPost("multiple")]
+    [Authorize]
+    [ProducesResponseType(typeof(IEnumerable<UploadResult>), 200)]
+    public async Task<IActionResult> UploadMultiple(List<IFormFile> files)
+    {
+        try 
+        {
+            if (files == null || !files.Any())
+                return BadRequest("No se han seleccionado archivos.");
+
+            var webRoot = _environment.WebRootPath ?? Path.Combine(_environment.ContentRootPath, "wwwroot");
+            var uploadsFolder = Path.Combine(webRoot, "uploads");
+            
+            if (!Directory.Exists(uploadsFolder))
+                Directory.CreateDirectory(uploadsFolder);
+
+            var results = new List<UploadResult>();
+
+            foreach (var file in files)
+            {
+                var fileName = $"{Guid.NewGuid()}{Path.GetExtension(file.FileName)}";
+                var filePath = Path.Combine(uploadsFolder, fileName);
+
+                using (var stream = new FileStream(filePath, FileMode.Create))
+                {
+                    await file.CopyToAsync(stream);
+                }
+
+                var baseUrl = $"{Request.Scheme}://{Request.Host}{Request.PathBase}";
+                results.Add(new UploadResult($"{baseUrl}/uploads/{fileName}"));
+            }
+
+            return Ok(results);
+        }
+        catch (Exception ex)
+        {
+            return StatusCode(500, new { Mensaje = $"Error al procesar la carga múltiple: {ex.Message}" });
+        }
     }
 }
 

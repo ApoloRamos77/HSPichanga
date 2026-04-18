@@ -88,12 +88,17 @@ using (var scope = app.Services.CreateScope())
     {
         var dbContext = scope.ServiceProvider.GetRequiredService<AppDbContext>();
         await dbContext.Database.MigrateAsync();
+
+        // Asegurar que la carpeta de subidas existe
+        var env = scope.ServiceProvider.GetRequiredService<IWebHostEnvironment>();
+        var webRoot = env.WebRootPath ?? Path.Combine(env.ContentRootPath, "wwwroot");
+        var uploadsPath = Path.Combine(webRoot, "uploads");
+        if (!Directory.Exists(uploadsPath)) Directory.CreateDirectory(uploadsPath);
     }
     catch (Exception ex)
     {
         var logger = scope.ServiceProvider.GetRequiredService<ILogger<Program>>();
-        logger.LogError(ex, "Ocurrió un error al aplicar las migraciones.");
-        // No relanzamos para que la App intente arrancar si la DB ya está ok
+        logger.LogError(ex, "Ocurrió un error al aplicar las migraciones o preparar directorios.");
     }
 }
 
