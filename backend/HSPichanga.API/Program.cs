@@ -84,8 +84,17 @@ var app = builder.Build();
 // ─── Migraciones automáticas al arrancar ──────────────────────────────────────
 using (var scope = app.Services.CreateScope())
 {
-    var dbContext = scope.ServiceProvider.GetRequiredService<AppDbContext>();
-    await dbContext.Database.MigrateAsync();
+    try 
+    {
+        var dbContext = scope.ServiceProvider.GetRequiredService<AppDbContext>();
+        await dbContext.Database.MigrateAsync();
+    }
+    catch (Exception ex)
+    {
+        var logger = scope.ServiceProvider.GetRequiredService<ILogger<Program>>();
+        logger.LogError(ex, "Ocurrió un error al aplicar las migraciones.");
+        // No relanzamos para que la App intente arrancar si la DB ya está ok
+    }
 }
 
 // ─── Pipeline ─────────────────────────────────────────────────────────────────

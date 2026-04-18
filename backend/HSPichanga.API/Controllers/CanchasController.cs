@@ -23,9 +23,11 @@ public class CanchasController : ControllerBase
     [ProducesResponseType(typeof(IEnumerable<CanchaDto>), 200)]
     public async Task<IActionResult> GetCanchas(
         [FromQuery] Guid? zonaId,
+        [FromQuery] double? userLatitude,
+        [FromQuery] double? userLongitude,
         CancellationToken ct)
     {
-        var result = await _mediator.Send(new GetCanchasQuery(zonaId), ct);
+        var result = await _mediator.Send(new GetCanchasQuery(zonaId, userLatitude, userLongitude), ct);
         return Ok(result);
     }
 
