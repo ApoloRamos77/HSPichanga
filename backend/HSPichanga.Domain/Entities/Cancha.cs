@@ -16,6 +16,10 @@ public class Cancha
     public bool TieneEstacionamiento { get; private set; }
     public bool Activo { get; private set; }
     public EstadoCancha EstadoCancha { get; private set; }
+    public double? Latitude { get; private set; }
+    public double? Longitude { get; private set; }
+    public string? CelularYape { get; private set; }
+    public string? CelularPlin { get; private set; }
 
     // Navigation
     public Zona Zona { get; private set; } = null!;
@@ -32,7 +36,11 @@ public class Cancha
         string? ubicacionGoogleMaps,
         List<string> fotosUrls,
         bool tieneLuz = false,
-        bool tieneEstacionamiento = false)
+        bool tieneEstacionamiento = false,
+        double? latitude = null,
+        double? longitude = null,
+        string? celularYape = null,
+        string? celularPlin = null)
     {
         return new Cancha
         {
@@ -47,7 +55,11 @@ public class Cancha
             TieneLuz = tieneLuz,
             TieneEstacionamiento = tieneEstacionamiento,
             Activo = true,
-            EstadoCancha = EstadoCancha.Activa
+            EstadoCancha = EstadoCancha.Activa,
+            Latitude = latitude,
+            Longitude = longitude,
+            CelularYape = celularYape,
+            CelularPlin = celularPlin
         };
     }
 
@@ -60,7 +72,11 @@ public class Cancha
         string? ubicacionGoogleMaps,
         List<string> fotosUrls,
         bool tieneLuz,
-        bool tieneEstacionamiento)
+        bool tieneEstacionamiento,
+        double? latitude,
+        double? longitude,
+        string? celularYape,
+        string? celularPlin)
     {
         Nombre = nombre;
         Descripcion = descripcion;
@@ -70,6 +86,10 @@ public class Cancha
         if(FotosUrls.Any()) FotoUrl = FotosUrls.First();
         TieneLuz = tieneLuz;
         TieneEstacionamiento = tieneEstacionamiento;
+        Latitude = latitude;
+        Longitude = longitude;
+        CelularYape = celularYape;
+        CelularPlin = celularPlin;
     }
 
     public void Activar()

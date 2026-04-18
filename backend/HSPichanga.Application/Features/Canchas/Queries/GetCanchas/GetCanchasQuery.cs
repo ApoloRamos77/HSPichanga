@@ -4,7 +4,11 @@ using MediatR;
 
 namespace HSPichanga.Application.Features.Canchas.Queries.GetCanchas;
 
-public record GetCanchasQuery(Guid? ZonaId = null) : IRequest<IEnumerable<CanchaDto>>;
+public record GetCanchasQuery(
+    Guid? ZonaId = null,
+    double? UserLatitude = null,
+    double? UserLongitude = null
+) : IRequest<IEnumerable<CanchaDto>>;
 
 public record CanchaDto(
     Guid Id,
@@ -16,7 +20,10 @@ public record CanchaDto(
     List<string> FotosUrls,
     string? FotoUrl,
     bool TieneLuz,
-    bool TieneEstacionamiento
+    bool TieneEstacionamiento,
+    double? Latitude,
+    double? Longitude,
+    double? Distance = null
 );
 
 public class GetCanchasQueryHandler : IRequestHandler<GetCanchasQuery, IEnumerable<CanchaDto>>
@@ -39,7 +46,33 @@ public class GetCanchasQueryHandler : IRequestHandler<GetCanchasQuery, IEnumerab
             c.FotosUrls,
             c.FotoUrl,
             c.TieneLuz,
-            c.TieneEstacionamiento
+            c.TieneEstacionamiento,
+            c.Latitude,
+            c.Longitude,
+            request.UserLatitude.HasValue && request.UserLongitude.HasValue && c.Latitude.HasValue && c.Longitude.HasValue
+                ? CalculateDistance(request.UserLatitude.Value, request.UserLongitude.Value, c.Latitude.Value, c.Longitude.Value)
+                : null
         ));
+
+        if (request.UserLatitude.HasValue && request.UserLongitude.HasValue)
+        {
+            return result.OrderBy(c => c.Distance ?? double.MaxValue);
+        }
+
+        return result;
     }
+
+    private double CalculateDistance(double lat1, double lon1, double lat2, double lon2)
+    {
+        var r = 6371; // Earth radius in km
+        var dLat = ToRadians(lat2 - lat1);
+        var dLon = ToRadians(lon2 - lon1);
+        var a = Math.Sin(dLat / 2) * Math.Sin(dLat / 2) +
+                Math.Cos(ToRadians(lat1)) * Math.Cos(ToRadians(lat2)) *
+                Math.Sin(dLon / 2) * Math.Sin(dLon / 2);
+        var c = 2 * Math.Atan2(Math.Sqrt(a), Math.Sqrt(1 - a));
+        return r * c;
+    }
+
+    private double ToRadians(double angle) => Math.PI * angle / 180.0;
 }

@@ -177,6 +177,16 @@ export default function ReservaDetailScreen() {
                 size="lg"
                 style={{ marginTop: Spacing.md }}
               />
+
+              <Button
+                title="ABRIR CHAT DEL PARTIDO"
+                onPress={() => router.push(`/(main)/reservas/chat?id=${id}` as any)}
+                variant="outline"
+                size="md"
+                style={{ marginTop: Spacing.sm }}
+                leftIcon={<Ionicons name="chatbubbles-outline" size={20} color={Colors.accent} />}
+              />
+
               <Text style={styles.disclaimer}>
                 * La reserva quedará en Verificación hasta comprobar la transferencia.
               </Text>

@@ -13,6 +13,8 @@ public class UnitOfWork : IUnitOfWork
     public IReservaRepository Reservas { get; }
     public IUsuarioRepository Usuarios { get; }
     public IZonaRepository Zonas { get; }
+    public ICalificacionRepository Calificaciones { get; }
+    public IMensajeRepository Mensajes { get; }
 
     public UnitOfWork(AppDbContext ctx)
     {
@@ -22,6 +24,8 @@ public class UnitOfWork : IUnitOfWork
         Reservas = new ReservaRepository(ctx);
         Usuarios = new UsuarioRepository(ctx);
         Zonas    = new ZonaRepository(ctx);
+        Calificaciones = new CalificacionRepository(ctx);
+        Mensajes = new MensajeRepository(ctx);
     }
 
     public async Task<int> SaveChangesAsync(CancellationToken cancellationToken = default)

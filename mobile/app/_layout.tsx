@@ -4,6 +4,7 @@ import { StatusBar } from 'expo-status-bar';
 import { useEffect } from 'react';
 import { useAuthStore } from '../src/stores/authStore';
 import { Colors } from '../src/theme';
+import { InactivityTracker } from '../src/components/InactivityTracker';
 
 const queryClient = new QueryClient({
   defaultOptions: {
@@ -20,11 +21,13 @@ export default function RootLayout() {
 
   return (
     <QueryClientProvider client={queryClient}>
-      <StatusBar style="light" backgroundColor={Colors.background} />
-      <Stack screenOptions={{ headerShown: false }}>
-        <Stack.Screen name="(auth)" />
-        <Stack.Screen name="(main)" />
-      </Stack>
+      <InactivityTracker>
+        <StatusBar style="light" backgroundColor={Colors.background} />
+        <Stack screenOptions={{ headerShown: false }}>
+          <Stack.Screen name="(auth)" />
+          <Stack.Screen name="(main)" />
+        </Stack>
+      </InactivityTracker>
     </QueryClientProvider>
   );
 }

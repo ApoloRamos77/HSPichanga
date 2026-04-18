@@ -49,6 +49,11 @@ export function PartidoCard({ partido, onPress, style }: Props) {
       <Text style={styles.zona}>
         <Ionicons name="location-outline" size={12} color={Colors.textSecondary} />
         {' '}{partido.zonaNombre}
+        {partido.distance !== undefined && partido.distance !== null && (
+          <Text style={styles.distanceText}>
+            {'  •  '}{partido.distance.toFixed(1)} km cerca
+          </Text>
+        )}
       </Text>
 
       {/* Info fila */}
@@ -156,6 +161,13 @@ const styles = StyleSheet.create({
     fontSize: Typography.size.sm,
     color: Colors.textSecondary,
     marginBottom: Spacing.sm,
+    flexDirection: 'row',
+    alignItems: 'center',
+  },
+  distanceText: {
+    fontSize: Typography.size.xs,
+    color: Colors.accent,
+    fontWeight: Typography.weight.bold,
   },
   infoRow: { flexDirection: 'row', gap: Spacing.sm, marginBottom: Spacing.md },
   chip: {

@@ -12,7 +12,11 @@ public record EditarCanchaCommand(
     string? UbicacionGoogleMaps,
     List<string> FotosUrls,
     bool TieneLuz,
-    bool TieneEstacionamiento
+    bool TieneEstacionamiento,
+    double? Latitude = null,
+    double? Longitude = null,
+    string? CelularYape = null,
+    string? CelularPlin = null
 ) : IRequest<EditarCanchaResult>;
 
 public record EditarCanchaResult(Guid Id, string Nombre);
@@ -34,7 +38,11 @@ public class EditarCanchaCommandHandler : IRequestHandler<EditarCanchaCommand, E
             request.UbicacionGoogleMaps,
             request.FotosUrls,
             request.TieneLuz,
-            request.TieneEstacionamiento);
+            request.TieneEstacionamiento,
+            request.Latitude,
+            request.Longitude,
+            request.CelularYape,
+            request.CelularPlin);
 
         _uow.Canchas.Update(cancha);
         await _uow.SaveChangesAsync(cancellationToken);

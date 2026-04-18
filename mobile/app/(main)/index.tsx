@@ -12,6 +12,7 @@ import { partidosService, PartidoDto } from '../../src/services/api';
 import { useAuthStore } from '../../src/stores/authStore';
 import { PartidoCard } from '../../src/components/PartidoCard';
 import { Colors, Spacing, Radius, Typography } from '../../src/theme';
+import { useLocation } from '../../src/services/useLocation';
 
 const CATEGORIAS = [
   { label: 'Todos', value: undefined },
@@ -26,12 +27,20 @@ const CATEGORIAS = [
 export default function HomeScreen() {
   const usuario = useAuthStore((s) => s.usuario);
   const logout  = useAuthStore((s) => s.logout);
+  const { coords, loading: locLoading } = useLocation();
   const [catActiva, setCatActiva] = useState<string | undefined>(undefined);
   const [busqueda, setBusqueda]   = useState('');
 
   const { data: partidos, isLoading, isError, refetch, isRefetching } = useQuery({
-    queryKey: ['partidos', catActiva],
-    queryFn: () => partidosService.getAbiertos(catActiva).then(r => r.data),
+    queryKey: ['partidos', catActiva, coords?.latitude, coords?.longitude],
+    queryFn: () => partidosService.getAbiertos(
+      catActiva, 
+      undefined, 
+      undefined, 
+      coords?.latitude, 
+      coords?.longitude
+    ).then(r => r.data),
+    enabled: !locLoading,
   });
 
   const filtrados = (partidos ?? []).filter((p) =>
@@ -79,7 +88,11 @@ export default function HomeScreen() {
         {/* Stats rápidos */}
         <View style={styles.statsRow}>
           <StatChip icon="football-outline" value={`${filtrados.length}`} label="Pichangas" />
-          <StatChip icon="location-outline" value="Lima" label="Ciudad" />
+          <StatChip 
+            icon="location-outline" 
+            value={coords ? 'Cerca' : 'Lima'} 
+            label={coords ? `${coords.latitude.toFixed(2)}, ${coords.longitude.toFixed(2)}` : 'Ciudad'} 
+          />
           <StatChip icon="people-outline" value={usuario?.rol ?? ''} label="Rol" />
         </View>
       </LinearGradient>

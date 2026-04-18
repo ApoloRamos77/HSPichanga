@@ -51,6 +51,8 @@ export type CanchaDto = {
   zonaNombre: string; ubicacionGoogleMaps: string | null;
   direccion: string; fotosUrls: string[];
   fotoUrl?: string; tieneLuz: boolean; tieneEstacionamiento: boolean;
+  latitude?: number; longitude?: number; distance?: number;
+  celularYape?: string; celularPlin?: string;
 };
 
 // ─── Canchas (admin) ─────────────────────────────────────────────────────────
@@ -61,11 +63,13 @@ export type CanchaAdminDto = {
   fotoUrl?: string; tieneLuz: boolean; tieneEstacionamiento: boolean;
   activo: boolean;
   estadoCancha: 'Activa' | 'Inactiva' | 'Anulada';
+  latitude?: number; longitude?: number;
+  celularYape?: string; celularPlin?: string;
 };
 
 export const canchasService = {
-  getAll: (zonaId?: string) =>
-    apiClient.get<CanchaDto[]>('/Canchas', { params: { zonaId } }),
+  getAll: (zonaId?: string, userLat?: number, userLon?: number) =>
+    apiClient.get<CanchaDto[]>('/Canchas', { params: { zonaId, userLatitude: userLat, userLongitude: userLon } }),
   getAllAdmin: () =>
     apiClient.get<CanchaAdminDto[]>('/Canchas/admin'),
   crearCancha: (data: any) =>
@@ -85,6 +89,7 @@ export type PartidoDto = {
   fechaHora: string; tipoPartido: string; categoria: string; estado: string;
   cuotaIndividual: number; cuposDisponibles: number; cuposTotales: number;
   modalidad: string; notas?: string; organizadorNombre: string;
+  distance?: number;
 };
 
 // ─── Partidos (admin) ─────────────────────────────────────────────────────────
@@ -99,8 +104,8 @@ export type PartidoAdminDto = {
 };
 
 export const partidosService = {
-  getAbiertos: (categoria?: string, zonaId?: string, modalidad?: string) =>
-    apiClient.get<PartidoDto[]>('/Partidos', { params: { categoria, zonaId, modalidad } }),
+  getAbiertos: (categoria?: string, zonaId?: string, modalidad?: string, userLat?: number, userLon?: number) =>
+    apiClient.get<PartidoDto[]>('/Partidos', { params: { categoria, zonaId, modalidad, userLatitude: userLat, userLongitude: userLon } }),
   getAllAdmin: (tipoPartido?: number) =>
     apiClient.get<PartidoAdminDto[]>('/Partidos/admin', { params: { tipoPartido } }),
   crearPartido: (data: {
@@ -131,4 +136,20 @@ export const reservasService = {
     apiClient.post<CrearReservaResponse>('/Reservas', { partidoId, jugadorId, metodoPago, numeroOperacion }),
   getMisReservas: (jugadorId: string) =>
     apiClient.get<MisReservasDto[]>(`/Reservas/jugador/${jugadorId}`),
+};
+
+// ─── Chat ─────────────────────────────────────────────────────────────────────
+export const chatService = {
+  getMessages: (partidoId: string) => 
+    apiClient.get(`/Chat/${partidoId}`),
+  sendMessage: (partidoId: string, usuarioId: string, contenido: string) =>
+    apiClient.post('/Chat', { partidoId, usuarioId, contenido }),
+};
+
+// ─── Calificaciones ──────────────────────────────────────────────────────────
+export const ratingsService = {
+  getByCancha: (canchaId: string) =>
+    apiClient.get(`/Calificaciones/cancha/${canchaId}`),
+  create: (canchaId: string, usuarioId: string, puntuacion: number, comentario?: string) =>
+    apiClient.post('/Calificaciones', { canchaId, usuarioId, puntuacion, comentario }),
 };

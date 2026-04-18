@@ -15,6 +15,8 @@ public class AppDbContext : DbContext
     public DbSet<Partido> Partidos => Set<Partido>();
     public DbSet<Reserva> Reservas => Set<Reserva>();
     public DbSet<Club> Clubs => Set<Club>();
+    public DbSet<Calificacion> Calificaciones => Set<Calificacion>();
+    public DbSet<Mensaje> Mensajes => Set<Mensaje>();
 
     protected override void OnModelCreating(ModelBuilder modelBuilder)
     {

@@ -8,9 +8,12 @@ import { Ionicons } from '@expo/vector-icons';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import { canchasService, CanchaDto } from '../../../src/services/api';
 import { Colors, Spacing, Radius, Typography, Shadows } from '../../../src/theme';
+import { Button } from '../../../src/components/Button';
+import { RatingModal } from '../../../src/components/RatingModal';
 
 export default function CanchaDetailScreen() {
   const { id } = useLocalSearchParams<{ id: string }>();
+  const [showRating, setShowRating] = React.useState(false);
 
   const { data: canchas, isLoading } = useQuery({
     queryKey: ['canchas'],
@@ -80,8 +83,22 @@ export default function CanchaDetailScreen() {
 
           <Text style={styles.sectionTitle}>Descripción</Text>
           <Text style={styles.descText}>{cancha.descripcion}</Text>
+
+          <Button
+            title="CALIFICAR ESTA CANCHA"
+            onPress={() => setShowRating(true)}
+            variant="outline"
+            style={{ marginTop: Spacing.xl }}
+            leftIcon={<Ionicons name="star-outline" size={20} color={Colors.accent} />}
+          />
         </View>
       </ScrollView>
+
+      <RatingModal 
+        visible={showRating} 
+        onClose={() => setShowRating(false)} 
+        canchaId={id!} 
+      />
     </SafeAreaView>
   );
 }

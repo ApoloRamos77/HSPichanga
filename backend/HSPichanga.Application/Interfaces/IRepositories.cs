@@ -51,3 +51,15 @@ public interface IZonaRepository
     Task<IEnumerable<Zona>> GetAllActivasAsync(CancellationToken cancellationToken = default);
     Task<Zona?> GetByIdAsync(Guid id, CancellationToken cancellationToken = default);
 }
+
+public interface ICalificacionRepository
+{
+    Task<IEnumerable<Calificacion>> GetByCanchaAsync(Guid canchaId, CancellationToken cancellationToken = default);
+    Task AddAsync(Calificacion calificacion, CancellationToken cancellationToken = default);
+}
+
+public interface IMensajeRepository
+{
+    Task<IEnumerable<Mensaje>> GetByPartidoAsync(Guid partidoId, CancellationToken cancellationToken = default);
+    Task AddAsync(Mensaje mensaje, CancellationToken cancellationToken = default);
+}

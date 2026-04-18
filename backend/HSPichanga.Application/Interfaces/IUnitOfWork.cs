@@ -7,6 +7,8 @@ public interface IUnitOfWork : IDisposable
     IReservaRepository Reservas { get; }
     IUsuarioRepository Usuarios { get; }
     IZonaRepository Zonas { get; }
+    ICalificacionRepository Calificaciones { get; }
+    IMensajeRepository Mensajes { get; }
 
     Task<int> SaveChangesAsync(CancellationToken cancellationToken = default);
 }

@@ -63,7 +63,11 @@ public class CanchasController : ControllerBase
             request.UbicacionGoogleMaps,
             request.FotosUrls,
             request.TieneLuz,
-            request.TieneEstacionamiento), ct);
+            request.TieneEstacionamiento,
+            request.Latitude,
+            request.Longitude,
+            request.CelularYape,
+            request.CelularPlin), ct);
         return Ok(result);
     }
 
@@ -85,7 +89,11 @@ public record EditarCanchaRequest(
     string? UbicacionGoogleMaps,
     List<string> FotosUrls,
     bool TieneLuz,
-    bool TieneEstacionamiento
+    bool TieneEstacionamiento,
+    double? Latitude = null,
+    double? Longitude = null,
+    string? CelularYape = null,
+    string? CelularPlin = null
 );
 
 public record CambiarEstadoCanchaRequest(EstadoCancha NuevoEstado);

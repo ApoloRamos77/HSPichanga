@@ -13,7 +13,11 @@ public record CrearCanchaCommand(
     string? UbicacionGoogleMaps,
     List<string> FotosUrls,
     bool TieneLuz,
-    bool TieneEstacionamiento
+    bool TieneEstacionamiento,
+    double? Latitude = null,
+    double? Longitude = null,
+    string? CelularYape = null,
+    string? CelularPlin = null
 ) : IRequest<CrearCanchaResult>;
 
 public record CrearCanchaResult(Guid Id);
@@ -37,7 +41,11 @@ public class CrearCanchaCommandHandler : IRequestHandler<CrearCanchaCommand, Cre
             request.UbicacionGoogleMaps,
             request.FotosUrls,
             request.TieneLuz,
-            request.TieneEstacionamiento);
+            request.TieneEstacionamiento,
+            request.Latitude,
+            request.Longitude,
+            request.CelularYape,
+            request.CelularPlin);
 
         await _uow.Canchas.AddAsync(cancha, cancellationToken);
         await _uow.SaveChangesAsync(cancellationToken);

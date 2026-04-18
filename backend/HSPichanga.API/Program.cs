@@ -129,6 +129,7 @@ app.UseExceptionHandler(errorApp =>
 app.UseCors("ExpoPolicy");
 app.UseAuthentication();
 app.UseAuthorization();
+app.UseStaticFiles();
 app.MapControllers();
 
 app.MapGet("/", context =>
