@@ -150,16 +150,17 @@ app.UseForwardedHeaders(forwardedOptions);
 
 app.UseCors("ExpoPolicy");
 
-var webRoot = app.Environment.WebRootPath ?? Path.Combine(app.Environment.ContentRootPath, "wwwroot");
-var uploadsPath = Path.Combine(webRoot, "uploads");
-if (!Directory.Exists(uploadsPath)) Directory.CreateDirectory(uploadsPath);
+// Re-using environment paths for static file mapping
+var envPaths = app.Services.GetRequiredService<IWebHostEnvironment>();
+var finalWebRoot = envPaths.WebRootPath ?? Path.Combine(envPaths.ContentRootPath, "wwwroot");
+var finalUploadsPath = Path.Combine(finalWebRoot, "uploads");
 
 app.UseStaticFiles(); // Servir archivos desde wwwroot por defecto
 
 // Configuración explícita para la carpeta de subidas
 app.UseStaticFiles(new StaticFileOptions
 {
-    FileProvider = new Microsoft.Extensions.FileProviders.PhysicalFileProvider(uploadsPath),
+    FileProvider = new Microsoft.Extensions.FileProviders.PhysicalFileProvider(finalUploadsPath),
     RequestPath = "/uploads"
 });
 
