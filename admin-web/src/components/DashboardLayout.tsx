@@ -1,4 +1,3 @@
-import React from 'react';
 import { useNavigate, Link, Outlet } from 'react-router-dom';
 import { LayoutDashboard, MapPinned, Settings, LogOut, User as UserIcon } from 'lucide-react';
 
