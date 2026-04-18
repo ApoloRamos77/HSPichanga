@@ -1,13 +1,49 @@
 import React, { useState, useEffect } from 'react';
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
 import { canchasService, uploadService } from '../services/api';
-import { Plus, Edit2, Trash2, MapPin, Phone, Check, X, Camera, Loader2 } from 'lucide-react';
+import { Plus, Edit2, Trash2, MapPin, Camera, Loader2, X, Search } from 'lucide-react';
+import { MapContainer, TileLayer, Marker, useMapEvents, useMap } from 'react-leaflet';
+import L from 'leaflet';
+
+// Fix for default marker icons
+import markerIcon from 'leaflet/dist/images/marker-icon.png';
+import markerIconRetina from 'leaflet/dist/images/marker-icon-2x.png';
+import markerShadow from 'leaflet/dist/images/marker-shadow.png';
+
+const DefaultIcon = L.icon({
+  iconUrl: markerIcon,
+  iconRetinaUrl: markerIconRetina,
+  shadowUrl: markerShadow,
+  iconSize: [25, 41],
+  iconAnchor: [12, 41],
+});
+L.Marker.prototype.options.icon = DefaultIcon;
+
+// Component to programmatically move the map
+const MapController = ({ center }: { center: [number, number] }) => {
+  const map = useMap();
+  useEffect(() => {
+    map.setView(center, map.getZoom());
+  }, [center, map]);
+  return null;
+};
+
+const LocationPicker = ({ position, setPosition }: { position: [number, number], setPosition: (p: [number, number]) => void }) => {
+  useMapEvents({
+    click(e) {
+      setPosition([e.latlng.lat, e.latlng.lng]);
+    },
+  });
+  return <Marker position={position} />;
+};
 
 export const CanchasPage = () => {
   const queryClient = useQueryClient();
   const [isEditing, setIsEditing] = useState(false);
   const [selectedCancha, setSelectedCancha] = useState<any>(null);
   const [loadingUpload, setLoadingUpload] = useState(false);
+  const [searchTerm, setSearchTerm] = useState('');
+  const [searching, setSearching] = useState(false);
 
   // Form State
   const [formData, setFormData] = useState({
@@ -55,6 +91,7 @@ export const CanchasPage = () => {
       latitude: -12.046374, longitude: -77.042793, celularYape: '', celularPlin: ''
     });
     setSelectedCancha(null);
+    setSearchTerm('');
   };
 
   const handleEdit = (cancha: any) => {
@@ -85,6 +122,28 @@ export const CanchasPage = () => {
     }
   };
 
+  const handleSearch = async (e: React.FormEvent) => {
+    e.preventDefault();
+    if (!searchTerm) return;
+
+    setSearching(true);
+    try {
+      const response = await fetch(`https://nominatim.openstreetmap.org/search?format=json&q=${encodeURIComponent(searchTerm)}`);
+      const data = await response.json();
+      if (data && data.length > 0) {
+        const { lat, lon } = data[0];
+        setFormData(prev => ({ ...prev, latitude: parseFloat(lat), longitude: parseFloat(lon) }));
+      } else {
+        alert('No se encontró la dirección');
+      }
+    } catch (err) {
+      console.error(err);
+      alert('Error al buscar dirección');
+    } finally {
+      setSearching(false);
+    }
+  };
+
   const handleFileUpload = async (e: React.ChangeEvent<HTMLInputElement>) => {
     const file = e.target.files?.[0];
     if (!file) return;
@@ -93,8 +152,10 @@ export const CanchasPage = () => {
     try {
       const { data } = await uploadService.upload(file);
       setFormData(prev => ({ ...prev, fotosUrls: [...prev.fotosUrls, data.url] }));
-    } catch (err) {
-      alert('Error al subir imagen');
+    } catch (err: any) {
+      console.error('Upload error:', err);
+      const msg = err.response?.data?.mensaje || err.response?.data || err.message;
+      alert(`Error al subir imagen: ${msg}`);
     } finally {
       setLoadingUpload(false);
     }
@@ -120,7 +181,7 @@ export const CanchasPage = () => {
         <div className="premium-card glass" style={{ marginBottom: '40px' }}>
           <h2 style={{ marginBottom: '24px', fontSize: '1.25rem' }}>{selectedCancha ? 'Editar Cancha' : 'Nueva Cancha'}</h2>
           <form onSubmit={handleSubmit}>
-            <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '24px' }}>
+            <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '40px' }}>
               <div>
                 <div className="input-group">
                   <label>Nombre de la Cancha</label>
@@ -131,7 +192,7 @@ export const CanchasPage = () => {
                   <textarea rows={3} value={formData.descripcion} onChange={e => setFormData({ ...formData, descripcion: e.target.value })} required />
                 </div>
                 <div className="input-group">
-                  <label>Dirección</label>
+                  <label>Dirección física</label>
                   <input type="text" value={formData.direccion} onChange={e => setFormData({ ...formData, direccion: e.target.value })} required />
                 </div>
                 
@@ -160,14 +221,46 @@ export const CanchasPage = () => {
 
               <div>
                 <div className="input-group">
-                  <label>Geolocalización (Mapa)</label>
-                  <div style={{ height: '200px', backgroundColor: 'var(--surface-light)', borderRadius: '8px', display: 'flex', flexWrap: 'wrap', gap: '8px', padding: '16px', alignItems: 'center', justifyContent: 'center', border: '1px dashed var(--text-muted)' }}>
-                    <MapPin size={32} color={Colors.primary} />
-                    <div style={{ textAlign: 'center' }}>
-                      <p style={{ fontSize: '0.75rem' }}>Lat: {formData.latitude.toFixed(6)}</p>
-                      <p style={{ fontSize: '0.75rem' }}>Lon: {formData.longitude.toFixed(6)}</p>
-                      <button type="button" onClick={() => setFormData({ ...formData, latitude: -12.1221, longitude: -77.0298 })} style={{ color: 'var(--primary)', fontSize: '0.75rem', marginTop: '8px' }}>Simular Selección (Miraflores)</button>
+                  <label>Geolocalización (Mapa Interactivo)</label>
+                  
+                  {/* Search Bar */}
+                  <div style={{ display: 'flex', gap: '8px', marginBottom: '12px' }}>
+                    <div style={{ position: 'relative', flex: 1 }}>
+                      <Search size={16} style={{ position: 'absolute', left: '12px', top: '50%', transform: 'translateY(-50%)', color: 'var(--text-muted)' }} />
+                      <input 
+                        type="text" 
+                        placeholder="Buscar dirección (ej: Parque Kennedy, Lima)..." 
+                        value={searchTerm}
+                        onChange={e => setSearchTerm(e.target.value)}
+                        onKeyDown={e => e.key === 'Enter' && handleSearch(e as any)}
+                        style={{ paddingLeft: '36px', height: '40px', fontSize: '0.875rem' }}
+                      />
                     </div>
+                    <button type="button" onClick={handleSearch} disabled={searching} className="premium-btn" style={{ height: '40px', padding: '0 16px', fontSize: '0.875rem' }}>
+                      {searching ? <Loader2 size={16} className="animate-spin" /> : 'Buscar'}
+                    </button>
+                  </div>
+
+                  <div style={{ height: '350px', width: '100%', borderRadius: '12px', overflow: 'hidden', border: '1px solid var(--border)', marginBottom: '16px' }}>
+                    <MapContainer 
+                      center={[formData.latitude, formData.longitude]} 
+                      zoom={14} 
+                      style={{ height: '100%', width: '100%' }}
+                    >
+                      <TileLayer
+                        url="https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png"
+                        attribution='&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors'
+                      />
+                      <MapController center={[formData.latitude, formData.longitude]} />
+                      <LocationPicker 
+                        position={[formData.latitude, formData.longitude]} 
+                        setPosition={(pos) => setFormData(prev => ({ ...prev, latitude: pos[0], longitude: pos[1] }))} 
+                      />
+                    </MapContainer>
+                  </div>
+                  <div style={{ display: 'flex', justifyContent: 'space-between', padding: '12px', backgroundColor: 'var(--surface-light)', borderRadius: '8px', fontSize: '0.875rem' }}>
+                    <span>Lat: <b>{formData.latitude.toFixed(6)}</b></span>
+                    <span>Lon: <b>{formData.longitude.toFixed(6)}</b></span>
                   </div>
                 </div>
 
@@ -177,7 +270,7 @@ export const CanchasPage = () => {
                     {formData.fotosUrls.map((url, i) => (
                       <div key={i} style={{ width: '80px', height: '80px', borderRadius: '8px', overflow: 'hidden', position: 'relative' }}>
                         <img src={url} style={{ width: '100%', height: '100%', objectFit: 'cover' }} />
-                        <button type="button" onClick={() => setFormData({ ...prev => ({ ...prev, fotosUrls: prev.fotosUrls.filter((_, idx) => idx !== i) }) })} style={{ position: 'absolute', top: '2px', right: '2px', backgroundColor: 'rgba(0,0,0,0.5)', borderRadius: '50%', padding: '2px' }}>
+                        <button type="button" onClick={() => setFormData(prev => ({ ...prev, fotosUrls: prev.fotosUrls.filter((_, idx) => idx !== i) }))} style={{ position: 'absolute', top: '2px', right: '2px', backgroundColor: 'rgba(0,0,0,0.5)', borderRadius: '50%', padding: '2px' }}>
                           <X size={12} color="white" />
                         </button>
                       </div>
@@ -206,7 +299,7 @@ export const CanchasPage = () => {
               </div>
               <div style={{ flex: 1 }}>
                 <h3 style={{ fontSize: '1.25rem', fontWeight: 'bold', marginBottom: '4px' }}>{cancha.nombre}</h3>
-                <p style={{ color: 'var(--text-secondary)', fontSize: '0.875rem', marginBottom: '12px' }}><MapPin size={14} inline /> {cancha.direccion}</p>
+                <p style={{ color: 'var(--text-secondary)', fontSize: '0.875rem', marginBottom: '12px' }}><MapPin size={14} /> {cancha.direccion}</p>
                 
                 <div style={{ display: 'flex', gap: '12px', marginBottom: '16px' }}>
                   {cancha.celularYape && (
