@@ -36,7 +36,7 @@ public class GetCanchasQueryHandler : IRequestHandler<GetCanchasQuery, IEnumerab
     {
         var canchas = await _uow.Canchas.GetAllAsync(request.ZonaId, cancellationToken);
 
-        return canchas.Select(c => new CanchaDto(
+        var result = canchas.Select(c => new CanchaDto(
             c.Id,
             c.Nombre,
             c.Descripcion,
@@ -52,7 +52,7 @@ public class GetCanchasQueryHandler : IRequestHandler<GetCanchasQuery, IEnumerab
             request.UserLatitude.HasValue && request.UserLongitude.HasValue && c.Latitude.HasValue && c.Longitude.HasValue
                 ? CalculateDistance(request.UserLatitude.Value, request.UserLongitude.Value, c.Latitude.Value, c.Longitude.Value)
                 : null
-        ));
+        )).ToList();
 
         if (request.UserLatitude.HasValue && request.UserLongitude.HasValue)
         {
