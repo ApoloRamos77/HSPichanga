@@ -41,7 +41,7 @@ public class GetPartidosAbiertosQueryHandler : IRequestHandler<GetPartidosAbiert
         var partidos = await _uow.Partidos.GetPartidosAbiertosAsync(
             request.Categoria, request.ZonaId, request.Modalidad, cancellationToken);
 
-        return partidos.Select(p => new PartidoDto(
+        var result = partidos.Select(p => new PartidoDto(
             p.Id,
             p.CanchaId,
             p.Cancha?.Nombre ?? "",
@@ -59,7 +59,7 @@ public class GetPartidosAbiertosQueryHandler : IRequestHandler<GetPartidosAbiert
             request.UserLatitude.HasValue && request.UserLongitude.HasValue && p.Cancha?.Latitude.HasValue == true && p.Cancha?.Longitude.HasValue == true
                 ? CalculateDistance(request.UserLatitude.Value, request.UserLongitude.Value, p.Cancha.Latitude.Value, p.Cancha.Longitude.Value)
                 : null
-        ));
+        )).ToList();
 
         if (request.UserLatitude.HasValue && request.UserLongitude.HasValue)
         {
