@@ -45,7 +45,7 @@ public class UploadController : ControllerBase
         }
         catch (Exception ex)
         {
-            return StatusCode(500, new { Mensaje = $"Error al procesar la carga: {ex.Message}" });
+            return StatusCode(500, new { Mensaje = $"Error al procesar la carga: {ex.ToString()}" });
         }
     }
 
@@ -85,7 +85,7 @@ public class UploadController : ControllerBase
         }
         catch (Exception ex)
         {
-            return StatusCode(500, new { Mensaje = $"Error al procesar la carga múltiple: {ex.Message}" });
+            return StatusCode(500, new { Mensaje = $"Error al procesar la carga múltiple: {ex.ToString()}" });
         }
     }
 }
