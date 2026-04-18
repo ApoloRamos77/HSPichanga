@@ -146,7 +146,20 @@ app.UseForwardedHeaders(new ForwardedHeadersOptions
 });
 
 app.UseCors("ExpoPolicy");
-app.UseStaticFiles(); // Servir archivos desde wwwroot
+
+var webRoot = app.Environment.WebRootPath ?? Path.Combine(app.Environment.ContentRootPath, "wwwroot");
+var uploadsPath = Path.Combine(webRoot, "uploads");
+if (!Directory.Exists(uploadsPath)) Directory.CreateDirectory(uploadsPath);
+
+app.UseStaticFiles(); // Servir archivos desde wwwroot por defecto
+
+// Configuración explícita para la carpeta de subidas
+app.UseStaticFiles(new StaticFileOptions
+{
+    FileProvider = new Microsoft.Extensions.FileProviders.PhysicalFileProvider(uploadsPath),
+    RequestPath = "/uploads"
+});
+
 app.UseAuthentication();
 app.UseAuthorization();
 app.MapControllers();
