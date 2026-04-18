@@ -48,12 +48,14 @@ public class UploadController : ControllerBase
         if (files == null || !files.Any())
             return BadRequest("No se han seleccionado archivos.");
 
-        var results = new List<UploadResult>();
+        var uploadsFolder = Path.Combine(_environment.WebRootPath, "uploads");
+        if (!Directory.Exists(uploadsFolder))
+            Directory.CreateDirectory(uploadsFolder);
 
         foreach (var file in files)
         {
             var fileName = $"{Guid.NewGuid()}{Path.GetExtension(file.FileName)}";
-            var filePath = Path.Combine(_environment.WebRootPath, "uploads", fileName);
+            var filePath = Path.Combine(uploadsFolder, fileName);
 
             using (var stream = new FileStream(filePath, FileMode.Create))
             {
