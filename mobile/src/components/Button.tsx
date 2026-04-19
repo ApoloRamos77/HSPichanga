@@ -1,6 +1,6 @@
 import React from 'react';
 import {
-  TouchableOpacity, Text, ActivityIndicator, StyleSheet, ViewStyle, TextStyle
+  TouchableOpacity, Text, ActivityIndicator, StyleSheet, ViewStyle, TextStyle, View
 } from 'react-native';
 import { LinearGradient } from 'expo-linear-gradient';
 import { Colors, Spacing, Radius, Typography, Shadows } from '../theme';
@@ -16,11 +16,12 @@ interface Props {
   loading?: boolean;
   disabled?: boolean;
   style?: ViewStyle;
+  leftIcon?: React.ReactNode;
 }
 
 export function Button({
   title, onPress, variant = 'accent', size = 'md',
-  loading = false, disabled = false, style
+  loading = false, disabled = false, style, leftIcon
 }: Props) {
 
   const isAccent   = variant === 'accent';
@@ -74,7 +75,12 @@ export function Button({
         />
         {loading
           ? <ActivityIndicator color={Colors.textPrimary} />
-          : <Text style={textStyle}>{title}</Text>
+          : (
+            <View style={{ flexDirection: 'row', alignItems: 'center', gap: Spacing.sm }}>
+              {leftIcon}
+              <Text style={textStyle}>{title}</Text>
+            </View>
+          )
         }
       </TouchableOpacity>
     );
@@ -89,7 +95,12 @@ export function Button({
     >
       {loading
         ? <ActivityIndicator color={Colors.accent} />
-        : <Text style={textStyle}>{title}</Text>
+        : (
+          <View style={{ flexDirection: 'row', alignItems: 'center', gap: Spacing.sm }}>
+            {leftIcon}
+            <Text style={textStyle}>{title}</Text>
+          </View>
+        )
       }
     </TouchableOpacity>
   );

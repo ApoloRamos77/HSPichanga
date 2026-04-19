@@ -59,27 +59,12 @@ export default function CanchaDetailScreen() {
           </View>
           <Text style={styles.direccionText}>{cancha.direccion}</Text>
 
-          <Text style={styles.sectionTitle}>Detalles</Text>
+          <Text style={styles.sectionTitle}>Amenidades</Text>
           <View style={styles.detailsGrid}>
-            <DetailItem icon="football" label="Modalidad" value={cancha.modalidad} />
-            <DetailItem icon="people" label="Formato" value={`${cancha.jugadoresRequeridos} vs ${cancha.jugadoresRequeridos}`} />
-            <DetailItem icon="cash" label="Costo/Hora" value={`S/. ${cancha.costoTotal.toFixed(2)}`} />
-            <DetailItem icon="person" label="Cuota Est." value={`S/. ${cancha.cuotaIndividualEstimada.toFixed(2)}`} />
+            <DetailItem icon="bulb" label="Iluminación" value={cancha.tieneLuz ? 'Disponible' : 'No cuenta'} />
+            <DetailItem icon="car" label="Estacionamiento" value={cancha.tieneEstacionamiento ? 'SÍ' : 'NO'} />
           </View>
 
-          <Text style={styles.sectionTitle}>Servicios</Text>
-          <View style={styles.serviciosRow}>
-            <ServicioChip
-              icon={cancha.tieneLuz ? 'bulb' : 'bulb-outline'}
-              label="Luz Artificial"
-              active={cancha.tieneLuz}
-            />
-            <ServicioChip
-              icon={cancha.tieneEstacionamiento ? 'car' : 'car-outline'}
-              label="Estacionamiento"
-              active={cancha.tieneEstacionamiento}
-            />
-          </View>
 
           <Text style={styles.sectionTitle}>Descripción</Text>
           <Text style={styles.descText}>{cancha.descripcion}</Text>

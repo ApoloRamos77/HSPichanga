@@ -7,7 +7,7 @@
     "orientation": "portrait",
     "icon": "./assets/icon.png",
     "userInterfaceStyle": "dark",
-    "newArchEnabled": true,
+    "newArchEnabled": false,
     "splash": {
       "image": "./assets/splash-icon.png",
       "resizeMode": "contain",
@@ -23,7 +23,8 @@
         "backgroundColor": "#0D1B2A"
       },
       "edgeToEdgeEnabled": true,
-      "package": "com.adhsoftsport.hspichanga"
+      "package": "com.adhsoftsport.hspichanga",
+      "versionCode": 1
     },
     "web": {
       "favicon": "./assets/favicon.png",
@@ -32,10 +33,21 @@
     },
     "plugins": [
       "expo-router",
-      "expo-secure-store"
+      "expo-secure-store",
+      [
+        "expo-build-properties",
+        {
+          "android": {
+            "org.gradle.jvmargs": "-Xmx4096m -XX:MaxMetaspaceSize=1024m",
+            "crunchPngs": false
+          }
+        }
+      ],
+      "@react-native-community/datetimepicker",
+      "expo-font"
     ],
     "experiments": {
-      "typedRoutes": true
+      "typedRoutes": false
     },
     "extra": {
       "router": {},

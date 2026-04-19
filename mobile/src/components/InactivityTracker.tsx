@@ -7,7 +7,7 @@ const INACTIVITY_TIMEOUT = 60000; // 60 segundos
 export const InactivityTracker = ({ children }: { children: React.ReactNode }) => {
   const logout = useAuthStore((s) => s.logout);
   const isAuthenticated = useAuthStore((s) => s.isAuthenticated);
-  const timer = useRef<NodeJS.Timeout | null>(null);
+  const timer = useRef<any>(null);
 
   const resetTimer = () => {
     if (timer.current) clearTimeout(timer.current);

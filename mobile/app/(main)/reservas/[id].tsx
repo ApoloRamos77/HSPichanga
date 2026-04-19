@@ -1,6 +1,6 @@
 import React, { useState } from 'react';
 import {
-  View, Text, StyleSheet, ScrollView, Alert, ActivityIndicator, TouchableOpacity, TextInput,
+  View, Text, StyleSheet, ScrollView, Alert, ActivityIndicator, TouchableOpacity, TextInput, Image,
 } from 'react-native';
 import { useLocalSearchParams, router } from 'expo-router';
 import { useQuery, useMutation } from '@tanstack/react-query';
@@ -81,9 +81,11 @@ export default function ReservaDetailScreen() {
           <View style={styles.heroCenter}>
             <Ionicons name="football" size={52} color={Colors.accent} />
             <Text style={styles.canchaNombre}>{partido.canchaNombre}</Text>
-            <TouchableOpacity onPress={openMaps} style={styles.zona}>
-              <Ionicons name="location-outline" size={14} color={Colors.textSecondary} />
-              {' '}{partido.zonaNombre} - Ver Mapa
+            <TouchableOpacity onPress={openMaps}>
+              <Text style={styles.zona}>
+                <Ionicons name="location-outline" size={14} color={Colors.textSecondary} />
+                {' '}{partido.zonaNombre} - Ver Mapa
+              </Text>
             </TouchableOpacity>
           </View>
 
@@ -92,7 +94,7 @@ export default function ReservaDetailScreen() {
             <View style={styles.carouselContainer}>
               <ScrollView horizontal pagingEnabled showsHorizontalScrollIndicator={false}>
                 {partido.fotosUrls!.map((url, i) => (
-                  <require('react-native').Image 
+                  <Image 
                     key={i} 
                     source={{ uri: url }} 
                     style={styles.carouselImage} 

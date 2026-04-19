@@ -36,8 +36,16 @@ export default apiClient;
 
 // ─── Auth ─────────────────────────────────────────────────────────────────────
 export type LoginRequest  = { email: string; password: string };
+export type UsuarioDto = { 
+  id: string; 
+  nombreCompleto: string; 
+  email: string; 
+  rol: string; 
+  telefono: string; 
+  fotoUrl?: string;
+  fechaRegistro?: string;
+};
 export type RegistroRequest = { nombreCompleto: string; email: string; password: string; telefono: string };
-export type UsuarioDto = { id: string; nombreCompleto: string; email: string; rol: string; telefono: string; fotoUrl?: string };
 export type LoginResponse  = { token: string; usuario: UsuarioDto };
 
 export const authService = {
@@ -78,6 +86,8 @@ export const canchasService = {
     nombre: string; descripcion: string;
     direccion: string; ubicacionGoogleMaps: string | null; fotosUrls: string[];
     tieneLuz: boolean; tieneEstacionamiento: boolean;
+    latitude?: number; longitude?: number;
+    celularYape?: string; celularPlin?: string;
   }) => apiClient.put(`/Canchas/${id}`, data),
   cambiarEstado: (id: string, nuevoEstado: 1 | 2 | 3) =>
     apiClient.put(`/Canchas/${id}/estado`, { nuevoEstado }),
@@ -147,10 +157,7 @@ export const reservasService = {
 };
 
 // ─── Usuarios (admin) ────────────────────────────────────────────────────────
-export type UsuarioDto = {
-  id: string; nombreCompleto: string; email: string;
-  rol: string; telefono: string; fechaRegistro: string;
-};
+// UsuarioDto is now consolidated at the top
 
 export const usuariosService = {
   getAll: () => apiClient.get<UsuarioDto[]>('/Usuarios'),

@@ -259,7 +259,7 @@ export default function AdminPartidosScreen() {
               {canchas.find(c => c.id === canchaId)?.ubicacionGoogleMaps ? (
                 <Text style={{color: Colors.primaryLight, fontSize: Typography.size.sm, marginTop: 4}}>🌐 Mapa: {canchas.find(c => c.id === canchaId)?.ubicacionGoogleMaps}</Text>
               ) : null}
-              {canchas.find(c => c.id === canchaId)?.fotosUrls?.length > 0 ? (
+              {(canchas.find(c => c.id === canchaId)?.fotosUrls?.length ?? 0) > 0 ? (
                 <Text style={{color: Colors.accent, fontSize: Typography.size.sm, marginTop: 4}}>📷 Ver {canchas.find(c => c.id === canchaId)?.fotosUrls?.length} fotos</Text>
               ) : null}
             </View>

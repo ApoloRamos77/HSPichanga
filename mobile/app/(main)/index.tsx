@@ -68,9 +68,11 @@ export default function HomeScreen() {
           <View style={{ flexDirection: 'row', gap: 12 }}>
             {usuario?.rol === 'Administrador' && (
               <>
+                {/* @ts-ignore */}
                 <TouchableOpacity onPress={() => router.push('/(main)/admin-canchas')} style={styles.logoutBtn}>
                   <Ionicons name="business-outline" size={22} color={Colors.accent} />
                 </TouchableOpacity>
+                {/* @ts-ignore */}
                 <TouchableOpacity onPress={() => router.push('/(main)/admin-partidos')} style={styles.logoutBtn}>
                   <Ionicons name="calendar-sharp" size={22} color={Colors.accent} />
                 </TouchableOpacity>

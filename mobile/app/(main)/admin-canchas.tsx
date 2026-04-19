@@ -84,9 +84,9 @@ export default function AdminCanchasScreen() {
     setSelectedCancha(c);
     let stString = 'Activa';
     // Mapeo inverso si llegara como int (1,2,3) o ya viniera como string.
-    if(c.estadoCancha == 1 || c.estadoCancha === 'Activa') stString = 'Activa';
-    if(c.estadoCancha == 2 || c.estadoCancha === 'Inactiva') stString = 'Inactiva';
-    if(c.estadoCancha == 3 || c.estadoCancha === 'Anulada') stString = 'Anulada';
+    if((c.estadoCancha as any) == 1 || c.estadoCancha === 'Activa') stString = 'Activa';
+    if((c.estadoCancha as any) == 2 || c.estadoCancha === 'Inactiva') stString = 'Inactiva';
+    if((c.estadoCancha as any) == 3 || c.estadoCancha === 'Anulada') stString = 'Anulada';
 
     setEditForm({
       nombre: c.nombre,
