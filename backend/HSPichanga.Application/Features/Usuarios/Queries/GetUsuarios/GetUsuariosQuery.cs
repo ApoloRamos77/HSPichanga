@@ -1,6 +1,5 @@
 using HSPichanga.Application.Interfaces;
 using MediatR;
-using Microsoft.EntityFrameworkCore;
 
 namespace HSPichanga.Application.Features.Usuarios.Queries.GetUsuarios;
 
