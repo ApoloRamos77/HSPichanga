@@ -54,7 +54,7 @@ public class GetPartidosAdminQueryHandler : IRequestHandler<GetPartidosAdminQuer
             p.Notas,
             p.Organizador?.NombreCompleto ?? "",
             p.FechaCreacion,
-            p.Reservas?.Where(r => r.EstadoPago != EstadoPago.Anulada)
+            p.Reservas?.Where(r => r.EstadoPago != EstadoPago.Devuelto)
                      .Select(r => r.Jugador?.NombreCompleto ?? "Anónimo")
                      .ToList()
         ));

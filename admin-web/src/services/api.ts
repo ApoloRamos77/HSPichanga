@@ -28,6 +28,15 @@ export const canchasService = {
   changeStatus: (id: string, nuevoEstado: number) => api.put(`/Canchas/${id}/estado`, { nuevoEstado }),
 };
 
+export const partidosService = {
+  getAllAdmin: () => api.get('/Partidos/admin'),
+  cambiarEstado: (id: string, nuevoEstado: number) => api.put(`/Partidos/${id}/estado`, { nuevoEstado }),
+};
+
+export const usuariosService = {
+  getAll: () => api.get('/Auth/Admin/usuarios'),
+};
+
 export const uploadService = {
   upload: (file: File) => {
     const formData = new FormData();

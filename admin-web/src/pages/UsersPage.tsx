@@ -1,12 +1,11 @@
-import React from 'react';
 import { useQuery } from '@tanstack/react-query';
 import { usuariosService } from '../services/api';
-import { User, Mail, Phone, Calendar, Loader2, Search } from 'lucide-react';
+import { Mail, Phone, Calendar, Loader2, Search } from 'lucide-react';
 
 export const UsersPage = () => {
   const { data: usuarios, isLoading } = useQuery({
     queryKey: ['usuarios-admin'],
-    queryFn: () => usuariosService.getAll().then(r => r.data)
+    queryFn: () => usuariosService.getAll().then((r: any) => r.data)
   });
 
   if (isLoading) return <div style={{ display: 'flex', justifyContent: 'center', marginTop: '100px' }}><Loader2 className="animate-spin" /></div>;

@@ -1,7 +1,7 @@
 import React, { useState } from 'react';
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
 import { partidosService } from '../services/api';
-import { Calendar, Users, ListFilter, Loader2, Info } from 'lucide-react';
+import { Calendar, Users, Loader2 } from 'lucide-react';
 
 export const PartidosPage = () => {
   const queryClient = useQueryClient();
@@ -9,7 +9,7 @@ export const PartidosPage = () => {
 
   const { data: partidos, isLoading } = useQuery({
     queryKey: ['partidos-admin'],
-    queryFn: () => partidosService.getAllAdmin().then(r => r.data)
+    queryFn: () => partidosService.getAllAdmin().then((r: any) => r.data)
   });
 
   const updateEstadoMutation = useMutation({
