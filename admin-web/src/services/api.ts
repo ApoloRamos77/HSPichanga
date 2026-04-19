@@ -34,7 +34,7 @@ export const partidosService = {
 };
 
 export const usuariosService = {
-  getAll: () => api.get('/Auth/Admin/usuarios'),
+  getAll: () => api.get('/Usuarios'),
 };
 
 export const uploadService = {
