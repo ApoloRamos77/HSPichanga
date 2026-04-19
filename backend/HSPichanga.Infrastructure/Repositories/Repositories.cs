@@ -33,6 +33,7 @@ public class PartidoRepository : IPartidoRepository
         var query = _ctx.Partidos
             .Include(p => p.Cancha).ThenInclude(c => c.Zona)
             .Include(p => p.Organizador)
+            .Include(p => p.Reservas).ThenInclude(r => r.Jugador)
             .AsQueryable();
 
         if (tipoPartido.HasValue) query = query.Where(p => p.TipoPartido == tipoPartido);
