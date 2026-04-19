@@ -15,7 +15,7 @@ public class UsuariosController : ControllerBase
     public UsuariosController(IMediator mediator) => _mediator = mediator;
 
     [HttpGet]
-    public async Task<ActionResult<IEnumerable<UsuarioDto>>> GetAll()
+    public async Task<ActionResult<IEnumerable<UsuarioAdminDto>>> GetAll()
     {
         var result = await _mediator.Send(new GetUsuariosQuery());
         return Ok(result);
