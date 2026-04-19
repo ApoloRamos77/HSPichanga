@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import { useState } from 'react';
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
 import { partidosService } from '../services/api';
 import { Calendar, Users, Loader2 } from 'lucide-react';

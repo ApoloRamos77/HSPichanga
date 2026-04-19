@@ -123,7 +123,7 @@ public class UsuarioRepository : IUsuarioRepository
         => await _ctx.Usuarios.FindAsync(new object[] { id }, cancellationToken);
 
     public async Task<IEnumerable<Usuario>> GetAllAsync(CancellationToken cancellationToken)
-        => await _ctx.Usuarios.OrderByDescending(u => u.FechaCreacion).ToListAsync(cancellationToken);
+        => await _ctx.Usuarios.OrderByDescending(u => u.FechaRegistro).ToListAsync(cancellationToken);
 
     public async Task AddAsync(Usuario usuario, CancellationToken cancellationToken)
         => await _ctx.Usuarios.AddAsync(usuario, cancellationToken);

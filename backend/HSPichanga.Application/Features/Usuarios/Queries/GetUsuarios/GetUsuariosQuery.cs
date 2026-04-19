@@ -30,7 +30,7 @@ public class GetUsuariosQueryHandler : IRequestHandler<GetUsuariosQuery, IEnumer
             u.Email,
             u.Telefono ?? "",
             u.Rol.ToString(),
-            u.FechaCreacion
+            u.FechaRegistro
         ));
     }
 }
