@@ -90,6 +90,13 @@ export type PartidoDto = {
   cuotaIndividual: number; cuposDisponibles: number; cuposTotales: number;
   modalidad: string; notas?: string; organizadorNombre: string;
   distance?: number;
+  celularYape?: string;
+  celularPlin?: string;
+  fotosUrls?: string[];
+  latitude?: number;
+  longitude?: number;
+  direccion?: string;
+  ubicacionGoogleMaps?: string;
 };
 
 // ─── Partidos (admin) ─────────────────────────────────────────────────────────
@@ -101,6 +108,7 @@ export type PartidoAdminDto = {
   cuotaIndividual: number; cuposDisponibles: number; cuposTotales: number;
   modalidad: string; notas?: string; organizadorNombre: string;
   fechaCreacion: string;
+  jugadores?: string[];
 };
 
 export const partidosService = {
@@ -136,6 +144,16 @@ export const reservasService = {
     apiClient.post<CrearReservaResponse>('/Reservas', { partidoId, jugadorId, metodoPago, numeroOperacion }),
   getMisReservas: (jugadorId: string) =>
     apiClient.get<MisReservasDto[]>(`/Reservas/jugador/${jugadorId}`),
+};
+
+// ─── Usuarios (admin) ────────────────────────────────────────────────────────
+export type UsuarioDto = {
+  id: string; nombreCompleto: string; email: string;
+  rol: string; telefono: string; fechaRegistro: string;
+};
+
+export const usuariosService = {
+  getAll: () => apiClient.get<UsuarioDto[]>('/Usuarios'),
 };
 
 // ─── Chat ─────────────────────────────────────────────────────────────────────

@@ -1,5 +1,5 @@
 import { useNavigate, Link, Outlet } from 'react-router-dom';
-import { LayoutDashboard, MapPinned, Settings, LogOut, User as UserIcon } from 'lucide-react';
+import { LayoutDashboard, MapPinned, Settings, LogOut, User as UserIcon, Calendar } from 'lucide-react';
 
 export const DashboardLayout = () => {
   const navigate = useNavigate();
@@ -22,6 +22,8 @@ export const DashboardLayout = () => {
         <nav style={{ flex: 1, display: 'flex', flexDirection: 'column', gap: '8px' }}>
           <SidebarLink to="/dashboard" icon={<LayoutDashboard size={20} />} label="Dashboard" />
           <SidebarLink to="/canchas" icon={<MapPinned size={20} />} label="Gestión de Canchas" />
+          <SidebarLink to="/partidos" icon={<Calendar size={20} />} label="Control de Partidos" />
+          <SidebarLink to="/usuarios" icon={<UserIcon size={20} />} label="Usuarios Registrados" />
           <SidebarLink to="/settings" icon={<Settings size={20} />} label="Configuración" />
         </nav>
 

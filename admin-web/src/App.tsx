@@ -4,6 +4,8 @@ import { QueryClient, QueryClientProvider } from '@tanstack/react-query';
 import { LoginPage } from './pages/LoginPage';
 import { DashboardLayout } from './components/DashboardLayout';
 import { CanchasPage } from './pages/CanchasPage';
+import { PartidosPage } from './pages/PartidosPage';
+import { UsersPage } from './pages/UsersPage';
 
 const queryClient = new QueryClient();
 
@@ -29,6 +31,8 @@ function App() {
               </div>
             } />
             <Route path="canchas" element={<CanchasPage />} />
+            <Route path="partidos" element={<PartidosPage />} />
+            <Route path="usuarios" element={<UsersPage />} />
             <Route path="settings" element={<div>Próximamente...</div>} />
           </Route>
 

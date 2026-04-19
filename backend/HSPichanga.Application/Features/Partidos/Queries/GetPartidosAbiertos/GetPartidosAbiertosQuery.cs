@@ -27,7 +27,14 @@ public record PartidoDto(
     string Modalidad,
     string? Notas,
     string OrganizadorNombre,
-    double? Distance = null
+    double? Distance = null,
+    string? CelularYape = null,
+    string? CelularPlin = null,
+    List<string>? FotosUrls = null,
+    double? Latitude = null,
+    double? Longitude = null,
+    string? Direccion = null,
+    string? UbicacionGoogleMaps = null
 );
 
 public class GetPartidosAbiertosQueryHandler : IRequestHandler<GetPartidosAbiertosQuery, IEnumerable<PartidoDto>>
@@ -58,7 +65,14 @@ public class GetPartidosAbiertosQueryHandler : IRequestHandler<GetPartidosAbiert
             p.Organizador?.NombreCompleto ?? "",
             request.UserLatitude.HasValue && request.UserLongitude.HasValue && p.Cancha?.Latitude.HasValue == true && p.Cancha?.Longitude.HasValue == true
                 ? CalculateDistance(request.UserLatitude.Value, request.UserLongitude.Value, p.Cancha.Latitude.Value, p.Cancha.Longitude.Value)
-                : null
+                : null,
+            p.Cancha?.CelularYape,
+            p.Cancha?.CelularPlin,
+            p.Cancha?.FotosUrls,
+            p.Cancha?.Latitude,
+            p.Cancha?.Longitude,
+            p.Cancha?.Direccion,
+            p.Cancha?.UbicacionGoogleMaps
         )).ToList();
 
         if (request.UserLatitude.HasValue && request.UserLongitude.HasValue)

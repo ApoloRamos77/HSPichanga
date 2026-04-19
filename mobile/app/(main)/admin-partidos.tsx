@@ -17,6 +17,8 @@ export default function AdminPartidosScreen() {
   const [loading, setLoading] = useState(false);
   const [selectedPartido, setSelectedPartido] = useState<PartidoAdminDto | null>(null);
   const [modalReprogramarVisible, setModalReprogramarVisible] = useState(false);
+  const [modalJugadoresVisible, setModalJugadoresVisible] = useState(false);
+  const [jugadoresList, setJugadoresList] = useState<string[]>([]);
   
   // Reprogramación / Edición state
   const [repDate, setRepDate] = useState(new Date());
@@ -154,13 +156,29 @@ export default function AdminPartidosScreen() {
 
   const promptCambiarEstado = (p: PartidoAdminDto) => {
     Alert.alert(
+      "Opciones de Partido",
+      "Selecciona una acción:",
+      [
+        { text: "Cambiar Estado", onPress: () => promptSoloEstado(p) },
+        { text: "Ver Jugadores", onPress: () => {
+            setJugadoresList(p.jugadores || []);
+            setSelectedPartido(p);
+            setModalJugadoresVisible(true);
+        }},
+        { text: "Cerrar", style: "cancel" }
+      ]
+    );
+  };
+
+  const promptSoloEstado = (p: PartidoAdminDto) => {
+    Alert.alert(
       "Cambiar Estado",
-      "Selecciona el nuevo estado para este partido:",
+      "Selecciona el nuevo estado:",
       [
         { text: "Abierto", onPress: () => handleCambiarEstado(p.id, 1) },
         { text: "Cancelado", onPress: () => handleCambiarEstado(p.id, 3), style: "destructive" },
         { text: "Finalizado", onPress: () => handleCambiarEstado(p.id, 4) },
-        { text: "Cerrar", style: "cancel" }
+        { text: "Cancelar", style: "cancel" }
       ]
     );
   };
@@ -213,8 +231,8 @@ export default function AdminPartidosScreen() {
                   <Text style={styles.actionText}> Reprogramar</Text>
                 </TouchableOpacity>
                 <TouchableOpacity style={[styles.actionBtn, { borderColor: Colors.borderLight }]} onPress={() => promptCambiarEstado(item)}>
-                  <Ionicons name="analytics" size={16} color={Colors.textPrimary} />
-                  <Text style={styles.actionText}> Estado</Text>
+                  <Ionicons name="people-outline" size={16} color={Colors.textPrimary} />
+                  <Text style={styles.actionText}> Opciones</Text>
                 </TouchableOpacity>
               </View>
             </View>
@@ -439,6 +457,41 @@ export default function AdminPartidosScreen() {
         </View>
       </Modal>
 
+      {/* Modal Jugadores */}
+      <Modal visible={modalJugadoresVisible} transparent animationType="fade">
+        <View style={styles.modalOverlay}>
+          <View style={styles.modalContent}>
+            <View style={{flexDirection: 'row', justifyContent: 'space-between', alignItems: 'center', marginBottom: Spacing.md}}>
+              <Text style={styles.modalTitle}>Inscritos ({jugadoresList.length})</Text>
+              <TouchableOpacity onPress={() => setModalJugadoresVisible(false)}>
+                <Ionicons name="close-circle" size={24} color={Colors.textMuted} />
+              </TouchableOpacity>
+            </View>
+            
+            <Text style={{color: Colors.textSecondary, marginBottom: Spacing.md}}>{selectedPartido?.canchaNombre}</Text>
+
+            <ScrollView style={{maxHeight: 300}}>
+              {jugadoresList.length > 0 ? (
+                jugadoresList.map((name, i) => (
+                  <View key={i} style={styles.playerItem}>
+                    <Text style={styles.playerName}>{i + 1}. {name}</Text>
+                  </View>
+                ))
+              ) : (
+                <Text style={{color: Colors.textMuted, textAlign: 'center', marginTop: 20}}>No hay jugadores inscritos aún.</Text>
+              )}
+            </ScrollView>
+
+            <TouchableOpacity 
+              style={[styles.btnCrear, {marginTop: Spacing.lg, backgroundColor: Colors.surfaceHover}]} 
+              onPress={() => setModalJugadoresVisible(false)}
+            >
+              <Text style={{color: Colors.textPrimary}}>Cerrar</Text>
+            </TouchableOpacity>
+          </View>
+        </View>
+      </Modal>
+
     </SafeAreaView>
   );
 }
@@ -509,5 +562,7 @@ const styles = StyleSheet.create({
   modalOverlay: { flex: 1, backgroundColor: 'rgba(0,0,0,0.7)', justifyContent: 'center', padding: Spacing.lg },
   modalContent: { backgroundColor: Colors.background, borderRadius: Radius.lg, padding: Spacing.xl, borderWidth: 1, borderColor: Colors.borderLight },
   modalTitle: { fontSize: Typography.size.lg, color: Colors.textPrimary, fontWeight: 'bold', marginBottom: Spacing.md },
-  modalBtn: { flex: 1, padding: Spacing.md, borderRadius: Radius.md, alignItems: 'center', marginHorizontal: Spacing.xs }
+  modalBtn: { flex: 1, padding: Spacing.md, borderRadius: Radius.md, alignItems: 'center', marginHorizontal: Spacing.xs },
+  playerItem: { paddingVertical: Spacing.sm, borderBottomWidth: 1, borderBottomColor: Colors.borderLight },
+  playerName: { color: Colors.textPrimary, fontSize: Typography.size.base }
 });

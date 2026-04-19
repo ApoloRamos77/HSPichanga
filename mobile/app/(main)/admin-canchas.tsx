@@ -25,7 +25,9 @@ export default function AdminCanchasScreen() {
     direccion: '',
     tieneLuz: false,
     tieneEstacionamiento: false,
-    estadoCancha: 'Activa' // Default to string status
+    estadoCancha: 'Activa',
+    celularYape: '',
+    celularPlin: ''
   });
 
   // Tab Nueva Cancha
@@ -37,7 +39,9 @@ export default function AdminCanchasScreen() {
     direccion: '',
     zonaId: '11111111-1111-1111-1111-111111111111', // Miraflores por defecto
     tieneLuz: true,
-    tieneEstacionamiento: true
+    tieneEstacionamiento: true,
+    celularYape: '',
+    celularPlin: ''
   });
 
   useEffect(() => {
@@ -68,7 +72,7 @@ export default function AdminCanchasScreen() {
         fotosUrls: form.fotosUrlStr ? form.fotosUrlStr.split(',').map(s=>s.trim()).filter(s=>s.length>0) : []
       });
       Alert.alert('Éxito', 'La cancha ha sido registrada.');
-      setForm({ ...form, nombre: '', descripcion: '', direccion: '', ubicacionGoogleMaps: '', fotosUrlStr: '' });
+      setForm({ ...form, nombre: '', descripcion: '', direccion: '', ubicacionGoogleMaps: '', fotosUrlStr: '', celularYape: '', celularPlin: '' });
       setTab('CANCHAS');
       loadData();
     } catch (e: any) {
@@ -92,7 +96,9 @@ export default function AdminCanchasScreen() {
       direccion: c.direccion,
       tieneLuz: c.tieneLuz,
       tieneEstacionamiento: c.tieneEstacionamiento,
-      estadoCancha: stString
+      estadoCancha: stString,
+      celularYape: c.celularYape || '',
+      celularPlin: c.celularPlin || ''
     });
     setModalEditVisible(true);
   };
@@ -114,7 +120,9 @@ export default function AdminCanchasScreen() {
         ubicacionGoogleMaps: editForm.ubicacionGoogleMaps || null,
         fotosUrls: editForm.fotosUrlStr ? editForm.fotosUrlStr.split(',').map(s=>s.trim()).filter(s=>s.length>0) : [],
         tieneLuz: editForm.tieneLuz,
-        tieneEstacionamiento: editForm.tieneEstacionamiento
+        tieneEstacionamiento: editForm.tieneEstacionamiento,
+        celularYape: editForm.celularYape,
+        celularPlin: editForm.celularPlin
       });
       
       // 2. Update status if changed or just update it anyway
@@ -259,6 +267,26 @@ export default function AdminCanchasScreen() {
             onChangeText={(val) => setForm({ ...form, fotosUrlStr: val })}
           />
 
+          <Text style={styles.label}>Celular Yape (Opcional)</Text>
+          <TextInput
+            style={styles.input}
+            placeholder="999000111"
+            placeholderTextColor={Colors.textMuted}
+            keyboardType="numeric"
+            value={form.celularYape}
+            onChangeText={(val) => setForm({ ...form, celularYape: val })}
+          />
+
+          <Text style={styles.label}>Celular Plin (Opcional)</Text>
+          <TextInput
+            style={styles.input}
+            placeholder="999000111"
+            placeholderTextColor={Colors.textMuted}
+            keyboardType="numeric"
+            value={form.celularPlin}
+            onChangeText={(val) => setForm({ ...form, celularPlin: val })}
+          />
+
           <View style={styles.switchRow}>
              <Text style={styles.label}>Tiene Luz</Text>
              <Switch 
@@ -316,6 +344,22 @@ export default function AdminCanchasScreen() {
                 multiline
                 value={editForm.fotosUrlStr}
                 onChangeText={(val) => setEditForm({ ...editForm, fotosUrlStr: val })}
+              />
+
+              <Text style={styles.label}>Celular Yape</Text>
+              <TextInput
+                style={styles.input}
+                value={editForm.celularYape}
+                keyboardType="numeric"
+                onChangeText={(val) => setEditForm({ ...editForm, celularYape: val })}
+              />
+
+              <Text style={styles.label}>Celular Plin</Text>
+              <TextInput
+                style={styles.input}
+                value={editForm.celularPlin}
+                keyboardType="numeric"
+                onChangeText={(val) => setEditForm({ ...editForm, celularPlin: val })}
               />
               
               <View style={styles.switchRow}>

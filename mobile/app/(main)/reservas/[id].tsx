@@ -60,6 +60,18 @@ export default function ReservaDetailScreen() {
   const pctLleno = partido.cuposDisponibles / partido.cuposTotales;
   const estadoColor = Colors.estadoColors[partido.estado] ?? Colors.textSecondary;
   const catColor = Colors.categoryColors[partido.categoria] ?? Colors.accent;
+  const hasImages = partido.fotosUrls && partido.fotosUrls.length > 0;
+
+  const openMaps = () => {
+    if (partido.ubicacionGoogleMaps) {
+      const url = partido.ubicacionGoogleMaps.startsWith('http') 
+        ? partido.ubicacionGoogleMaps 
+        : `https://www.google.com/maps/search/?api=1&query=${encodeURIComponent(partido.ubicacionGoogleMaps)}`;
+      require('react-native').Linking.openURL(url);
+    } else if (partido.latitude && partido.longitude) {
+      require('react-native').Linking.openURL(`https://www.google.com/maps/search/?api=1&query=${partido.latitude},${partido.longitude}`);
+    }
+  };
 
   return (
     <SafeAreaView style={styles.container}>
@@ -69,11 +81,30 @@ export default function ReservaDetailScreen() {
           <View style={styles.heroCenter}>
             <Ionicons name="football" size={52} color={Colors.accent} />
             <Text style={styles.canchaNombre}>{partido.canchaNombre}</Text>
-            <Text style={styles.zona}>
+            <TouchableOpacity onPress={openMaps} style={styles.zona}>
               <Ionicons name="location-outline" size={14} color={Colors.textSecondary} />
-              {' '}{partido.zonaNombre}
-            </Text>
+              {' '}{partido.zonaNombre} - Ver Mapa
+            </TouchableOpacity>
           </View>
+
+          {/* Carrusel de Imágenes Simple */}
+          {hasImages && (
+            <View style={styles.carouselContainer}>
+              <ScrollView horizontal pagingEnabled showsHorizontalScrollIndicator={false}>
+                {partido.fotosUrls!.map((url, i) => (
+                  <require('react-native').Image 
+                    key={i} 
+                    source={{ uri: url }} 
+                    style={styles.carouselImage} 
+                    resizeMode="cover"
+                  />
+                ))}
+              </ScrollView>
+              <View style={styles.imageBadge}>
+                <Text style={styles.imageBadgeText}>{partido.fotosUrls!.length} Fotos</Text>
+              </View>
+            </View>
+          )}
 
           {/* Precio destacado */}
           <View style={styles.precioBox}>
@@ -153,8 +184,10 @@ export default function ReservaDetailScreen() {
 
               <View style={[styles.walletInfoBox, metodoPago === 2 ? { borderColor: '#742284' } : { borderColor: '#00D6D6' }]}>
                 <Ionicons name="qr-code-outline" size={48} color={metodoPago === 2 ? '#742284' : '#00D6D6'} />
-                <Text style={styles.walletPhone}>999 000 111</Text>
-                <Text style={styles.walletName}>Canchas ADHSOFT (Admin)</Text>
+                <Text style={styles.walletPhone}>
+                  {metodoPago === 2 ? (partido.celularYape || '999 000 111') : (partido.celularPlin || '999 000 111')}
+                </Text>
+                <Text style={styles.walletName}>{partido.canchaNombre} (Admin)</Text>
                 <Text style={styles.walletInstructions}>
                   Transfiere S/. {partido.cuotaIndividual.toFixed(2)} al número o lee el QR en tu app.
                 </Text>
@@ -232,9 +265,13 @@ const styles = StyleSheet.create({
   centered: { flex: 1, justifyContent: 'center', alignItems: 'center', backgroundColor: Colors.background },
   errorText: { color: Colors.danger, fontSize: Typography.size.base },
   hero: { padding: Spacing.xl, alignItems: 'center', paddingBottom: Spacing.xxl },
+  carouselContainer: { width: '100%', height: 180, borderRadius: Radius.lg, overflow: 'hidden', marginVertical: Spacing.md, position: 'relative' },
+  carouselImage: { width: 320, height: 180 }, // Aproximado para que se vea bien centrado
+  imageBadge: { position: 'absolute', bottom: 8, right: 8, backgroundColor: 'rgba(0,0,0,0.6)', paddingHorizontal: 8, paddingVertical: 4, borderRadius: Radius.sm },
+  imageBadgeText: { color: '#FFF', fontSize: 10, fontWeight: 'bold' },
   heroCenter: { alignItems: 'center', gap: 8, marginBottom: Spacing.lg },
   canchaNombre: { fontSize: Typography.size.xl, color: Colors.textPrimary, fontWeight: Typography.weight.bold, textAlign: 'center' },
-  zona: { fontSize: Typography.size.sm, color: Colors.textSecondary },
+  zona: { fontSize: Typography.size.sm, color: Colors.textSecondary, textDecorationLine: 'underline' },
   precioBox: {
     backgroundColor: Colors.accent + '22',
     borderRadius: Radius.xl, padding: Spacing.lg,
