@@ -46,7 +46,10 @@ builder.Services.AddAuthorization();
 builder.Services.AddCors(opts =>
 {
     opts.AddPolicy("ExpoPolicy", policy =>
-        policy.AllowAnyOrigin().AllowAnyHeader().AllowAnyMethod());
+        policy.AllowAnyOrigin()
+              .AllowAnyHeader()
+              .AllowAnyMethod()
+              .WithExposedHeaders("Authorization"));
 });
 
 // ─── Swagger ─────────────────────────────────────────────────────────────────

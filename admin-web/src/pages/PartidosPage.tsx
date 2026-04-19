@@ -7,9 +7,13 @@ export const PartidosPage = () => {
   const queryClient = useQueryClient();
   const [selectedPartido, setSelectedPartido] = useState<any>(null);
 
-  const { data: partidos, isLoading } = useQuery({
+  const { data: partidos, isLoading, error } = useQuery({
     queryKey: ['partidos-admin'],
-    queryFn: () => partidosService.getAllAdmin().then((r: any) => r.data)
+    queryFn: () => partidosService.getAllAdmin().then((r: any) => r.data),
+    retry: (failureCount, error: any) => {
+      if (error.response?.status === 401 || error.response?.status === 403) return false;
+      return failureCount < 2;
+    }
   });
 
   const updateEstadoMutation = useMutation({
@@ -22,6 +26,17 @@ export const PartidosPage = () => {
   });
 
   if (isLoading) return <div style={{ display: 'flex', justifyContent: 'center', marginTop: '100px' }}><Loader2 className="animate-spin" /></div>;
+
+  if (error) {
+    const isAuthError = (error as any).response?.status === 401;
+    return (
+      <div style={{ textAlign: 'center', marginTop: '100px', color: 'var(--danger)' }}>
+        <p style={{ fontSize: '1.25rem' }}>{isAuthError ? 'Tu sesión ha expirado' : 'Error al cargar partidos'}</p>
+        <p style={{ fontSize: '0.875rem', marginTop: '8px' }}>{(error as any).message}</p>
+        {isAuthError && <button onClick={() => { localStorage.clear(); window.location.href = '/login'; }} className="premium-btn" style={{ marginTop: '16px' }}>Ir al Login</button>}
+      </div>
+    );
+  }
 
   return (
     <div style={{ maxWidth: '1200px', margin: '0 auto' }}>
