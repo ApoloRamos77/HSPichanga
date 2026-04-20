@@ -1,6 +1,6 @@
 import React from 'react';
 import {
-  View, Text, StyleSheet, TouchableOpacity, ViewStyle
+  View, Text, StyleSheet, TouchableOpacity, ViewStyle, Image
 } from 'react-native';
 import { LinearGradient } from 'expo-linear-gradient';
 import { Ionicons } from '@expo/vector-icons';
@@ -25,9 +25,18 @@ export function PartidoCard({ partido, onPress, style }: Props) {
       activeOpacity={0.88}
       style={[styles.container, Shadows.card, style]}
     >
-      {/* Fondo con gradiente sutil */}
+      {/* Fondo de imagen de la cancha */}
+      {partido.fotosUrls && partido.fotosUrls.length > 0 && (
+        <Image
+          source={{ uri: partido.fotosUrls[0] }}
+          style={StyleSheet.absoluteFillObject}
+          resizeMode="cover"
+        />
+      )}
+
+      {/* Fondo con gradiente sutil y overlay oscurecido si hay imagen */}
       <LinearGradient
-        colors={Colors.gradientCard}
+        colors={partido.fotosUrls && partido.fotosUrls.length > 0 ? ['rgba(0,0,0,0.6)', 'rgba(0,0,0,0.9)'] : Colors.gradientCard}
         style={[StyleSheet.absoluteFillObject, { borderRadius: Radius.lg }]}
       />
 

@@ -24,9 +24,11 @@ public class PartidosController : ControllerBase
         [FromQuery] CategoriaPartido? categoria,
         [FromQuery] Guid? zonaId,
         [FromQuery] Modalidad? modalidad,
+        [FromQuery] double? userLatitude,
+        [FromQuery] double? userLongitude,
         CancellationToken ct)
     {
-        var result = await _mediator.Send(new GetPartidosAbiertosQuery(categoria, zonaId, modalidad), ct);
+        var result = await _mediator.Send(new GetPartidosAbiertosQuery(categoria, zonaId, modalidad, userLatitude, userLongitude), ct);
         return Ok(result);
     }
 

@@ -26,7 +26,7 @@ export default function ReservaDetailScreen() {
   const partido = partidos?.find(p => p.id === id);
 
   const mutation = useMutation({
-    mutationFn: () => reservasService.crear(id!, usuario!.id, metodoPago, numeroOperacion),
+    mutationFn: () => reservasService.crear(id!, usuario!.id, metodoPago, numeroOperacion.trim() === '' ? undefined : numeroOperacion.trim()),
     onSuccess: (data) => {
       Alert.alert(
         '¡Cupo Reservado! 🎉',

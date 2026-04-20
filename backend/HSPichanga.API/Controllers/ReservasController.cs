@@ -23,7 +23,7 @@ public class ReservasController : ControllerBase
         try
         {
             var result = await _mediator.Send(command, ct);
-            return CreatedAtAction(nameof(CrearReserva), result);
+            return Ok(result);
         }
         catch (DomainException ex)
         {
