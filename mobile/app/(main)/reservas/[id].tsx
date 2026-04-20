@@ -23,6 +23,15 @@ export default function ReservaDetailScreen() {
     queryFn: () => partidosService.getAbiertos().then(r => r.data),
   });
 
+  const { data: misReservas } = useQuery({
+    queryKey: ['misReservas', usuario?.id],
+    queryFn: () => reservasService.getMisReservas(usuario!.id).then((r: any) => r.data),
+    enabled: !!usuario?.id,
+  });
+
+  const yaReservado = misReservas?.some((r: any) => r.partidoId === id && r.estadoPago !== 'Devuelto');
+
+
   const partido = partidos?.find(p => p.id === id);
 
   const mutation = useMutation({
@@ -187,7 +196,7 @@ export default function ReservaDetailScreen() {
               <View style={[styles.walletInfoBox, metodoPago === 2 ? { borderColor: '#742284' } : { borderColor: '#00D6D6' }]}>
                 <Ionicons name="qr-code-outline" size={48} color={metodoPago === 2 ? '#742284' : '#00D6D6'} />
                 <Text style={styles.walletPhone}>
-                  {metodoPago === 2 ? (partido.celularYape || '999 000 111') : (partido.celularPlin || '999 000 111')}
+                  {metodoPago === 2 ? (partido.celularYape || '(No configurado)') : (partido.celularPlin || '(No configurado)')}
                 </Text>
                 <Text style={styles.walletName}>{partido.canchaNombre} (Admin)</Text>
                 <Text style={styles.walletInstructions}>
@@ -204,14 +213,21 @@ export default function ReservaDetailScreen() {
                 />
               </View>
 
-              <Button
-                title={`NOTIFICAR PAGO Y RESERVAR`}
-                onPress={() => mutation.mutate()}
-                loading={mutation.isPending}
-                variant="accent"
-                size="lg"
-                style={{ marginTop: Spacing.md }}
-              />
+              {yaReservado ? (
+                <View style={styles.yaReservadoBox}>
+                  <Ionicons name="checkmark-circle" size={20} color={Colors.success} />
+                  <Text style={styles.yaReservadoText}>Ya tienes un lugar reservado en este partido</Text>
+                </View>
+              ) : (
+                <Button
+                  title={`NOTIFICAR PAGO Y RESERVAR`}
+                  onPress={() => mutation.mutate()}
+                  loading={mutation.isPending}
+                  variant="accent"
+                  size="lg"
+                  style={{ marginTop: Spacing.md }}
+                />
+              )}
 
               <Button
                 title="ABRIR CHAT DEL PARTIDO"
@@ -336,5 +352,7 @@ const styles = StyleSheet.create({
   walletPhone: { fontSize: Typography.size.xl, fontWeight: Typography.weight.black, color: Colors.textPrimary, marginTop: 4 },
   walletName: { fontSize: Typography.size.sm, color: Colors.textSecondary },
   walletInstructions: { fontSize: Typography.size.sm, color: Colors.textSecondary, textAlign: 'center', marginTop: 4, marginBottom: Spacing.md },
-  inputStyle: { width: '100%', backgroundColor: Colors.background, borderWidth: 1, borderColor: Colors.border, borderRadius: Radius.md, padding: Spacing.md, color: Colors.textPrimary, fontSize: Typography.size.sm }
+  inputStyle: { width: '100%', backgroundColor: Colors.background, borderWidth: 1, borderColor: Colors.border, borderRadius: Radius.md, padding: Spacing.md, color: Colors.textPrimary, fontSize: Typography.size.sm },
+  yaReservadoBox: { flexDirection: 'row', alignItems: 'center', justifyContent: 'center', backgroundColor: Colors.success + '22', borderRadius: Radius.md, padding: Spacing.md, marginTop: Spacing.md, borderWidth: 1, borderColor: Colors.success + '44', gap: 8 },
+  yaReservadoText: { color: Colors.success, fontSize: Typography.size.sm, fontWeight: Typography.weight.bold }
 });

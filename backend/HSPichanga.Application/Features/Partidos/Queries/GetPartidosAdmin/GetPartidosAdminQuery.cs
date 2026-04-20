@@ -46,7 +46,7 @@ public class GetPartidosAdminQueryHandler : IRequestHandler<GetPartidosAdminQuer
             p.FechaReprogramada,
             p.TipoPartido.ToString(),
             p.Categoria.ToString(),
-            p.Estado.ToString(),
+            (p.Estado == EstadoPartido.Abierto && p.FechaHora < DateTime.UtcNow) ? "Finalizado" : p.Estado.ToString(),
             p.CuotaIndividual,
             p.CuposDisponibles,
             p.CuposTotales,

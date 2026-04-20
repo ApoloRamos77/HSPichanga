@@ -40,7 +40,7 @@ public class GetMisReservasQueryHandler : IRequestHandler<GetMisReservasQuery, L
             CanchaNombre: r.Partido.Cancha?.Nombre ?? "Desconocido",
             ZonaNombre: r.Partido.Cancha?.Zona?.Nombre ?? "Desconocido",
             FechaHora: r.Partido.FechaHora,
-            EstadoPartido: r.Partido.Estado.ToString(),
+            EstadoPartido: (r.Partido.Estado == HSPichanga.Domain.Enums.EstadoPartido.Abierto && r.Partido.FechaHora < DateTime.UtcNow) ? "Finalizado" : r.Partido.Estado.ToString(),
             CodigoConfirmacion: r.CodigoConfirmacion,
             MontoPagado: r.MontoPagado,
             EstadoPago: r.EstadoPago.ToString()

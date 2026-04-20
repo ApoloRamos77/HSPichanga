@@ -13,6 +13,8 @@ public class Usuario
     public string? FotoUrl { get; private set; }
     public bool Activo { get; private set; }
     public DateTime FechaRegistro { get; private set; }
+    public string? ResetToken { get; private set; }
+    public DateTime? ResetTokenExpiry { get; private set; }
 
     // Navigation properties
     public ICollection<Reserva> Reservas { get; private set; } = new List<Reserva>();
@@ -43,4 +45,30 @@ public class Usuario
 
     public void ActualizarFoto(string url) => FotoUrl = url;
     public void Desactivar() => Activo = false;
+
+    public void GenerateResetToken()
+    {
+        ResetToken = Guid.NewGuid().ToString("N")[..8].ToUpper();
+        ResetTokenExpiry = DateTime.UtcNow.AddHours(1);
+    }
+    
+    public void ValidarResetToken(string token)
+    {
+        if (ResetToken != token) throw new HSPichanga.Domain.Exceptions.DomainException("El código de recuperación es inválido o incorrecto.");
+        if (ResetTokenExpiry < DateTime.UtcNow) throw new HSPichanga.Domain.Exceptions.DomainException("El código de recuperación ha expirado.");
+    }
+    
+    public void ResetearPassword(string newHash)
+    {
+        PasswordHash = newHash;
+        ResetToken = null;
+        ResetTokenExpiry = null;
+    }
+    
+    public void ActualizarPerfil(string nombre, string telefono, RolUsuario rol)
+    {
+        NombreCompleto = nombre;
+        Telefono = telefono;
+        Rol = rol;
+    }
 }

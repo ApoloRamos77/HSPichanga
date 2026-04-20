@@ -35,6 +35,8 @@ export const partidosService = {
 
 export const usuariosService = {
   getAll: () => api.get('/Usuarios'),
+  update: (id: string, data: any) => api.put(`/Usuarios/${id}`, data),
+  generateTempPassword: (id: string) => api.post(`/Usuarios/${id}/temp-password`),
 };
 
 export const uploadService = {

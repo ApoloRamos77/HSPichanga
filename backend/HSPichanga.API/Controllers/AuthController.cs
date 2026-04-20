@@ -1,5 +1,7 @@
 using HSPichanga.Application.Features.Auth.Commands.Login;
 using HSPichanga.Application.Features.Auth.Commands.Registro;
+using HSPichanga.Application.Features.Auth.Commands.ForgotPassword;
+using HSPichanga.Application.Features.Auth.Commands.ResetPassword;
 using MediatR;
 using Microsoft.AspNetCore.Mvc;
 
@@ -41,6 +43,32 @@ public class AuthController : ControllerBase
             return CreatedAtAction(nameof(Login), result);
         }
         catch (InvalidOperationException ex)
+        {
+            return BadRequest(new { mensaje = ex.Message });
+        }
+    }
+
+    /// <summary>Solicitar token de recuperación</summary>
+    [HttpPost("forgot-password")]
+    [ProducesResponseType(200)]
+    public async Task<IActionResult> ForgotPassword([FromBody] ForgotPasswordCommand command, CancellationToken ct)
+    {
+        await _mediator.Send(command, ct);
+        return Ok(new { mensaje = "Si el correo está registrado, se ha enviado un código de recuperación." });
+    }
+
+    /// <summary>Establecer nueva contraseña</summary>
+    [HttpPost("reset-password")]
+    [ProducesResponseType(200)]
+    [ProducesResponseType(400)]
+    public async Task<IActionResult> ResetPassword([FromBody] ResetPasswordCommand command, CancellationToken ct)
+    {
+        try
+        {
+            await _mediator.Send(command, ct);
+            return Ok(new { mensaje = "Contraseña actualizada exitosamente." });
+        }
+        catch (HSPichanga.Domain.Exceptions.DomainException ex)
         {
             return BadRequest(new { mensaje = ex.Message });
         }
