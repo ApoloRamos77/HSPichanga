@@ -62,13 +62,13 @@ public class CanchaRepository : ICanchaRepository
 
     public async Task<IEnumerable<Cancha>> GetAllAsync(Guid? zonaId, CancellationToken cancellationToken)
     {
-        var query = _ctx.Canchas.Include(c => c.Zona).Where(c => c.Activo);
+        var query = _ctx.Canchas.Include(c => c.Zona).Include(c => c.Administrador).Where(c => c.Activo);
         if (zonaId.HasValue)    query = query.Where(c => c.ZonaId == zonaId);
         return await query.OrderBy(c => c.Nombre).ToListAsync(cancellationToken);
     }
 
     public async Task<IEnumerable<Cancha>> GetAllAdminAsync(CancellationToken cancellationToken)
-        => await _ctx.Canchas.Include(c => c.Zona)
+        => await _ctx.Canchas.Include(c => c.Zona).Include(c => c.Administrador)
             .OrderBy(c => c.Nombre)
             .ToListAsync(cancellationToken);
 

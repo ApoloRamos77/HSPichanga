@@ -51,6 +51,12 @@ public class CanchaConfiguration : IEntityTypeConfiguration<Cancha>
                .WithMany(z => z.Canchas)
                .HasForeignKey(x => x.ZonaId)
                .OnDelete(DeleteBehavior.Restrict);
+
+        builder.HasOne(x => x.Administrador)
+               .WithMany()
+               .HasForeignKey(x => x.AdministradorId)
+               .IsRequired(false)
+               .OnDelete(DeleteBehavior.Restrict);
     }
 }
 

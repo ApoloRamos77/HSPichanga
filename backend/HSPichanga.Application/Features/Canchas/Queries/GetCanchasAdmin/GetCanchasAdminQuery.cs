@@ -10,17 +10,18 @@ public record CanchaAdminDto(
     Guid Id,
     string Nombre,
     string Descripcion,
-    string ZonaNombre,
     string Direccion,
-    string? UbicacionGoogleMaps,
+    Guid ZonaId,
+    string ZonaNombre,
+    string UbicacionGoogleMaps,
     List<string> FotosUrls,
-    string? FotoUrl,
     bool TieneLuz,
     bool TieneEstacionamiento,
-    bool Activo,
-    string EstadoCancha,
     double? Latitude,
-    double? Longitude
+    double? Longitude,
+    int EstadoCancha,
+    string EstadoNombre,
+    Guid? AdministradorId
 );
 
 public class GetCanchasAdminQueryHandler : IRequestHandler<GetCanchasAdminQuery, IEnumerable<CanchaAdminDto>>
@@ -36,17 +37,18 @@ public class GetCanchasAdminQueryHandler : IRequestHandler<GetCanchasAdminQuery,
             c.Id,
             c.Nombre,
             c.Descripcion,
-            c.Zona?.Nombre ?? "",
             c.Direccion,
-            c.UbicacionGoogleMaps,
+            c.ZonaId,
+            c.Zona?.Nombre ?? "Sin zona",
+            c.UbicacionGoogleMaps ?? "",
             c.FotosUrls,
-            c.FotoUrl,
             c.TieneLuz,
             c.TieneEstacionamiento,
-            c.Activo,
-            c.EstadoCancha.ToString(),
             c.Latitude,
-            c.Longitude
-        ));
+            c.Longitude,
+            (int)c.EstadoCancha,
+            c.EstadoCancha.ToString(),
+            c.AdministradorId
+        )).ToList();
     }
 }

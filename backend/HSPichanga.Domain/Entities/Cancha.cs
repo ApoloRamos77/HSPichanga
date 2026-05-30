@@ -18,9 +18,11 @@ public class Cancha
     public EstadoCancha EstadoCancha { get; private set; }
     public double? Latitude { get; private set; }
     public double? Longitude { get; private set; }
+    public Guid? AdministradorId { get; private set; }
 
     // Navigation
     public Zona Zona { get; private set; } = null!;
+    public Usuario? Administrador { get; private set; }
     public ICollection<HorarioDisponible> Horarios { get; private set; } = new List<HorarioDisponible>();
     public ICollection<Partido> Partidos { get; private set; } = new List<Partido>();
 
@@ -36,7 +38,8 @@ public class Cancha
         bool tieneLuz = false,
         bool tieneEstacionamiento = false,
         double? latitude = null,
-        double? longitude = null)
+        double? longitude = null,
+        Guid? administradorId = null)
     {
         return new Cancha
         {
@@ -53,7 +56,8 @@ public class Cancha
             Activo = true,
             EstadoCancha = EstadoCancha.Activa,
             Latitude = latitude,
-            Longitude = longitude
+            Longitude = longitude,
+            AdministradorId = administradorId
         };
     }
 
@@ -68,7 +72,8 @@ public class Cancha
         bool tieneLuz,
         bool tieneEstacionamiento,
         double? latitude,
-        double? longitude)
+        double? longitude,
+        Guid? administradorId = null)
     {
         Nombre = nombre;
         Descripcion = descripcion;
@@ -80,6 +85,7 @@ public class Cancha
         TieneEstacionamiento = tieneEstacionamiento;
         Latitude = latitude;
         Longitude = longitude;
+        if (administradorId.HasValue) AdministradorId = administradorId;
     }
 
     public void Activar()

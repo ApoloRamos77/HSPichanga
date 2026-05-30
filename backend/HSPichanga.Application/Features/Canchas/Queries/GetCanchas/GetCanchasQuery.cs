@@ -23,6 +23,10 @@ public record CanchaDto(
     bool TieneEstacionamiento,
     double? Latitude,
     double? Longitude,
+    string? YapeNumero,
+    string? YapeQrUrl,
+    string? PlinNumero,
+    string? PlinQrUrl,
     double? Distance = null
 );
 
@@ -49,6 +53,10 @@ public class GetCanchasQueryHandler : IRequestHandler<GetCanchasQuery, IEnumerab
             c.TieneEstacionamiento,
             c.Latitude,
             c.Longitude,
+            c.Administrador?.YapeNumero,
+            c.Administrador?.YapeQrUrl,
+            c.Administrador?.PlinNumero,
+            c.Administrador?.PlinQrUrl,
             request.UserLatitude.HasValue && request.UserLongitude.HasValue && c.Latitude.HasValue && c.Longitude.HasValue
                 ? CalculateDistance(request.UserLatitude.Value, request.UserLongitude.Value, c.Latitude.Value, c.Longitude.Value)
                 : null

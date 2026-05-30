@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
-import { canchasService, uploadService } from '../services/api';
+import { canchasService, uploadService, usuariosService } from '../services/api';
 import { Plus, Edit2, Trash2, MapPin, Camera, Loader2, X, Search } from 'lucide-react';
 import { MapContainer, TileLayer, Marker, useMapEvents, useMap } from 'react-leaflet';
 import L from 'leaflet';
@@ -57,7 +57,13 @@ export const CanchasPage = () => {
     tieneLuz: false,
     tieneEstacionamiento: false,
     latitude: -12.046374, // Lima Center
-    longitude: -77.042793
+    longitude: -77.042793,
+    administradorId: ''
+  });
+
+  const { data: administradores } = useQuery({
+    queryKey: ['usuarios-admin'],
+    queryFn: () => usuariosService.getAll().then((r: any) => r.data.filter((u: any) => u.rol === 'Administrador'))
   });
 
   const { data: canchas, isLoading, error } = useQuery({
@@ -91,7 +97,7 @@ export const CanchasPage = () => {
     setFormData({
       nombre: '', descripcion: '', direccion: '', zonaId: '11111111-1111-1111-1111-111111111111',
       ubicacionGoogleMaps: '', fotosUrls: [], tieneLuz: false, tieneEstacionamiento: false,
-      latitude: -12.046374, longitude: -77.042793
+      latitude: -12.046374, longitude: -77.042793, administradorId: ''
     });
     setSelectedCancha(null);
     setSearchTerm('');
@@ -109,7 +115,8 @@ export const CanchasPage = () => {
       tieneLuz: cancha.tieneLuz,
       tieneEstacionamiento: cancha.tieneEstacionamiento,
       latitude: cancha.latitude || -12.046374,
-      longitude: cancha.longitude || -77.042793
+      longitude: cancha.longitude || -77.042793,
+      administradorId: cancha.administradorId || ''
     });
     setIsEditing(true);
   };
@@ -221,6 +228,21 @@ export const CanchasPage = () => {
                 <div className="input-group">
                   <label>Dirección física</label>
                   <input type="text" value={formData.direccion} onChange={e => setFormData({ ...formData, direccion: e.target.value })} required />
+                </div>
+                
+                <div className="input-group" style={{ marginTop: '16px' }}>
+                  <label>Administrador Responsable</label>
+                  <select 
+                    value={formData.administradorId} 
+                    onChange={e => setFormData({ ...formData, administradorId: e.target.value })} 
+                    className="form-input" 
+                    required
+                  >
+                    <option value="">Seleccione un administrador...</option>
+                    {administradores?.map((a: any) => (
+                      <option key={a.id} value={a.id}>{a.nombreCompleto}</option>
+                    ))}
+                  </select>
                 </div>
 
                 <div style={{ display: 'flex', gap: '24px', margin: '16px 0' }}>
