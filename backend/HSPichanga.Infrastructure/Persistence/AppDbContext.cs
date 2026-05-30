@@ -58,7 +58,10 @@ public class AppDbContext : DbContext
             Telefono = "+51999000000",
             FotoUrl = (string?)null,
             Activo = true,
-            FechaRegistro = new DateTime(2026, 1, 1, 0, 0, 0, DateTimeKind.Utc)
+            RequiereCambioPassword = false,
+            FechaRegistro = new DateTime(2026, 1, 1, 0, 0, 0, DateTimeKind.Utc),
+            ResetToken = (string?)null,
+            ResetTokenExpiry = (DateTime?)null,
         });
 
         // Cancha demo

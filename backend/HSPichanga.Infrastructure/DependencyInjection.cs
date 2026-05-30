@@ -1,4 +1,5 @@
 using HSPichanga.Application.Interfaces;
+using HSPichanga.Infrastructure.Email;
 using HSPichanga.Infrastructure.Identity;
 using HSPichanga.Infrastructure.Persistence;
 using HSPichanga.Infrastructure.Repositories;
@@ -30,6 +31,7 @@ public static class DependencyInjection
         services.AddScoped<IMensajeRepository, MensajeRepository>();
         services.AddScoped<IUnitOfWork, UnitOfWork>();
         services.AddScoped<IJwtTokenService, JwtTokenService>();
+        services.AddScoped<IEmailService, GmailEmailService>();
 
         return services;
     }

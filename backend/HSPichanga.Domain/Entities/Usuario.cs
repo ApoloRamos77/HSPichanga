@@ -12,6 +12,7 @@ public class Usuario
     public string Telefono { get; private set; } = string.Empty;
     public string? FotoUrl { get; private set; }
     public bool Activo { get; private set; }
+    public bool RequiereCambioPassword { get; private set; }
     public DateTime FechaRegistro { get; private set; }
     public string? ResetToken { get; private set; }
     public DateTime? ResetTokenExpiry { get; private set; }
@@ -45,6 +46,7 @@ public class Usuario
 
     public void ActualizarFoto(string url) => FotoUrl = url;
     public void Desactivar() => Activo = false;
+    public void Activar() => Activo = true;
 
     public void GenerateResetToken()
     {
@@ -58,9 +60,10 @@ public class Usuario
         if (ResetTokenExpiry < DateTime.UtcNow) throw new HSPichanga.Domain.Exceptions.DomainException("El código de recuperación ha expirado.");
     }
     
-    public void ResetearPassword(string newHash)
+    public void ResetearPassword(string newHash, bool requiereCambio = false)
     {
         PasswordHash = newHash;
+        RequiereCambioPassword = requiereCambio;
         ResetToken = null;
         ResetTokenExpiry = null;
     }
@@ -71,4 +74,6 @@ public class Usuario
         Telefono = telefono;
         Rol = rol;
     }
+
+    public void MarcarCambioPasswordCompletado() => RequiereCambioPassword = false;
 }

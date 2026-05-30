@@ -27,7 +27,13 @@ export default function LoginScreen() {
     try {
       const { data } = await authService.login({ email: email.trim(), password });
       await setAuth(data.token, data.usuario);
-      router.replace('/(main)');
+
+      // Si el admin reseteó la clave, redirigir a cambio obligatorio
+      if (data.usuario.requiereCambioPassword) {
+        router.replace('/(auth)/change-password');
+      } else {
+        router.replace('/(main)');
+      }
     } catch (err: any) {
       const msg = err.response?.data?.mensaje ?? 'Error de conexión. Verifica tu red.';
       Alert.alert('Error al iniciar sesión', msg);
@@ -112,6 +118,14 @@ export default function LoginScreen() {
                 </TouchableOpacity>
               </View>
             </View>
+
+            {/* Olvidé contraseña */}
+            <TouchableOpacity
+              style={styles.forgotLink}
+              onPress={() => router.push('/(auth)/forgot-password')}
+            >
+              <Text style={styles.forgotText}>¿Olvidaste tu contraseña?</Text>
+            </TouchableOpacity>
 
             <Button
               title="INGRESAR"
@@ -219,6 +233,12 @@ const styles = StyleSheet.create({
     fontSize: Typography.size.base,
   },
   eyeBtn: { padding: 4 },
+  forgotLink: { alignItems: 'flex-end', marginTop: -4, marginBottom: Spacing.sm },
+  forgotText: {
+    fontSize: Typography.size.sm,
+    color: Colors.accent,
+    fontWeight: Typography.weight.medium,
+  },
   registerLink: { marginTop: Spacing.lg, alignItems: 'center' },
   registerText: { color: Colors.textSecondary, fontSize: Typography.size.sm },
   footer: {

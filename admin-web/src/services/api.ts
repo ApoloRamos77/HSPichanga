@@ -35,8 +35,11 @@ export const partidosService = {
 
 export const usuariosService = {
   getAll: () => api.get('/Usuarios'),
+  create: (data: { nombreCompleto: string; email: string; telefono: string; rol: number }) =>
+    api.post('/Usuarios', data),
   update: (id: string, data: any) => api.put(`/Usuarios/${id}`, data),
-  generateTempPassword: (id: string) => api.post(`/Usuarios/${id}/temp-password`),
+  toggleActivo: (id: string) => api.patch(`/Usuarios/${id}/toggle-activo`),
+  resetPasswordAdmin: (id: string) => api.post(`/Usuarios/${id}/reset-password-admin`),
 };
 
 export const uploadService = {

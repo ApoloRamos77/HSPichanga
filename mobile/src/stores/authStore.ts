@@ -26,6 +26,7 @@ interface AuthState {
   setAuth: (token: string, usuario: UsuarioDto) => Promise<void>;
   logout: () => Promise<void>;
   loadFromStorage: () => Promise<void>;
+  clearRequiereCambioPassword: () => void;
 }
 
 export const useAuthStore = create<AuthState>((set) => ({
@@ -51,5 +52,14 @@ export const useAuthStore = create<AuthState>((set) => ({
     if (token && userStr) {
       set({ token, usuario: JSON.parse(userStr), isAuthenticated: true });
     }
+  },
+
+  clearRequiereCambioPassword: () => {
+    set((state) => {
+      if (!state.usuario) return state;
+      const updated = { ...state.usuario, requiereCambioPassword: false };
+      storage.setItem('authUser', JSON.stringify(updated));
+      return { usuario: updated };
+    });
   },
 }));

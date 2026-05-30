@@ -44,13 +44,18 @@ export type UsuarioDto = {
   telefono: string; 
   fotoUrl?: string;
   fechaRegistro?: string;
+  requiereCambioPassword?: boolean;
 };
 export type RegistroRequest = { nombreCompleto: string; email: string; password: string; telefono: string };
 export type LoginResponse  = { token: string; usuario: UsuarioDto };
 
 export const authService = {
-  login:   (data: LoginRequest)   => apiClient.post<LoginResponse>('/Auth/login', data),
-  registro:(data: RegistroRequest)=> apiClient.post('/Auth/registro', data),
+  login:          (data: LoginRequest)   => apiClient.post<LoginResponse>('/Auth/login', data),
+  registro:       (data: RegistroRequest)=> apiClient.post('/Auth/registro', data),
+  forgotPassword: (email: string)        => apiClient.post('/Auth/forgot-password', { email }),
+  resetPassword:  (email: string, token: string, newPassword: string) =>
+                    apiClient.post('/Auth/reset-password', { email, token, newPassword }),
+  changePassword: (newPassword: string)  => apiClient.post('/Usuarios/change-password', { newPassword }),
 };
 
 // ─── Canchas (público) ────────────────────────────────────────────────────────

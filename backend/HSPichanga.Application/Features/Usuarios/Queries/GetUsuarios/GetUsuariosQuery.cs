@@ -11,7 +11,9 @@ public record UsuarioAdminDto(
     string Email,
     string Telefono,
     string Rol,
-    DateTime FechaRegistro
+    DateTime FechaRegistro,
+    bool Activo,
+    bool RequiereCambioPassword
 );
 
 public class GetUsuariosQueryHandler : IRequestHandler<GetUsuariosQuery, IEnumerable<UsuarioAdminDto>>
@@ -30,7 +32,9 @@ public class GetUsuariosQueryHandler : IRequestHandler<GetUsuariosQuery, IEnumer
             u.Email,
             u.Telefono ?? "",
             u.Rol.ToString(),
-            u.FechaRegistro
+            u.FechaRegistro,
+            u.Activo,
+            u.RequiereCambioPassword
         ));
     }
 }

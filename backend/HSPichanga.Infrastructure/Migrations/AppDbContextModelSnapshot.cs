@@ -197,7 +197,7 @@ namespace HSPichanga.Infrastructure.Migrations
                     b.HasData(
                         new
                         {
-                            Id = new Guid("9256cede-6608-4c3e-8e6b-b7c6d056fc96"),
+                            Id = new Guid("921388e5-f4df-4f1c-b429-9e9eb0a29a31"),
                             Activo = true,
                             CanchaId = new Guid("cccccccc-cccc-cccc-cccc-cccccccccccc"),
                             DiaSemana = 1,
@@ -206,7 +206,7 @@ namespace HSPichanga.Infrastructure.Migrations
                         },
                         new
                         {
-                            Id = new Guid("509be1ea-eb12-4f94-96a1-fc15c2f58bf2"),
+                            Id = new Guid("19275eb3-8082-465c-9550-40eb0cfd3e68"),
                             Activo = true,
                             CanchaId = new Guid("cccccccc-cccc-cccc-cccc-cccccccccccc"),
                             DiaSemana = 3,
@@ -215,7 +215,7 @@ namespace HSPichanga.Infrastructure.Migrations
                         },
                         new
                         {
-                            Id = new Guid("4f6a32be-cecd-4ff1-ab48-810fd05468c0"),
+                            Id = new Guid("ee97d804-85a3-4873-ac85-50b8c49e19f7"),
                             Activo = true,
                             CanchaId = new Guid("cccccccc-cccc-cccc-cccc-cccccccccccc"),
                             DiaSemana = 5,
@@ -224,7 +224,7 @@ namespace HSPichanga.Infrastructure.Migrations
                         },
                         new
                         {
-                            Id = new Guid("b15216f5-2e2a-46a0-a258-94ae42a76507"),
+                            Id = new Guid("dc18829d-1535-467d-9485-8f6ae314ab55"),
                             Activo = true,
                             CanchaId = new Guid("cccccccc-cccc-cccc-cccc-cccccccccccc"),
                             DiaSemana = 6,
@@ -401,6 +401,9 @@ namespace HSPichanga.Infrastructure.Migrations
                         .IsRequired()
                         .HasColumnType("text");
 
+                    b.Property<bool>("RequiereCambioPassword")
+                        .HasColumnType("boolean");
+
                     b.Property<string>("ResetToken")
                         .HasColumnType("text");
 
@@ -430,7 +433,8 @@ namespace HSPichanga.Infrastructure.Migrations
                             Email = "admin@adhsoftsport.com",
                             FechaRegistro = new DateTime(2026, 1, 1, 0, 0, 0, 0, DateTimeKind.Utc),
                             NombreCompleto = "Administrador ADHSOFT SPORT",
-                            PasswordHash = "$2a$11$l31qKQXfHsXrnxirix03fODiAAJReaZWSMFF2ICAWmIa0rqkshptS",
+                            PasswordHash = "$2a$11$K23CszsfKu2GBc9BXsnhVerUUXMqb0UmnAax/.yL3tCBGDDBi5amK",
+                            RequiereCambioPassword = false,
                             Rol = 1,
                             Telefono = "+51999000000"
                         });

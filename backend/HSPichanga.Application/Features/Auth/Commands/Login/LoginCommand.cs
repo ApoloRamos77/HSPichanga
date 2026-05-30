@@ -8,7 +8,14 @@ public record LoginCommand(string Email, string Password) : IRequest<LoginResult
 
 public record LoginResult(string Token, UsuarioDto Usuario);
 
-public record UsuarioDto(Guid Id, string NombreCompleto, string Email, string Rol, string Telefono, string? FotoUrl);
+public record UsuarioDto(
+    Guid Id,
+    string NombreCompleto,
+    string Email,
+    string Rol,
+    string Telefono,
+    string? FotoUrl,
+    bool RequiereCambioPassword);
 
 public class LoginCommandHandler : IRequestHandler<LoginCommand, LoginResult>
 {
@@ -40,7 +47,8 @@ public class LoginCommandHandler : IRequestHandler<LoginCommand, LoginResult>
             usuario.Email,
             usuario.Rol.ToString(),
             usuario.Telefono,
-            usuario.FotoUrl);
+            usuario.FotoUrl,
+            usuario.RequiereCambioPassword);
 
         return new LoginResult(token, dto);
     }
