@@ -17,6 +17,12 @@ public class Usuario
     public string? ResetToken { get; private set; }
     public DateTime? ResetTokenExpiry { get; private set; }
 
+    // Datos de cobro (solo para Administradores)
+    public string? YapeNumero { get; private set; }
+    public string? YapeQrUrl { get; private set; }
+    public string? PlinNumero { get; private set; }
+    public string? PlinQrUrl { get; private set; }
+
     // Navigation properties
     public ICollection<Reserva> Reservas { get; private set; } = new List<Reserva>();
     public ICollection<Partido> PartidosOrganizados { get; private set; } = new List<Partido>();
@@ -73,6 +79,15 @@ public class Usuario
         NombreCompleto = nombre;
         Telefono = telefono;
         Rol = rol;
+    }
+
+    public void ActualizarDatosCobro(string? yapeNum, string? yapeUrl, string? plinNum, string? plinUrl)
+    {
+        if (Rol != RolUsuario.Administrador) return;
+        YapeNumero = yapeNum;
+        YapeQrUrl = yapeUrl;
+        PlinNumero = plinNum;
+        PlinQrUrl = plinUrl;
     }
 
     public void MarcarCambioPasswordCompletado() => RequiereCambioPassword = false;

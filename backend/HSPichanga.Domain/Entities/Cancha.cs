@@ -18,8 +18,6 @@ public class Cancha
     public EstadoCancha EstadoCancha { get; private set; }
     public double? Latitude { get; private set; }
     public double? Longitude { get; private set; }
-    public string? CelularYape { get; private set; }
-    public string? CelularPlin { get; private set; }
 
     // Navigation
     public Zona Zona { get; private set; } = null!;
@@ -38,9 +36,7 @@ public class Cancha
         bool tieneLuz = false,
         bool tieneEstacionamiento = false,
         double? latitude = null,
-        double? longitude = null,
-        string? celularYape = null,
-        string? celularPlin = null)
+        double? longitude = null)
     {
         return new Cancha
         {
@@ -57,9 +53,7 @@ public class Cancha
             Activo = true,
             EstadoCancha = EstadoCancha.Activa,
             Latitude = latitude,
-            Longitude = longitude,
-            CelularYape = celularYape,
-            CelularPlin = celularPlin
+            Longitude = longitude
         };
     }
 
@@ -74,9 +68,7 @@ public class Cancha
         bool tieneLuz,
         bool tieneEstacionamiento,
         double? latitude,
-        double? longitude,
-        string? celularYape,
-        string? celularPlin)
+        double? longitude)
     {
         Nombre = nombre;
         Descripcion = descripcion;
@@ -88,8 +80,6 @@ public class Cancha
         TieneEstacionamiento = tieneEstacionamiento;
         Latitude = latitude;
         Longitude = longitude;
-        CelularYape = celularYape;
-        CelularPlin = celularPlin;
     }
 
     public void Activar()

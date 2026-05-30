@@ -28,10 +28,11 @@ const MapController = ({ center }: { center: [number, number] }) => {
   return null;
 };
 
-const LocationPicker = ({ position, setPosition }: { position: [number, number], setPosition: (p: [number, number]) => void }) => {
+const LocationPicker = ({ position, setPosition, onLocationChange }: { position: [number, number], setPosition: (p: [number, number]) => void, onLocationChange?: (lat: number, lng: number) => void }) => {
   useMapEvents({
     click(e) {
       setPosition([e.latlng.lat, e.latlng.lng]);
+      if (onLocationChange) onLocationChange(e.latlng.lat, e.latlng.lng);
     },
   });
   return <Marker position={position} />;
@@ -56,9 +57,7 @@ export const CanchasPage = () => {
     tieneLuz: false,
     tieneEstacionamiento: false,
     latitude: -12.046374, // Lima Center
-    longitude: -77.042793,
-    celularYape: '',
-    celularPlin: ''
+    longitude: -77.042793
   });
 
   const { data: canchas, isLoading, error } = useQuery({
@@ -92,7 +91,7 @@ export const CanchasPage = () => {
     setFormData({
       nombre: '', descripcion: '', direccion: '', zonaId: '11111111-1111-1111-1111-111111111111',
       ubicacionGoogleMaps: '', fotosUrls: [], tieneLuz: false, tieneEstacionamiento: false,
-      latitude: -12.046374, longitude: -77.042793, celularYape: '', celularPlin: ''
+      latitude: -12.046374, longitude: -77.042793
     });
     setSelectedCancha(null);
     setSearchTerm('');
@@ -110,9 +109,7 @@ export const CanchasPage = () => {
       tieneLuz: cancha.tieneLuz,
       tieneEstacionamiento: cancha.tieneEstacionamiento,
       latitude: cancha.latitude || -12.046374,
-      longitude: cancha.longitude || -77.042793,
-      celularYape: cancha.celularYape || '',
-      celularPlin: cancha.celularPlin || ''
+      longitude: cancha.longitude || -77.042793
     });
     setIsEditing(true);
   };
@@ -126,6 +123,21 @@ export const CanchasPage = () => {
     }
   };
 
+  const reverseGeocode = async (lat: number, lng: number) => {
+    try {
+      const response = await fetch(`https://nominatim.openstreetmap.org/reverse?format=json&lat=${lat}&lon=${lng}&addressdetails=1`);
+      const data = await response.json();
+      if (data && data.display_name) {
+        setFormData(prev => ({ ...prev, latitude: lat, longitude: lng, direccion: data.display_name }));
+      } else {
+        setFormData(prev => ({ ...prev, latitude: lat, longitude: lng }));
+      }
+    } catch (err) {
+      console.error("Error al obtener la dirección:", err);
+      setFormData(prev => ({ ...prev, latitude: lat, longitude: lng }));
+    }
+  };
+
   const handleSearch = async (e: React.FormEvent) => {
     e.preventDefault();
     if (!searchTerm) return;
@@ -135,8 +147,8 @@ export const CanchasPage = () => {
       const response = await fetch(`https://nominatim.openstreetmap.org/search?format=json&q=${encodeURIComponent(searchTerm)}`);
       const data = await response.json();
       if (data && data.length > 0) {
-        const { lat, lon } = data[0];
-        setFormData(prev => ({ ...prev, latitude: parseFloat(lat), longitude: parseFloat(lon) }));
+        const { lat, lon, display_name } = data[0];
+        setFormData(prev => ({ ...prev, latitude: parseFloat(lat), longitude: parseFloat(lon), direccion: display_name }));
       } else {
         alert('No se encontró la dirección');
       }
@@ -210,17 +222,6 @@ export const CanchasPage = () => {
                   <label>Dirección física</label>
                   <input type="text" value={formData.direccion} onChange={e => setFormData({ ...formData, direccion: e.target.value })} required />
                 </div>
-                
-                <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '16px' }}>
-                  <div className="input-group">
-                    <label>Celular Yape</label>
-                    <input type="text" value={formData.celularYape} onChange={e => setFormData({ ...formData, celularYape: e.target.value })} placeholder="999888777" />
-                  </div>
-                  <div className="input-group">
-                    <label>Celular Plin</label>
-                    <input type="text" value={formData.celularPlin} onChange={e => setFormData({ ...formData, celularPlin: e.target.value })} placeholder="999888777" />
-                  </div>
-                </div>
 
                 <div style={{ display: 'flex', gap: '24px', margin: '16px 0' }}>
                    <label style={{ display: 'flex', alignItems: 'center', gap: '8px', pointerEvents: 'auto' }}>
@@ -270,6 +271,7 @@ export const CanchasPage = () => {
                       <LocationPicker 
                         position={[formData.latitude, formData.longitude]} 
                         setPosition={(pos) => setFormData(prev => ({ ...prev, latitude: pos[0], longitude: pos[1] }))} 
+                        onLocationChange={reverseGeocode}
                       />
                     </MapContainer>
                   </div>
@@ -316,19 +318,6 @@ export const CanchasPage = () => {
                 <h3 style={{ fontSize: '1.25rem', fontWeight: 'bold', marginBottom: '4px' }}>{cancha.nombre}</h3>
                 <p style={{ color: 'var(--text-secondary)', fontSize: '0.875rem', marginBottom: '12px' }}><MapPin size={14} /> {cancha.direccion}</p>
                 
-                <div style={{ display: 'flex', gap: '12px', marginBottom: '16px' }}>
-                  {cancha.celularYape && (
-                    <div style={{ display: 'flex', alignItems: 'center', gap: '4px', fontSize: '0.75rem', color: '#a855f7' }}>
-                      <span style={{ padding: '2px 6px', backgroundColor: '#a855f722', borderRadius: '4px' }}>Yape: {cancha.celularYape}</span>
-                    </div>
-                  )}
-                  {cancha.celularPlin && (
-                    <div style={{ display: 'flex', alignItems: 'center', gap: '4px', fontSize: '0.75rem', color: '#3b82f6' }}>
-                      <span style={{ padding: '2px 6px', backgroundColor: '#3b82f622', borderRadius: '4px' }}>Plin: {cancha.celularPlin}</span>
-                    </div>
-                  )}
-                </div>
-
                 <div style={{ display: 'flex', gap: '8px' }}>
                   <span style={{ padding: '4px 8px', backgroundColor: 'var(--surface-light)', borderRadius: '4px', fontSize: '0.75rem' }}>{cancha.tieneLuz ? '💡 Con Luz' : '🌑 Sin Luz'}</span>
                   <span style={{ padding: '4px 8px', backgroundColor: 'var(--surface-light)', borderRadius: '4px', fontSize: '0.75rem' }}>🚗 {cancha.tieneEstacionamiento ? 'Parking' : 'No Parking'}</span>

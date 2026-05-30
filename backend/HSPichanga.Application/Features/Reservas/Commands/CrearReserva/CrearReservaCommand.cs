@@ -7,7 +7,13 @@ namespace HSPichanga.Application.Features.Reservas.Commands.CrearReserva;
 
 using HSPichanga.Domain.Enums;
 
-public record CrearReservaCommand(Guid PartidoId, Guid JugadorId, MetodoPago? MetodoPago, string? NumeroOperacion) : IRequest<CrearReservaResult>;
+public record CrearReservaCommand(
+    Guid PartidoId, 
+    Guid JugadorId, 
+    MetodoPago? MetodoPago = null, 
+    string? NumeroOperacion = null,
+    string? EvidenciaPagoUrl = null
+) : IRequest<CrearReservaResult>;
 
 public record CrearReservaResult(Guid ReservaId, string CodigoConfirmacion, decimal MontoPagado);
 
@@ -30,7 +36,14 @@ public class CrearReservaCommandHandler : IRequestHandler<CrearReservaCommand, C
 
         partido.OcuparCupo(); // lanza DomainException si no hay cupos
 
-        var reserva = Reserva.Crear(request.PartidoId, request.JugadorId, partido.CuotaIndividual, request.MetodoPago, request.NumeroOperacion);
+        var reserva = Reserva.Crear(
+            request.PartidoId, 
+            request.JugadorId, 
+            partido.CuotaIndividual, 
+            request.MetodoPago, 
+            request.NumeroOperacion,
+            request.EvidenciaPagoUrl
+        );
 
         await _uow.Reservas.AddAsync(reserva, cancellationToken);
         await _uow.SaveChangesAsync(cancellationToken);

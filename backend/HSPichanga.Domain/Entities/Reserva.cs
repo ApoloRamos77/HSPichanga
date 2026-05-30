@@ -14,6 +14,7 @@ public class Reserva
 
     public MetodoPago? MetodoPago { get; private set; }
     public string? NumeroOperacion { get; private set; }
+    public string? EvidenciaPagoUrl { get; private set; }
 
     // Navigation
     public Partido Partido { get; private set; } = null!;
@@ -21,7 +22,7 @@ public class Reserva
 
     protected Reserva() { }
 
-    public static Reserva Crear(Guid partidoId, Guid jugadorId, decimal montoPagado, MetodoPago? metodoPago = null, string? numeroOperacion = null)
+    public static Reserva Crear(Guid partidoId, Guid jugadorId, decimal montoPagado, MetodoPago? metodoPago = null, string? numeroOperacion = null, string? evidenciaPagoUrl = null)
     {
         var reserva = new Reserva
         {
@@ -31,6 +32,7 @@ public class Reserva
             MontoPagado = montoPagado,
             MetodoPago = metodoPago,
             NumeroOperacion = numeroOperacion,
+            EvidenciaPagoUrl = evidenciaPagoUrl,
             EstadoPago = metodoPago != null ? Enums.EstadoPago.EnVerificacion : Enums.EstadoPago.Pendiente,
             FechaReserva = DateTime.UtcNow,
             CodigoConfirmacion = GenerarCodigo()

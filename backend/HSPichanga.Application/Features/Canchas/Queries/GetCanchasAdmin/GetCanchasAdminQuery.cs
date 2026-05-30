@@ -20,9 +20,7 @@ public record CanchaAdminDto(
     bool Activo,
     string EstadoCancha,
     double? Latitude,
-    double? Longitude,
-    string? CelularYape,
-    string? CelularPlin
+    double? Longitude
 );
 
 public class GetCanchasAdminQueryHandler : IRequestHandler<GetCanchasAdminQuery, IEnumerable<CanchaAdminDto>>
@@ -48,9 +46,7 @@ public class GetCanchasAdminQueryHandler : IRequestHandler<GetCanchasAdminQuery,
             c.Activo,
             c.EstadoCancha.ToString(),
             c.Latitude,
-            c.Longitude,
-            c.CelularYape,
-            c.CelularPlin
+            c.Longitude
         ));
     }
 }

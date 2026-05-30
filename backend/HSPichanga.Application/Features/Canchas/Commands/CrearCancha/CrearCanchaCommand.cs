@@ -15,9 +15,7 @@ public record CrearCanchaCommand(
     bool TieneLuz,
     bool TieneEstacionamiento,
     double? Latitude = null,
-    double? Longitude = null,
-    string? CelularYape = null,
-    string? CelularPlin = null
+    double? Longitude = null
 ) : IRequest<CrearCanchaResult>;
 
 public record CrearCanchaResult(Guid Id);
@@ -43,9 +41,7 @@ public class CrearCanchaCommandHandler : IRequestHandler<CrearCanchaCommand, Cre
             request.TieneLuz,
             request.TieneEstacionamiento,
             request.Latitude,
-            request.Longitude,
-            request.CelularYape,
-            request.CelularPlin);
+            request.Longitude);
 
         await _uow.Canchas.AddAsync(cancha, cancellationToken);
         await _uow.SaveChangesAsync(cancellationToken);

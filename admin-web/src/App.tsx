@@ -6,6 +6,7 @@ import { DashboardLayout } from './components/DashboardLayout';
 import { CanchasPage } from './pages/CanchasPage';
 import { PartidosPage } from './pages/PartidosPage';
 import { UsersPage } from './pages/UsersPage';
+import { SettingsPage } from './pages/SettingsPage';
 
 const queryClient = new QueryClient();
 
@@ -33,7 +34,7 @@ function App() {
             <Route path="canchas" element={<CanchasPage />} />
             <Route path="partidos" element={<PartidosPage />} />
             <Route path="usuarios" element={<UsersPage />} />
-            <Route path="settings" element={<div>Próximamente...</div>} />
+            <Route path="settings" element={<SettingsPage />} />
           </Route>
 
           <Route path="*" element={<Navigate to="/" replace />} />
