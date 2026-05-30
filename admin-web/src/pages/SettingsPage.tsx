@@ -210,7 +210,14 @@ export const SettingsPage = () => {
               <button onClick={() => setSelectedUser(null)} style={closeBtnStyle}><X size={20} color="var(--text-muted)" /></button>
             </div>
 
-            <form onSubmit={(e) => { e.preventDefault(); updateMutation.mutate(formData); }} style={{ display: 'flex', flexDirection: 'column', gap: '14px' }}>
+            <form onSubmit={(e) => { 
+              e.preventDefault(); 
+              updateMutation.mutate({
+                ...formData,
+                id: selectedUser.id,
+                rol: formData.rol === 'Administrador' ? 1 : 0
+              }); 
+            }} style={{ display: 'flex', flexDirection: 'column', gap: '14px' }}>
               <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '16px' }}>
                 <div><label style={labelStyle}>Nombre Completo</label><input type="text" className="form-input" value={formData.nombreCompleto} onChange={(e) => setFormData({ ...formData, nombreCompleto: e.target.value })} required /></div>
                 <div><label style={labelStyle}>Teléfono</label><input type="text" className="form-input" value={formData.telefono} onChange={(e) => setFormData({ ...formData, telefono: e.target.value })} /></div>
