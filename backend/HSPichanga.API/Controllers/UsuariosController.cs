@@ -13,7 +13,6 @@ namespace HSPichanga.API.Controllers;
 
 [ApiController]
 [Route("api/[controller]")]
-[Authorize(Roles = "Administrador")]
 public class UsuariosController : ControllerBase
 {
     private readonly IMediator _mediator;
@@ -22,6 +21,7 @@ public class UsuariosController : ControllerBase
 
     /// <summary>Listar todos los usuarios</summary>
     [HttpGet]
+    [Authorize(Roles = "Administrador")]
     public async Task<ActionResult<IEnumerable<UsuarioAdminDto>>> GetAll()
     {
         var result = await _mediator.Send(new GetUsuariosQuery());
@@ -30,6 +30,7 @@ public class UsuariosController : ControllerBase
 
     /// <summary>Crear un nuevo usuario desde el panel admin</summary>
     [HttpPost]
+    [Authorize(Roles = "Administrador")]
     public async Task<IActionResult> Create([FromBody] CreateUsuarioCommand command)
     {
         try
@@ -45,6 +46,7 @@ public class UsuariosController : ControllerBase
 
     /// <summary>Editar datos de un usuario</summary>
     [HttpPut("{id}")]
+    [Authorize(Roles = "Administrador")]
     public async Task<IActionResult> EditUser(Guid id, [FromBody] EditUsuarioCommand command)
     {
         if (id != command.Id) return BadRequest("El ID de la ruta no coincide con el cuerpo del request.");
@@ -54,6 +56,7 @@ public class UsuariosController : ControllerBase
 
     /// <summary>Activar o desactivar un usuario</summary>
     [HttpPatch("{id}/toggle-activo")]
+    [Authorize(Roles = "Administrador")]
     public async Task<IActionResult> ToggleActivo(Guid id)
     {
         try
@@ -69,6 +72,7 @@ public class UsuariosController : ControllerBase
 
     /// <summary>Resetear contraseña desde el panel admin — envía email al usuario</summary>
     [HttpPost("{id}/reset-password-admin")]
+    [Authorize(Roles = "Administrador")]
     public async Task<IActionResult> ResetPasswordAdmin(Guid id)
     {
         try
@@ -92,6 +96,7 @@ public class UsuariosController : ControllerBase
 
     /// <summary>Generar clave temporal (método legacy — ahora usa reset-password-admin)</summary>
     [HttpPost("{id}/temp-password")]
+    [Authorize(Roles = "Administrador")]
     public async Task<IActionResult> GenerateTempPassword(Guid id)
     {
         var tempPass = await _mediator.Send(new ResetPasswordAdminCommand(id));

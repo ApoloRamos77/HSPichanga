@@ -44,7 +44,7 @@ export default function ChangePasswordScreen() {
         [{ text: 'Continuar', onPress: () => router.replace('/(main)') }]
       );
     } catch (err: any) {
-      const msg = err.response?.data?.mensaje ?? 'Error al cambiar la contraseña. Intenta nuevamente.';
+      const msg = err.response?.data?.mensaje ?? `Fallo de red/servidor: ${err.message} - ${JSON.stringify(err.response?.data || err)}`;
       Alert.alert('Error', msg);
     } finally {
       setLoading(false);
