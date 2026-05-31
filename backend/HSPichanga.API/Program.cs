@@ -139,7 +139,7 @@ app.UseExceptionHandler(errorApp =>
         }
 
         context.Response.StatusCode = 500;
-        await context.Response.WriteAsJsonAsync(new { Mensaje = "Error interno del servidor." });
+        await context.Response.WriteAsJsonAsync(new { Mensaje = $"ERROR GLOBAL: {exception?.Message} | {exception?.StackTrace}" });
     });
 });
 
