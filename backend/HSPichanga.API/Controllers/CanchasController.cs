@@ -67,7 +67,8 @@ public class CanchasController : ControllerBase
             request.TieneLuz,
             request.TieneEstacionamiento,
             request.Latitude,
-            request.Longitude), ct);
+            request.Longitude,
+            request.AdministradorId), ct);
         return Ok(result);
     }
 
@@ -91,7 +92,8 @@ public record EditarCanchaRequest(
     bool TieneLuz,
     bool TieneEstacionamiento,
     double? Latitude = null,
-    double? Longitude = null
+    double? Longitude = null,
+    Guid? AdministradorId = null
 );
 
 public record CambiarEstadoCanchaRequest(EstadoCancha NuevoEstado);
