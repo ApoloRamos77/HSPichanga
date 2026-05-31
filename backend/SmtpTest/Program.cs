@@ -1,36 +1,41 @@
 using System;
-using MailKit.Net.Smtp;
-using MailKit.Security;
-using MimeKit;
+using System.IdentityModel.Tokens.Jwt;
+using System.Net.Http;
+using System.Net.Http.Headers;
+using System.Security.Claims;
+using System.Text;
+using System.Threading.Tasks;
+using Microsoft.IdentityModel.Tokens;
 
 class Program
 {
-    static void Main(string[] args)
+    static async Task Main(string[] args)
     {
-        try
+        var key = Encoding.UTF8.GetBytes("HSPichanga_ADHSOFT_SPORT_SuperSecretKey_2026!#$%");
+        var tokenHandler = new JwtSecurityTokenHandler();
+        var tokenDescriptor = new SecurityTokenDescriptor
         {
-            Console.WriteLine("Probando conexión SMTP...");
-            var message = new MimeMessage();
-            message.From.Add(new MailboxAddress("HSPichanga", "adhsoftsport@gmail.com"));
-            message.To.Add(new MailboxAddress("Test", "adhsoftsport@gmail.com")); // enviarse a sí mismo
-            message.Subject = "Test Email";
+            Subject = new ClaimsIdentity(new[]
+            {
+                new Claim(ClaimTypes.NameIdentifier, "012670f1-660c-432e-b287-890aff240378"),
+                new Claim(ClaimTypes.Role, "Jugador")
+            }),
+            Expires = DateTime.UtcNow.AddHours(1),
+            Issuer = "HSPichanga.API",
+            Audience = "HSPichanga.Mobile",
+            SigningCredentials = new SigningCredentials(new SymmetricSecurityKey(key), SecurityAlgorithms.HmacSha256Signature)
+        };
+        var token = tokenHandler.CreateToken(tokenDescriptor);
+        var tokenString = tokenHandler.WriteToken(token);
 
-            message.Body = new TextPart("plain") { Text = "Prueba de SMTP." };
-
-            using var client = new SmtpClient();
-            client.Connect("smtp.gmail.com", 587, SecureSocketOptions.StartTls);
-            Console.WriteLine("Conectado...");
-            client.Authenticate("adhsoftsport@gmail.com", "bjxjogmybiegsrgn");
-            Console.WriteLine("Autenticado...");
-            client.Send(message);
-            Console.WriteLine("Enviado...");
-            client.Disconnect(true);
-            Console.WriteLine("Éxito!");
-        }
-        catch (Exception ex)
-        {
-            Console.WriteLine("ERROR: " + ex.Message);
-            Console.WriteLine(ex.StackTrace);
-        }
+        using var client = new HttpClient();
+        client.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue("Bearer", tokenString);
+        
+        var content = new StringContent("{\"NewPassword\":\"Nory2026\"}", Encoding.UTF8, "application/json");
+        var response = await client.PostAsync("https://softsport77-api-pichanga.scuiaw.easypanel.host/api/Usuarios/change-password", content);
+        
+        var responseString = await response.Content.ReadAsStringAsync();
+        Console.WriteLine($"Status: {response.StatusCode}");
+        Console.WriteLine($"Response: {responseString}");
     }
 }
