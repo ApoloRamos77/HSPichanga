@@ -80,6 +80,14 @@ public class UsuariosController : ControllerBase
         {
             return NotFound(new { mensaje = ex.Message });
         }
+        catch (HSPichanga.Domain.Exceptions.DomainException ex)
+        {
+            return BadRequest(new { mensaje = ex.Message });
+        }
+        catch (Exception ex)
+        {
+            return StatusCode(500, new { mensaje = $"ERROR INTERNO SMTP/DB: {ex.Message} | {ex.StackTrace}" });
+        }
     }
 
     /// <summary>Generar clave temporal (método legacy — ahora usa reset-password-admin)</summary>
@@ -95,20 +103,24 @@ public class UsuariosController : ControllerBase
     [Authorize]
     public async Task<IActionResult> ChangePassword([FromBody] ChangePasswordRequest request)
     {
-        var userIdStr = User.FindFirstValue(ClaimTypes.NameIdentifier)
-                     ?? User.FindFirstValue("sub");
-
-        if (!Guid.TryParse(userIdStr, out var userId))
-            return Unauthorized(new { mensaje = "Token inválido." });
-
         try
         {
+            var userIdStr = User.FindFirstValue(ClaimTypes.NameIdentifier)
+                         ?? User.FindFirstValue("sub");
+
+            if (!Guid.TryParse(userIdStr, out var userId))
+                return Unauthorized(new { mensaje = "Token inválido." });
+
             await _mediator.Send(new ChangePasswordCommand(userId, request.NewPassword));
             return Ok(new { mensaje = "Contraseña actualizada exitosamente." });
         }
         catch (HSPichanga.Domain.Exceptions.DomainException ex)
         {
             return BadRequest(new { mensaje = ex.Message });
+        }
+        catch (Exception ex)
+        {
+            return StatusCode(500, new { mensaje = $"ERROR INTERNO: {ex.Message} | {ex.StackTrace}" });
         }
     }
 }
