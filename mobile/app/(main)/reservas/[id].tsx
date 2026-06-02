@@ -1,6 +1,6 @@
 import React, { useState } from 'react';
 import {
-  View, Text, StyleSheet, ScrollView, Alert, ActivityIndicator, TouchableOpacity, TextInput, Image,
+  View, Text, StyleSheet, ScrollView, Alert, ActivityIndicator, TouchableOpacity, TextInput, Image, Platform
 } from 'react-native';
 import { useLocalSearchParams, router } from 'expo-router';
 import { useQuery, useMutation } from '@tanstack/react-query';
@@ -72,13 +72,18 @@ export default function ReservaDetailScreen() {
   const hasImages = partido.fotosUrls && partido.fotosUrls.length > 0;
 
   const openMaps = () => {
-    if (partido.ubicacionGoogleMaps) {
+    if (partido.latitude && partido.longitude) {
+      const url = Platform.OS === 'ios'
+        ? `maps:0,0?q=${partido.latitude},${partido.longitude}`
+        : `geo:0,0?q=${partido.latitude},${partido.longitude}(${encodeURIComponent(partido.canchaNombre)})`;
+      require('react-native').Linking.openURL(url).catch(() => {
+        require('react-native').Linking.openURL(`https://www.google.com/maps/search/?api=1&query=${partido.latitude},${partido.longitude}`);
+      });
+    } else if (partido.ubicacionGoogleMaps) {
       const url = partido.ubicacionGoogleMaps.startsWith('http') 
         ? partido.ubicacionGoogleMaps 
         : `https://www.google.com/maps/search/?api=1&query=${encodeURIComponent(partido.ubicacionGoogleMaps)}`;
       require('react-native').Linking.openURL(url);
-    } else if (partido.latitude && partido.longitude) {
-      require('react-native').Linking.openURL(`https://www.google.com/maps/search/?api=1&query=${partido.latitude},${partido.longitude}`);
     }
   };
 
