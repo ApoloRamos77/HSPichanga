@@ -73,8 +73,13 @@ export default function ReservaDetailScreen() {
 
   const openMaps = () => {
     if (partido.latitude && partido.longitude) {
-      const url = `https://www.google.com/maps/search/?api=1&query=${partido.latitude},${partido.longitude}`;
-      require('react-native').Linking.openURL(url);
+      const lat = Number(partido.latitude).toFixed(6);
+      const lng = Number(partido.longitude).toFixed(6);
+      if (Platform.OS === 'ios') {
+        require('react-native').Linking.openURL(`maps:${lat},${lng}?q=${lat},${lng}`);
+      } else {
+        require('react-native').Linking.openURL(`https://www.google.com/maps/search/?api=1&query=${lat},${lng}`);
+      }
     } else if (partido.ubicacionGoogleMaps) {
       const url = partido.ubicacionGoogleMaps.startsWith('http') 
         ? partido.ubicacionGoogleMaps 
