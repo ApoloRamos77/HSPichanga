@@ -17,6 +17,7 @@ public class PartidoRepository : IPartidoRepository
     {
         var query = _ctx.Partidos
             .Include(p => p.Cancha).ThenInclude(c => c.Zona)
+            .Include(p => p.Cancha).ThenInclude(c => c.Administrador)
             .Include(p => p.Organizador)
             .Where(p => p.Estado == EstadoPartido.Abierto && p.FechaHora >= DateTime.UtcNow);
 
@@ -32,6 +33,7 @@ public class PartidoRepository : IPartidoRepository
     {
         var query = _ctx.Partidos
             .Include(p => p.Cancha).ThenInclude(c => c.Zona)
+            .Include(p => p.Cancha).ThenInclude(c => c.Administrador)
             .Include(p => p.Organizador)
             .Include(p => p.Reservas).ThenInclude(r => r.Jugador)
             .AsQueryable();

@@ -24,7 +24,12 @@
       },
       "edgeToEdgeEnabled": true,
       "package": "com.adhsoftsport.hspichanga",
-      "versionCode": 1
+      "versionCode": 1,
+      "config": {
+        "googleMaps": {
+          "apiKey": "AIzaSyDummyKeyForGoogleMapsToPreventCrash"
+        }
+      }
     },
     "web": {
       "favicon": "./assets/favicon.png",

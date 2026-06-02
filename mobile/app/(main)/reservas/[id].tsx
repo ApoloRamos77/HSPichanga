@@ -93,7 +93,7 @@ export default function ReservaDetailScreen() {
             <TouchableOpacity onPress={openMaps}>
               <Text style={styles.zona}>
                 <Ionicons name="location-outline" size={14} color={Colors.textSecondary} />
-                {' '}{partido.zonaNombre} - Ver Mapa
+                {' '}{partido.direccion ? `${partido.direccion} - ${partido.zonaNombre}` : partido.zonaNombre} - Ver Mapa
               </Text>
             </TouchableOpacity>
           </View>
