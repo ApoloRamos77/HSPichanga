@@ -48,14 +48,19 @@ export const LoginPage = () => {
       }}>
         {/* Logo y marca */}
         <div style={{ textAlign: 'center', marginBottom: '36px' }}>
-          <div style={{ position: 'relative', display: 'inline-block', marginBottom: '16px' }}>
-            <img
-              src="/logo.png"
-              alt="ChapatuCancha"
-              style={{ width: '100px', height: '100px', borderRadius: '50%', objectFit: 'cover', border: '3px solid #16A34A', boxShadow: '0 8px 24px rgba(22,163,74,0.35)' }}
-            />
-            <div style={{ position: 'absolute', bottom: '2px', right: '2px', width: '22px', height: '22px', borderRadius: '50%', background: '#16A34A', border: '2.5px solid white', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
-              <div style={{ width: '8px', height: '8px', borderRadius: '50%', background: 'white' }} />
+          <div style={{ position: 'relative', display: 'inline-block', marginBottom: '20px' }}>
+            <div style={{
+              width: '108px', height: '108px', borderRadius: '20px',
+              backgroundColor: '#FFFFFF',
+              display: 'flex', alignItems: 'center', justifyContent: 'center',
+              boxShadow: '0 12px 32px rgba(22,163,74,0.3), 0 0 0 3px rgba(22,163,74,0.25)',
+              overflow: 'hidden', padding: '4px',
+            }}>
+              <img
+                src="/logo.png"
+                alt="ChapatuCancha"
+                style={{ width: '100%', height: '100%', objectFit: 'contain' }}
+              />
             </div>
           </div>
           <h1 style={{ fontSize: '1.75rem', fontWeight: '900', color: '#14532D', marginBottom: '4px', letterSpacing: '-0.02em' }}>ChapatuCancha</h1>

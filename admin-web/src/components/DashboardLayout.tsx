@@ -27,12 +27,23 @@ export const DashboardLayout = () => {
         zIndex: 10,
       }}>
         {/* Logo + Brand */}
-        <div style={{ marginBottom: '36px', display: 'flex', alignItems: 'center', gap: '12px', padding: '8px 8px 20px', borderBottom: '1px solid rgba(255,255,255,0.12)' }}>
-          <img
-            src="/logo.png"
-            alt="ChapatuCancha"
-            style={{ width: '52px', height: '52px', borderRadius: '50%', objectFit: 'cover', border: '2.5px solid #06B6D4', boxShadow: '0 0 12px rgba(6,182,212,0.5)' }}
-          />
+        <div style={{ marginBottom: '36px', display: 'flex', alignItems: 'center', gap: '14px', padding: '8px 8px 20px', borderBottom: '1px solid rgba(255,255,255,0.12)' }}>
+          {/* Contenedor del logo - fondo blanco para que el escudo se vea completo */}
+          <div style={{
+            width: '56px', height: '56px', borderRadius: '14px',
+            backgroundColor: '#FFFFFF',
+            display: 'flex', alignItems: 'center', justifyContent: 'center',
+            flexShrink: 0,
+            boxShadow: '0 4px 14px rgba(0,0,0,0.25), 0 0 0 2px rgba(6,182,212,0.5)',
+            overflow: 'hidden',
+            padding: '3px',
+          }}>
+            <img
+              src="/logo.png"
+              alt="ChapatuCancha"
+              style={{ width: '100%', height: '100%', objectFit: 'contain' }}
+            />
+          </div>
           <div>
             <h2 style={{ fontSize: '1rem', fontWeight: '800', color: '#FFFFFF', lineHeight: '1.2', letterSpacing: '-0.01em' }}>ChapatuCancha</h2>
             <p style={{ fontSize: '0.65rem', color: 'rgba(255,255,255,0.55)', letterSpacing: '0.12em', textTransform: 'uppercase', marginTop: '2px' }}>Admin Panel</p>

@@ -1,4 +1,4 @@
-﻿import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect } from 'react';
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
 import { canchasService, uploadService, usuariosService } from '../services/api';
 import { Plus, Edit2, Trash2, MapPin, Camera, Loader2, X, Search } from 'lucide-react';
@@ -330,28 +330,55 @@ export const CanchasPage = () => {
           </form>
         </div>
       ) : (
-        <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fill, minmax(350px, 1fr))', gap: '24px' }}>
-          {canchas?.map((cancha: any) => (
-            <div key={cancha.id} className="premium-card glass" style={{ display: 'flex', flexDirection: 'column' }}>
-              <div style={{ height: '200px', backgroundColor: '#334155', borderRadius: '8px', marginBottom: '16px', overflow: 'hidden' }}>
-                <img src={cancha.fotoUrl || 'https://images.unsplash.com/photo-1574629810360-7efbbe195018?q=80&w=800'} style={{ width: '100%', height: '100%', objectFit: 'cover' }} />
-              </div>
-              <div style={{ flex: 1 }}>
-                <h3 style={{ fontSize: '1.25rem', fontWeight: 'bold', marginBottom: '4px' }}>{cancha.nombre}</h3>
-                <p style={{ color: 'var(--text-secondary)', fontSize: '0.875rem', marginBottom: '12px' }}><MapPin size={14} /> {cancha.direccion}</p>
-                
-                <div style={{ display: 'flex', gap: '8px' }}>
-                  <span style={{ padding: '4px 8px', backgroundColor: 'var(--surface-light)', borderRadius: '4px', fontSize: '0.75rem' }}>{cancha.tieneLuz ? '💡 Con Luz' : '🌑 Sin Luz'}</span>
-                  <span style={{ padding: '4px 8px', backgroundColor: 'var(--surface-light)', borderRadius: '4px', fontSize: '0.75rem' }}>🚗 {cancha.tieneEstacionamiento ? 'Parking' : 'No Parking'}</span>
+        <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fill, minmax(340px, 1fr))', gap: '24px' }}>
+          {canchas?.map((cancha: any) => {
+            const foto = cancha.fotosUrls?.[0] || cancha.fotoUrl || null;
+            return (
+              <div key={cancha.id} className="premium-card" style={{ display: 'flex', flexDirection: 'column', padding: 0, overflow: 'hidden' }}>
+                {/* Imagen de la cancha */}
+                <div style={{ height: '200px', position: 'relative', overflow: 'hidden', backgroundColor: '#E2F5E8' }}>
+                  {foto ? (
+                    <img
+                      src={foto}
+                      alt={cancha.nombre}
+                      style={{ width: '100%', height: '100%', objectFit: 'cover' }}
+                      onError={(e) => { (e.target as HTMLImageElement).style.display = 'none'; }}
+                    />
+                  ) : (
+                    <div style={{ width: '100%', height: '100%', display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'center', background: 'linear-gradient(135deg, #DCFCE7, #BBF7D0)', gap: '8px' }}>
+                      <MapPin size={40} color="#16A34A" strokeWidth={1.5} />
+                      <span style={{ fontSize: '0.8rem', color: '#4D7A5E', fontWeight: '600' }}>Sin foto aún</span>
+                    </div>
+                  )}
+                  {/* Overlay gradiente inferior */}
+                  <div style={{ position: 'absolute', bottom: 0, left: 0, right: 0, height: '60px', background: 'linear-gradient(to top, rgba(0,0,0,0.45), transparent)', pointerEvents: 'none' }} />
+                  {/* Badges sobre imagen */}
+                  <div style={{ position: 'absolute', top: '10px', right: '10px', display: 'flex', gap: '6px' }}>
+                    {cancha.tieneLuz && <span style={{ padding: '3px 8px', backgroundColor: 'rgba(22,163,74,0.9)', borderRadius: '20px', fontSize: '0.7rem', fontWeight: '700', color: 'white', backdropFilter: 'blur(4px)' }}>💡 Luz</span>}
+                    {cancha.tieneEstacionamiento && <span style={{ padding: '3px 8px', backgroundColor: 'rgba(27,117,208,0.9)', borderRadius: '20px', fontSize: '0.7rem', fontWeight: '700', color: 'white', backdropFilter: 'blur(4px)' }}>🚗 Parking</span>}
+                  </div>
+                </div>
+
+                {/* Contenido inferior */}
+                <div style={{ flex: 1, padding: '18px 20px 16px', display: 'flex', flexDirection: 'column' }}>
+                  <h3 style={{ fontSize: '1.1rem', fontWeight: '800', color: '#0F2A1A', marginBottom: '6px', lineHeight: '1.3' }}>{cancha.nombre}</h3>
+                  <p style={{ color: '#4D7A5E', fontSize: '0.8rem', marginBottom: '16px', display: 'flex', alignItems: 'flex-start', gap: '5px', lineHeight: '1.4' }}>
+                    <MapPin size={13} style={{ flexShrink: 0, marginTop: '2px' }} />
+                    <span style={{ overflow: 'hidden', display: '-webkit-box', WebkitLineClamp: 2, WebkitBoxOrient: 'vertical' }}>{cancha.direccion}</span>
+                  </p>
+
+                  <div style={{ marginTop: 'auto', display: 'flex', justifyContent: 'flex-end', gap: '4px' }}>
+                    <button onClick={() => handleEdit(cancha)} style={{ display: 'flex', alignItems: 'center', gap: '6px', padding: '8px 14px', borderRadius: '8px', background: 'rgba(27,117,208,0.1)', color: '#1B75D0', fontWeight: '600', fontSize: '0.8rem', border: '1px solid rgba(27,117,208,0.2)', cursor: 'pointer', transition: 'all 0.2s' }}>
+                      <Edit2 size={15} /> Editar
+                    </button>
+                    <button style={{ display: 'flex', alignItems: 'center', gap: '6px', padding: '8px 14px', borderRadius: '8px', background: 'rgba(220,38,38,0.08)', color: '#DC2626', fontWeight: '600', fontSize: '0.8rem', border: '1px solid rgba(220,38,38,0.15)', cursor: 'pointer', transition: 'all 0.2s' }}>
+                      <Trash2 size={15} /> Eliminar
+                    </button>
+                  </div>
                 </div>
               </div>
-              
-              <div style={{ marginTop: '24px', display: 'flex', justifyContent: 'flex-end', gap: '12px' }}>
-                <button onClick={() => handleEdit(cancha)} style={{ color: 'var(--primary)', padding: '8px' }}><Edit2 size={18} /></button>
-                <button style={{ color: 'var(--danger)', padding: '8px' }}><Trash2 size={18} /></button>
-              </div>
-            </div>
-          ))}
+            );
+          })}
         </div>
       )}
     </div>
