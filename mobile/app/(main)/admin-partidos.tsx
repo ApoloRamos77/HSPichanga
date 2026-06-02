@@ -20,6 +20,7 @@ export default function AdminPartidosScreen() {
   const [modalJugadoresVisible, setModalJugadoresVisible] = useState(false);
   const [modalOpcionesVisible, setModalOpcionesVisible] = useState(false);
   const [modalEstadoVisible, setModalEstadoVisible] = useState(false);
+  const [modalSuccessVisible, setModalSuccessVisible] = useState(false);
   const [jugadoresList, setJugadoresList] = useState<string[]>([]);
   
   // Reprogramación / Edición state
@@ -40,6 +41,7 @@ export default function AdminPartidosScreen() {
   const [newDate, setNewDate] = useState(new Date(new Date().getTime() + 86400000)); // Mañana
   const [newTime, setNewTime] = useState(new Date(new Date().setHours(20, 0, 0, 0))); // 20:00
   const [newDeporte, setNewDeporte] = useState<'Futbol' | 'Voley'>('Futbol');
+  const [newGenero, setNewGenero] = useState<'Masculino' | 'Femenino' | 'Mixto'>('Masculino');
   const [newModalidad, setNewModalidad] = useState<number>(2); // 2 = Futbol7
   const [newCostoTotal, setNewCostoTotal] = useState<string>('120');
   const [showNewDatePicker, setShowNewDatePicker] = useState(false);
@@ -84,13 +86,15 @@ export default function AdminPartidosScreen() {
         organizadorId: usuario?.id as string,
         fechaHora: combinedDate.toISOString(),
         tipoPartido: 3, // Amistoso
-        categoria: newDeporte === 'Voley' ? 6 : 1, // VoleyLibre vs AdultosLibre
+        categoria: newDeporte === 'Voley' 
+            ? (newGenero === 'Masculino' ? 8 : newGenero === 'Femenino' ? 6 : 9) 
+            : (newGenero === 'Femenino' ? 1 : newGenero === 'Mixto' ? 7 : 2),
         modalidad: newModalidad,
         costoTotal: parseFloat(newCostoTotal) || 0,
         notas: notas
       });
 
-      Alert.alert('Éxito', '¡Amistoso programado y publicado!');
+      setModalSuccessVisible(true);
       setTab('AMISTOSOS');
       loadData();
     } catch (e: any) {
@@ -321,6 +325,23 @@ export default function AdminPartidosScreen() {
             ))}
           </View>
 
+          <Text style={styles.label}>Género / Categoría</Text>
+          <View style={styles.stateSelector}>
+            {[
+              { label: 'Masculino', value: 'Masculino' },
+              { label: 'Femenino', value: 'Femenino' },
+              { label: 'Mixto', value: 'Mixto' }
+            ].map(m => (
+              <TouchableOpacity 
+                key={m.value}
+                style={[styles.stateBtn, newGenero === m.value && styles.stateBtnActive]}
+                onPress={() => setNewGenero(m.value as 'Masculino' | 'Femenino' | 'Mixto')}
+              >
+                <Text style={[styles.stateText, newGenero === m.value && styles.stateTextActive]}>{m.label}</Text>
+              </TouchableOpacity>
+            ))}
+          </View>
+
           {newDeporte === 'Futbol' && (
             <>
               <Text style={styles.label}>Modalidad (Fútbol)</Text>
@@ -355,7 +376,7 @@ export default function AdminPartidosScreen() {
 
           <Text style={styles.label}>Notas adicionales</Text>
           <TextInput
-            style={[styles.input, { height: 80 }]}
+            style={[styles.input, { height: 100, textAlignVertical: 'top' }]}
             placeholder="Equipos con camiseta y canilleras..."
             placeholderTextColor={Colors.textMuted}
             multiline
@@ -609,6 +630,24 @@ export default function AdminPartidosScreen() {
               onPress={() => setModalEstadoVisible(false)}
             >
               <Text style={[styles.btnText, { color: Colors.textPrimary }]}>CERRAR</Text>
+            </TouchableOpacity>
+          </View>
+        </View>
+      </Modal>
+
+      <Modal visible={modalSuccessVisible} transparent animationType="fade">
+        <View style={styles.modalOverlay}>
+          <View style={[styles.modalContent, { alignItems: 'center', padding: Spacing.xl }]}>
+            <Ionicons name="checkmark-circle" size={64} color={Colors.success} style={{ marginBottom: Spacing.md }} />
+            <Text style={[styles.modalTitle, { textAlign: 'center' }]}>¡Éxito!</Text>
+            <Text style={{ color: Colors.textSecondary, textAlign: 'center', marginBottom: Spacing.lg, fontSize: Typography.size.md }}>
+              ¡Amistoso programado y publicado exitosamente!
+            </Text>
+            <TouchableOpacity 
+              style={[styles.btnCrear, { width: '100%', marginTop: 0 }]} 
+              onPress={() => setModalSuccessVisible(false)}
+            >
+              <Text style={styles.btnText}>ENTENDIDO</Text>
             </TouchableOpacity>
           </View>
         </View>

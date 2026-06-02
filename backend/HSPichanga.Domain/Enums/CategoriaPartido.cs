@@ -8,9 +8,12 @@ namespace HSPichanga.Domain.Enums;
 public enum CategoriaPartido
 {
     FutbolFemeninoLibre = 1,
-    AdultosLibre = 2,
+    AdultosLibre = 2, // Masculino Futbol
     Master = 3,
     Sub15 = 4,
     Sub17 = 5,
-    VoleyLibre = 6
+    VoleyLibre = 6, // Voley Femenino/General
+    FutbolMixto = 7,
+    VoleyMasculino = 8,
+    VoleyMixto = 9
 }

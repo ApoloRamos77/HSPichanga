@@ -212,7 +212,14 @@ export default function ReservaDetailScreen() {
               </View>
 
               <View style={[styles.walletInfoBox, metodoPago === 2 ? { borderColor: '#742284' } : { borderColor: '#00D6D6' }]}>
-                <Ionicons name="qr-code-outline" size={48} color={metodoPago === 2 ? '#742284' : '#00D6D6'} />
+                {metodoPago === 2 && partido.yapeQrUrl ? (
+                  <Image source={{ uri: partido.yapeQrUrl }} style={{ width: 120, height: 120, borderRadius: 8, marginBottom: 8 }} />
+                ) : metodoPago === 3 && partido.plinQrUrl ? (
+                  <Image source={{ uri: partido.plinQrUrl }} style={{ width: 120, height: 120, borderRadius: 8, marginBottom: 8 }} />
+                ) : (
+                  <Ionicons name="qr-code-outline" size={48} color={metodoPago === 2 ? '#742284' : '#00D6D6'} />
+                )}
+                
                 <Text style={styles.walletPhone}>
                   {metodoPago === 2 ? (partido.celularYape || '(No configurado)') : (partido.celularPlin || '(No configurado)')}
                 </Text>

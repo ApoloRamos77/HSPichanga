@@ -57,7 +57,7 @@ export function PartidoCard({ partido, onPress, style }: Props) {
       <Text style={styles.canchaNombre}>{partido.canchaNombre}</Text>
       <Text style={styles.zona}>
         <Ionicons name="location-outline" size={12} color={Colors.textSecondary} />
-        {' '}{partido.zonaNombre}
+        {' '}{partido.direccion ? `${partido.direccion} - ${partido.zonaNombre}` : partido.zonaNombre}
         {partido.distance !== undefined && partido.distance !== null && (
           <Text style={styles.distanceText}>
             {'  •  '}{partido.distance.toFixed(1)} km cerca

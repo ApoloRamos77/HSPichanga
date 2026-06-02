@@ -107,6 +107,8 @@ export type PartidoDto = {
   distance?: number;
   celularYape?: string;
   celularPlin?: string;
+  yapeQrUrl?: string;
+  plinQrUrl?: string;
   fotosUrls?: string[];
   latitude?: number;
   longitude?: number;

@@ -32,7 +32,11 @@ public record PartidoDto(
     double? Latitude = null,
     double? Longitude = null,
     string? Direccion = null,
-    string? UbicacionGoogleMaps = null
+    string? UbicacionGoogleMaps = null,
+    string? CelularYape = null,
+    string? YapeQrUrl = null,
+    string? CelularPlin = null,
+    string? PlinQrUrl = null
 );
 
 public class GetPartidosAbiertosQueryHandler : IRequestHandler<GetPartidosAbiertosQuery, IEnumerable<PartidoDto>>
@@ -68,7 +72,11 @@ public class GetPartidosAbiertosQueryHandler : IRequestHandler<GetPartidosAbiert
             p.Cancha?.Latitude,
             p.Cancha?.Longitude,
             p.Cancha?.Direccion,
-            p.Cancha?.UbicacionGoogleMaps
+            p.Cancha?.UbicacionGoogleMaps,
+            p.Cancha?.Administrador?.YapeNumero,
+            p.Cancha?.Administrador?.YapeQrUrl,
+            p.Cancha?.Administrador?.PlinNumero,
+            p.Cancha?.Administrador?.PlinQrUrl
         )).ToList();
 
         if (request.UserLatitude.HasValue && request.UserLongitude.HasValue)
