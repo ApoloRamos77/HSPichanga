@@ -7,6 +7,7 @@ import { Colors, Spacing, Radius, Typography, Shadows } from '../../src/theme';
 import { canchasService, CanchaAdminDto, usuariosService, UsuarioDto, uploadService } from '../../src/services/api';
 import * as ImagePicker from 'expo-image-picker';
 import * as Location from 'expo-location';
+import MapView, { Marker } from 'react-native-maps';
 
 // Forced UI refresh for domain fields
 export default function AdminCanchasScreen() {
@@ -25,6 +26,17 @@ export default function AdminCanchasScreen() {
   const [modalAdminVisible, setModalAdminVisible] = useState(false);
   const [pickingForEdit, setPickingForEdit] = useState(false);
   const [isUploading, setIsUploading] = useState(false);
+
+  // Map State
+  const [modalMapVisible, setModalMapVisible] = useState(false);
+  const [mapPickingForEdit, setMapPickingForEdit] = useState(false);
+  const [mapRegion, setMapRegion] = useState({
+    latitude: -11.93,
+    longitude: -77.04,
+    latitudeDelta: 0.05,
+    longitudeDelta: 0.05,
+  });
+  const [mapMarker, setMapMarker] = useState<{lat: number, lng: number} | null>(null);
   
   // Edit Form State
   const [editForm, setEditForm] = useState({
@@ -113,26 +125,37 @@ export default function AdminCanchasScreen() {
     }
   };
 
-  const getLocation = async (forEdit: boolean) => {
+  const openMapPicker = async (forEdit: boolean) => {
+    setMapPickingForEdit(forEdit);
+    setModalMapVisible(true);
     let { status } = await Location.requestForegroundPermissionsAsync();
-    if (status !== 'granted') {
-      Alert.alert('Permiso denegado', 'No se puede acceder a la ubicación');
-      return;
+    if (status === 'granted') {
+      try {
+        let location = await Location.getCurrentPositionAsync({});
+        const lat = location.coords.latitude;
+        const lng = location.coords.longitude;
+        setMapRegion({
+          latitude: lat,
+          longitude: lng,
+          latitudeDelta: 0.01,
+          longitudeDelta: 0.01
+        });
+        setMapMarker({ lat, lng });
+      } catch(e) {}
+    } else {
+        setMapMarker({ lat: mapRegion.latitude, lng: mapRegion.longitude });
     }
-    try {
-      let location = await Location.getCurrentPositionAsync({});
-      const lat = location.coords.latitude;
-      const lng = location.coords.longitude;
-      const url = `https://www.google.com/maps/search/?api=1&query=${lat},${lng}`;
-      if (forEdit) {
-        setEditForm({...editForm, latitude: lat, longitude: lng, ubicacionGoogleMaps: url});
-      } else {
-        setForm({...form, latitude: lat, longitude: lng, ubicacionGoogleMaps: url});
-      }
-      Alert.alert('Ubicación Obtenida', 'Coordenadas actualizadas.');
-    } catch(e) {
-      Alert.alert('Error', 'No se pudo obtener la ubicación.');
+  };
+
+  const handleMapConfirm = () => {
+    if (!mapMarker) return;
+    const url = `https://www.google.com/maps/search/?api=1&query=${mapMarker.lat},${mapMarker.lng}`;
+    if (mapPickingForEdit) {
+      setEditForm({...editForm, latitude: mapMarker.lat, longitude: mapMarker.lng, ubicacionGoogleMaps: url});
+    } else {
+      setForm({...form, latitude: mapMarker.lat, longitude: mapMarker.lng, ubicacionGoogleMaps: url});
     }
+    setModalMapVisible(false);
   };
 
   const handleCrear = async () => {
@@ -323,8 +346,8 @@ export default function AdminCanchasScreen() {
 
           <View style={styles.row}>
              <Text style={styles.label}>Ubicación Google Maps (URL)</Text>
-             <TouchableOpacity onPress={() => getLocation(false)}>
-                <Ionicons name="location-outline" size={24} color={Colors.accent} />
+             <TouchableOpacity onPress={() => openMapPicker(false)}>
+                <Ionicons name="map-outline" size={24} color={Colors.accent} />
              </TouchableOpacity>
           </View>
           <TextInput
@@ -406,8 +429,8 @@ export default function AdminCanchasScreen() {
 
               <View style={styles.row}>
                 <Text style={styles.label}>Ubicación Google Maps (URL)</Text>
-                <TouchableOpacity onPress={() => getLocation(true)}>
-                  <Ionicons name="location-outline" size={24} color={Colors.accent} />
+                <TouchableOpacity onPress={() => openMapPicker(true)}>
+                  <Ionicons name="map-outline" size={24} color={Colors.accent} />
                 </TouchableOpacity>
               </View>
               <TextInput
@@ -561,6 +584,50 @@ export default function AdminCanchasScreen() {
             >
               <Text style={[styles.btnText, { color: Colors.textPrimary }]}>CERRAR</Text>
             </TouchableOpacity>
+          </View>
+        </View>
+      </Modal>
+
+      {/* Modal Mapa Interactivo */}
+      <Modal visible={modalMapVisible} transparent animationType="slide">
+        <View style={styles.modalOverlay}>
+          <View style={[styles.modalContent, { padding: 0, overflow: 'hidden', height: '80%' }]}>
+            <View style={{ padding: Spacing.md, backgroundColor: Colors.surface, borderBottomWidth: 1, borderBottomColor: Colors.border }}>
+                <Text style={[styles.modalTitle, {marginBottom: 0}]}>Seleccionar Ubicación</Text>
+                <Text style={{color: Colors.textSecondary, fontSize: 12}}>Toca o arrastra el marcador para fijar la cancha</Text>
+            </View>
+            <MapView
+              style={{ flex: 1 }}
+              region={mapRegion}
+              onRegionChangeComplete={(r) => setMapRegion(r)}
+              onPress={(e) => {
+                  setMapMarker({
+                      lat: e.nativeEvent.coordinate.latitude,
+                      lng: e.nativeEvent.coordinate.longitude
+                  });
+              }}
+            >
+              {mapMarker && (
+                <Marker
+                  coordinate={{ latitude: mapMarker.lat, longitude: mapMarker.lng }}
+                  draggable
+                  onDragEnd={(e) => {
+                      setMapMarker({
+                          lat: e.nativeEvent.coordinate.latitude,
+                          lng: e.nativeEvent.coordinate.longitude
+                      });
+                  }}
+                />
+              )}
+            </MapView>
+            <View style={{ padding: Spacing.md, flexDirection: 'row', backgroundColor: Colors.surface }}>
+                <TouchableOpacity style={[styles.modalBtn, {backgroundColor: Colors.surfaceHover}]} onPress={() => setModalMapVisible(false)}>
+                  <Text style={{color: Colors.textPrimary}}>Cancelar</Text>
+                </TouchableOpacity>
+                <TouchableOpacity style={[styles.modalBtn, {backgroundColor: Colors.accent}]} onPress={handleMapConfirm}>
+                  <Text style={{color: '#FFF', fontWeight: 'bold'}}>Confirmar</Text>
+                </TouchableOpacity>
+            </View>
           </View>
         </View>
       </Modal>

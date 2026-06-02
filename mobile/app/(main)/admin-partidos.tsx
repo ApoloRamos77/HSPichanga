@@ -56,7 +56,7 @@ export default function AdminPartidosScreen() {
       const pRes = await partidosService.getAllAdmin(3); // 3 = Amistoso
       setPartidos(pRes.data);
       const cRes = await canchasService.getAllAdmin();
-      const activas = cRes.data.filter(c => c.estadoCancha === 'Activa' || c.activo);
+      const activas = cRes.data.filter(c => c.estadoCancha === 'Activa' || c.estadoCancha == 1 || c.activo);
       setCanchas(activas);
       if (activas.length > 0 && !canchaId) setCanchaId(activas[0].id);
     } catch (e) {
