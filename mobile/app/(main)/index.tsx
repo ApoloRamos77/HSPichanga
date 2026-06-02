@@ -59,13 +59,13 @@ export default function HomeScreen() {
       {/* Hero Header */}
       <LinearGradient colors={Colors.gradientMain} style={styles.hero}>
         <View style={styles.heroContent}>
-          <View>
-            <Text style={styles.greeting}>
+          <View style={{ flex: 1, paddingRight: Spacing.sm }}>
+            <Text style={styles.greeting} numberOfLines={1}>
               ¡Hola, {usuario?.nombreCompleto?.split(' ')[0] ?? 'Jugador'}! 👋
             </Text>
             <Text style={styles.heroSubtitle}>¿A qué hora juegas hoy?</Text>
           </View>
-          <View style={{ flexDirection: 'row', gap: 12 }}>
+          <View style={{ flexDirection: 'row', gap: 8, flexWrap: 'wrap', justifyContent: 'flex-end', maxWidth: 160 }}>
             {usuario?.rol === 'Administrador' && (
               <>
                 {/* @ts-ignore */}

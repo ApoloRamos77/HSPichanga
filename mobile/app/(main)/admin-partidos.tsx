@@ -18,6 +18,8 @@ export default function AdminPartidosScreen() {
   const [selectedPartido, setSelectedPartido] = useState<PartidoAdminDto | null>(null);
   const [modalReprogramarVisible, setModalReprogramarVisible] = useState(false);
   const [modalJugadoresVisible, setModalJugadoresVisible] = useState(false);
+  const [modalOpcionesVisible, setModalOpcionesVisible] = useState(false);
+  const [modalEstadoVisible, setModalEstadoVisible] = useState(false);
   const [jugadoresList, setJugadoresList] = useState<string[]>([]);
   
   // Reprogramación / Edición state
@@ -52,7 +54,7 @@ export default function AdminPartidosScreen() {
       const pRes = await partidosService.getAllAdmin(3); // 3 = Amistoso
       setPartidos(pRes.data);
       const cRes = await canchasService.getAllAdmin();
-      const activas = cRes.data.filter(c => c.activo);
+      const activas = cRes.data.filter(c => c.estadoCancha === 'Activa' || c.activo);
       setCanchas(activas);
       if (activas.length > 0 && !canchaId) setCanchaId(activas[0].id);
     } catch (e) {
@@ -148,6 +150,8 @@ export default function AdminPartidosScreen() {
   const handleCambiarEstado = async (id: string, nuevoEstado: number) => {
     try {
       await partidosService.cambiarEstado(id, nuevoEstado);
+      setModalEstadoVisible(false);
+      setModalOpcionesVisible(false);
       loadData();
     } catch (e: any) {
       Alert.alert('Error', e.response?.data?.mensaje || 'Error al cambiar estado');
@@ -155,32 +159,16 @@ export default function AdminPartidosScreen() {
   };
 
   const promptCambiarEstado = (p: PartidoAdminDto) => {
-    Alert.alert(
-      "Opciones de Partido",
-      "Selecciona una acción:",
-      [
-        { text: "Cambiar Estado", onPress: () => promptSoloEstado(p) },
-        { text: "Ver Jugadores", onPress: () => {
-            setJugadoresList(p.jugadores || []);
-            setSelectedPartido(p);
-            setModalJugadoresVisible(true);
-        }},
-        { text: "Cerrar", style: "cancel" }
-      ]
-    );
+    setSelectedPartido(p);
+    setModalOpcionesVisible(true);
   };
 
-  const promptSoloEstado = (p: PartidoAdminDto) => {
-    Alert.alert(
-      "Cambiar Estado",
-      "Selecciona el nuevo estado:",
-      [
-        { text: "Abierto", onPress: () => handleCambiarEstado(p.id, 1) },
-        { text: "Cancelado", onPress: () => handleCambiarEstado(p.id, 3), style: "destructive" },
-        { text: "Finalizado", onPress: () => handleCambiarEstado(p.id, 4) },
-        { text: "Cancelar", style: "cancel" }
-      ]
-    );
+  const promptSoloEstado = () => {
+    setModalOpcionesVisible(false);
+    // slight delay for smooth transition
+    setTimeout(() => {
+      setModalEstadoVisible(true);
+    }, 300);
   };
 
   return (
@@ -242,16 +230,20 @@ export default function AdminPartidosScreen() {
       ) : (
         <ScrollView contentContainerStyle={styles.formContainer}>
           <Text style={styles.label}>Seleccionar Cancha Base</Text>
-          <ScrollView horizontal style={styles.canchaScroller} showsHorizontalScrollIndicator={false}>
-              {canchas.map(c => (
-                  <TouchableOpacity 
-                      key={c.id} 
-                      style={[styles.canchaChip, canchaId === c.id && styles.canchaChipSelect]}
-                      onPress={() => setCanchaId(c.id)}>
-                      <Text style={{color: canchaId === c.id ? '#FFF' : Colors.textSecondary}}>{c.nombre}</Text>
-                  </TouchableOpacity>
-              ))}
-          </ScrollView>
+          {canchas.length === 0 ? (
+            <Text style={{color: Colors.danger, marginBottom: Spacing.md}}>No hay canchas registradas o activas.</Text>
+          ) : (
+            <ScrollView horizontal style={styles.canchaScroller} showsHorizontalScrollIndicator={false}>
+                {canchas.map(c => (
+                    <TouchableOpacity 
+                        key={c.id} 
+                        style={[styles.canchaChip, canchaId === c.id && styles.canchaChipSelect]}
+                        onPress={() => setCanchaId(c.id)}>
+                        <Text style={{color: canchaId === c.id ? '#FFF' : Colors.textSecondary}}>{c.nombre}</Text>
+                    </TouchableOpacity>
+                ))}
+            </ScrollView>
+          )}
 
           {canchas.find(c => c.id === canchaId) && (
             <View style={{ marginBottom: Spacing.md, padding: Spacing.sm, backgroundColor: Colors.surfaceHover, borderRadius: Radius.md, borderWidth: 1, borderColor: Colors.borderLight}}>
@@ -486,7 +478,84 @@ export default function AdminPartidosScreen() {
               style={[styles.btnCrear, {marginTop: Spacing.lg, backgroundColor: Colors.surfaceHover}]} 
               onPress={() => setModalJugadoresVisible(false)}
             >
-              <Text style={{color: Colors.textPrimary}}>Cerrar</Text>
+              <Text style={{color: Colors.textPrimary}}>CERRAR</Text>
+            </TouchableOpacity>
+          </View>
+        </View>
+      </Modal>
+
+      {/* Modal Opciones Principales */}
+      <Modal visible={modalOpcionesVisible} transparent animationType="fade">
+        <View style={styles.modalOverlay}>
+          <View style={[styles.modalContent, { maxWidth: 340, width: '100%' }]}>
+            <Text style={[styles.modalTitle, { textAlign: 'center' }]}>Opciones de Partido</Text>
+            <Text style={{ color: Colors.textSecondary, textAlign: 'center', marginBottom: Spacing.lg }}>
+              Selecciona una acción:
+            </Text>
+            
+            <TouchableOpacity 
+              style={[styles.btnCrear, { backgroundColor: Colors.primaryLight, marginTop: 0, marginBottom: Spacing.sm }]} 
+              onPress={() => {
+                setModalOpcionesVisible(false);
+                setJugadoresList(selectedPartido?.jugadores || []);
+                setModalJugadoresVisible(true);
+              }}
+            >
+              <Text style={styles.btnText}>VER JUGADORES</Text>
+            </TouchableOpacity>
+            
+            <TouchableOpacity 
+              style={[styles.btnCrear, { backgroundColor: Colors.accent, marginTop: 0, marginBottom: Spacing.lg }]} 
+              onPress={promptSoloEstado}
+            >
+              <Text style={styles.btnText}>CAMBIAR ESTADO</Text>
+            </TouchableOpacity>
+
+            <TouchableOpacity 
+              style={[styles.btnCrear, { backgroundColor: Colors.surfaceHover, marginTop: 0 }]} 
+              onPress={() => setModalOpcionesVisible(false)}
+            >
+              <Text style={[styles.btnText, { color: Colors.textPrimary }]}>CERRAR</Text>
+            </TouchableOpacity>
+          </View>
+        </View>
+      </Modal>
+
+      {/* Modal Cambiar Estado */}
+      <Modal visible={modalEstadoVisible} transparent animationType="fade">
+        <View style={styles.modalOverlay}>
+          <View style={[styles.modalContent, { maxWidth: 340, width: '100%' }]}>
+            <Text style={[styles.modalTitle, { textAlign: 'center' }]}>Cambiar Estado</Text>
+            <Text style={{ color: Colors.textSecondary, textAlign: 'center', marginBottom: Spacing.lg }}>
+              Selecciona el nuevo estado:
+            </Text>
+            
+            <TouchableOpacity 
+              style={[styles.btnCrear, { backgroundColor: Colors.success, marginTop: 0, marginBottom: Spacing.sm }]} 
+              onPress={() => handleCambiarEstado(selectedPartido!.id, 1)}
+            >
+              <Text style={styles.btnText}>ABIERTO</Text>
+            </TouchableOpacity>
+            
+            <TouchableOpacity 
+              style={[styles.btnCrear, { backgroundColor: Colors.primaryLight, marginTop: 0, marginBottom: Spacing.sm }]} 
+              onPress={() => handleCambiarEstado(selectedPartido!.id, 4)}
+            >
+              <Text style={styles.btnText}>FINALIZADO</Text>
+            </TouchableOpacity>
+
+            <TouchableOpacity 
+              style={[styles.btnCrear, { backgroundColor: Colors.danger, marginTop: 0, marginBottom: Spacing.lg }]} 
+              onPress={() => handleCambiarEstado(selectedPartido!.id, 3)}
+            >
+              <Text style={styles.btnText}>CANCELADO</Text>
+            </TouchableOpacity>
+
+            <TouchableOpacity 
+              style={[styles.btnCrear, { backgroundColor: Colors.surfaceHover, marginTop: 0 }]} 
+              onPress={() => setModalEstadoVisible(false)}
+            >
+              <Text style={[styles.btnText, { color: Colors.textPrimary }]}>CERRAR</Text>
             </TouchableOpacity>
           </View>
         </View>
