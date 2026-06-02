@@ -1,6 +1,6 @@
 import React, { useState } from 'react';
 import {
-  View, Text, StyleSheet, ScrollView, Alert, ActivityIndicator, TouchableOpacity, TextInput, Image, Platform
+  View, Text, StyleSheet, ScrollView, Alert, ActivityIndicator, TouchableOpacity, TextInput, Image, Platform, Modal
 } from 'react-native';
 import { useLocalSearchParams, router } from 'expo-router';
 import { useQuery, useMutation } from '@tanstack/react-query';
@@ -17,6 +17,8 @@ export default function ReservaDetailScreen() {
   const usuario = useAuthStore((s) => s.usuario);
   const [metodoPago, setMetodoPago] = useState<number>(2); // 2: Yape, 3: Plin
   const [numeroOperacion, setNumeroOperacion] = useState('');
+  const [modalVisible, setModalVisible] = useState(false);
+  const [modalConfig, setModalConfig] = useState({ title: '', message: '', type: 'success' as 'success'|'error', extra: '' });
 
   const { data: partidos, isLoading } = useQuery({
     queryKey: ['partidos'],
@@ -37,15 +39,18 @@ export default function ReservaDetailScreen() {
   const mutation = useMutation({
     mutationFn: () => reservasService.crear(id!, usuario!.id, metodoPago, numeroOperacion.trim() === '' ? undefined : numeroOperacion.trim()),
     onSuccess: (data) => {
-      Alert.alert(
-        '¡Cupo Reservado! 🎉',
-        `Tu código de confirmación es:\n\n${data.data.codigoConfirmacion}\n\nMonto: S/. ${data.data.montoPagado.toFixed(2)}`,
-        [{ text: 'Entendido', onPress: () => router.back() }]
-      );
+      setModalConfig({
+        title: '¡Cupo Reservado! 🎉',
+        message: `Tu código de confirmación es:\n\n${data.data.codigoConfirmacion}`,
+        extra: `Monto: S/. ${data.data.montoPagado.toFixed(2)}`,
+        type: 'success'
+      });
+      setModalVisible(true);
     },
     onError: (err: any) => {
       const msg = err.response?.data?.mensaje ?? 'Error al reservar. Intenta nuevamente.';
-      Alert.alert('Error', msg);
+      setModalConfig({ title: 'Error', message: msg, extra: '', type: 'error' });
+      setModalVisible(true);
     },
   });
 
@@ -282,6 +287,37 @@ export default function ReservaDetailScreen() {
             </View>
           )}
         </View>
+
+        {/* Modal de confirmación */}
+        <Modal visible={modalVisible} transparent animationType="fade">
+          <View style={styles.modalOverlay}>
+            <View style={styles.modalContent}>
+              <View style={styles.modalIconContainer}>
+                <Ionicons 
+                  name={modalConfig.type === 'success' ? 'checkmark-circle' : 'close-circle'} 
+                  size={64} 
+                  color={modalConfig.type === 'success' ? Colors.success : Colors.danger} 
+                />
+              </View>
+              <Text style={styles.modalTitle}>{modalConfig.title}</Text>
+              <Text style={styles.modalMessage}>{modalConfig.message}</Text>
+              {modalConfig.extra ? <Text style={styles.modalExtra}>{modalConfig.extra}</Text> : null}
+              
+              <Button
+                title={modalConfig.type === 'success' ? "ENTENDIDO" : "CERRAR"}
+                onPress={() => {
+                  setModalVisible(false);
+                  if (modalConfig.type === 'success') {
+                    router.back();
+                  }
+                }}
+                variant={modalConfig.type === 'success' ? 'primary' : 'danger'}
+                style={{ width: '100%', marginTop: Spacing.lg }}
+              />
+            </View>
+          </View>
+        </Modal>
+
       </ScrollView>
     </SafeAreaView>
   );
@@ -385,5 +421,11 @@ const styles = StyleSheet.create({
   walletInstructions: { fontSize: Typography.size.sm, color: Colors.textSecondary, textAlign: 'center', marginTop: 4, marginBottom: Spacing.md },
   inputStyle: { width: '100%', backgroundColor: Colors.background, borderWidth: 1, borderColor: Colors.border, borderRadius: Radius.md, padding: Spacing.md, color: Colors.textPrimary, fontSize: Typography.size.sm },
   yaReservadoBox: { flexDirection: 'row', alignItems: 'center', justifyContent: 'center', backgroundColor: Colors.success + '22', borderRadius: Radius.md, padding: Spacing.md, marginTop: Spacing.md, borderWidth: 1, borderColor: Colors.success + '44', gap: 8 },
-  yaReservadoText: { color: Colors.success, fontSize: Typography.size.sm, fontWeight: Typography.weight.bold }
+  yaReservadoText: { color: Colors.success, fontSize: Typography.size.sm, fontWeight: Typography.weight.bold },
+  modalOverlay: { flex: 1, backgroundColor: 'rgba(0,0,0,0.7)', justifyContent: 'center', padding: Spacing.xl },
+  modalContent: { backgroundColor: Colors.surface, borderRadius: Radius.xl, padding: Spacing.xl, alignItems: 'center', gap: Spacing.sm, borderWidth: 1, borderColor: Colors.border, elevation: Shadows.lg.elevation, shadowColor: '#000', shadowOffset: Shadows.lg.shadowOffset, shadowOpacity: Shadows.lg.shadowOpacity, shadowRadius: Shadows.lg.shadowRadius },
+  modalIconContainer: { marginBottom: Spacing.xs },
+  modalTitle: { fontSize: Typography.size.xl, fontWeight: Typography.weight.bold, color: Colors.textPrimary, textAlign: 'center' },
+  modalMessage: { fontSize: Typography.size.md, color: Colors.textSecondary, textAlign: 'center', lineHeight: 22 },
+  modalExtra: { fontSize: Typography.size.lg, fontWeight: Typography.weight.bold, color: Colors.textPrimary, textAlign: 'center', marginTop: Spacing.xs }
 });
