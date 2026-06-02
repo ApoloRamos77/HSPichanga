@@ -65,7 +65,7 @@ export type CanchaDto = {
   direccion: string; fotosUrls: string[];
   fotoUrl?: string; tieneLuz: boolean; tieneEstacionamiento: boolean;
   latitude?: number; longitude?: number; distance?: number;
-  celularYape?: string; celularPlin?: string;
+  administradorId?: string;
 };
 
 // ─── Canchas (admin) ─────────────────────────────────────────────────────────
@@ -77,7 +77,7 @@ export type CanchaAdminDto = {
   activo: boolean;
   estadoCancha: 'Activa' | 'Inactiva' | 'Anulada';
   latitude?: number; longitude?: number;
-  celularYape?: string; celularPlin?: string;
+  administradorId?: string;
 };
 
 export const canchasService = {
@@ -92,7 +92,7 @@ export const canchasService = {
     direccion: string; ubicacionGoogleMaps: string | null; fotosUrls: string[];
     tieneLuz: boolean; tieneEstacionamiento: boolean;
     latitude?: number; longitude?: number;
-    celularYape?: string; celularPlin?: string;
+    administradorId?: string;
   }) => apiClient.put(`/Canchas/${id}`, data),
   cambiarEstado: (id: string, nuevoEstado: 1 | 2 | 3) =>
     apiClient.put(`/Canchas/${id}/estado`, { nuevoEstado }),
@@ -182,4 +182,12 @@ export const ratingsService = {
     apiClient.get(`/Calificaciones/cancha/${canchaId}`),
   create: (canchaId: string, usuarioId: string, puntuacion: number, comentario?: string) =>
     apiClient.post('/Calificaciones', { canchaId, usuarioId, puntuacion, comentario }),
+};
+
+// ─── Uploads ───────────────────────────────────────────────────────────────
+export const uploadService = {
+  upload: (formData: FormData) =>
+    apiClient.post<{ url: string }>('/Upload', formData, {
+      headers: { 'Content-Type': 'multipart/form-data' },
+    }),
 };

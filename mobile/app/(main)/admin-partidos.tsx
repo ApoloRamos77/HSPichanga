@@ -27,7 +27,8 @@ export default function AdminPartidosScreen() {
   const [repTime, setRepTime] = useState(new Date());
   const [repNotas, setRepNotas] = useState('');
   const [repEstado, setRepEstado] = useState<number>(1);
-  const [repModalidad, setRepModalidad] = useState<number>(1);
+  const [repDeporte, setRepDeporte] = useState<'Futbol' | 'Voley'>('Futbol');
+  const [repModalidad, setRepModalidad] = useState<number>(2);
   const [repCostoTotal, setRepCostoTotal] = useState<string>('0');
   const [showRepDatePicker, setShowRepDatePicker] = useState(false);
   const [showRepTimePicker, setShowRepTimePicker] = useState(false);
@@ -38,7 +39,8 @@ export default function AdminPartidosScreen() {
   
   const [newDate, setNewDate] = useState(new Date(new Date().getTime() + 86400000)); // Mañana
   const [newTime, setNewTime] = useState(new Date(new Date().setHours(20, 0, 0, 0))); // 20:00
-  const [newModalidad, setNewModalidad] = useState<number>(1); // 1 = Futbol7
+  const [newDeporte, setNewDeporte] = useState<'Futbol' | 'Voley'>('Futbol');
+  const [newModalidad, setNewModalidad] = useState<number>(2); // 2 = Futbol7
   const [newCostoTotal, setNewCostoTotal] = useState<string>('120');
   const [showNewDatePicker, setShowNewDatePicker] = useState(false);
   const [showNewTimePicker, setShowNewTimePicker] = useState(false);
@@ -82,7 +84,7 @@ export default function AdminPartidosScreen() {
         organizadorId: usuario?.id as string,
         fechaHora: combinedDate.toISOString(),
         tipoPartido: 3, // Amistoso
-        categoria: 1, // AdultosLibre
+        categoria: newDeporte === 'Voley' ? 6 : 1, // VoleyLibre vs AdultosLibre
         modalidad: newModalidad,
         costoTotal: parseFloat(newCostoTotal) || 0,
         notas: notas
@@ -103,14 +105,11 @@ export default function AdminPartidosScreen() {
   };
 
   const mapModalidadToInt = (m: string) => {
-    switch (m) {
-        case 'Futbol5': return 0;
-        case 'Futbol6': return 1;
-        case 'Futbol8': return 3;
-        case 'Futbol9': return 4;
-        case 'Futbol11': return 5;
-        default: return 2; // Futbol7
-    }
+    if (m.includes('Voley')) return 5;
+    if (m.includes('11')) return 4;
+    if (m.includes('9')) return 3;
+    if (m.includes('6')) return 1;
+    return 2; // Futbol7 (default)
   };
 
   const openReprogramar = (p: PartidoAdminDto) => {
@@ -120,7 +119,9 @@ export default function AdminPartidosScreen() {
     setRepTime(existingDate);
     setRepNotas(p.notas || '');
     setRepEstado(getEstadoNumber(p.estado));
-    setRepModalidad(mapModalidadToInt(p.modalidad));
+    const isVoley = p.modalidad?.includes('Voley');
+    setRepDeporte(isVoley ? 'Voley' : 'Futbol');
+    setRepModalidad(mapModalidadToInt(p.modalidad || ''));
     setRepCostoTotal((p.cuotaIndividual * p.cuposTotales).toString()); // Aproximación
     setModalReprogramarVisible(true);
   };
@@ -202,29 +203,37 @@ export default function AdminPartidosScreen() {
           contentContainerStyle={styles.listContainer}
           refreshing={loading}
           onRefresh={loadData}
-          renderItem={({ item }) => (
-            <View style={styles.card}>
-              <View style={styles.cardHeader}>
-                <Text style={styles.cardTitle}>{item.canchaNombre} - {item.zonaNombre}</Text>
-                <View style={[styles.badge, { backgroundColor: Colors.estadoColors[item.estado] }]}>
-                  <Text style={styles.badgeText}>{item.estado}</Text>
+          renderItem={({ item }) => {
+            const dateStr = item.fechaReprogramada || item.fechaHora;
+            const isPast = new Date(dateStr).getTime() < new Date().getTime();
+            const displayEstado = isPast && item.estado === 'Abierto' ? 'Finalizado' : item.estado;
+            return (
+              <View style={styles.card}>
+                <View style={styles.cardHeader}>
+                  <Text style={styles.cardTitle}>{item.canchaNombre} - {item.zonaNombre}</Text>
+                  <View style={[styles.badge, { backgroundColor: Colors.estadoColors[displayEstado] || Colors.textMuted }]}>
+                    <Text style={styles.badgeText}>{displayEstado}</Text>
+                  </View>
+                </View>
+                <Text style={styles.cardDetail}>📅 {new Date(dateStr).toLocaleString()}</Text>
+                <Text style={styles.cardDetail}>⚽ {item.modalidad}</Text>
+                {item.notas && <Text style={styles.cardDetail}>📝 {item.notas}</Text>}
+                
+                <View style={styles.cardActions}>
+                  {!isPast && displayEstado !== 'Finalizado' && displayEstado !== 'Cancelado' && (
+                    <TouchableOpacity style={styles.actionBtn} onPress={() => openReprogramar(item)}>
+                      <Ionicons name="calendar" size={16} color={Colors.textPrimary} />
+                      <Text style={styles.actionText}> Reprogramar</Text>
+                    </TouchableOpacity>
+                  )}
+                  <TouchableOpacity style={[styles.actionBtn, { borderColor: Colors.borderLight }]} onPress={() => promptCambiarEstado(item)}>
+                    <Ionicons name="people-outline" size={16} color={Colors.textPrimary} />
+                    <Text style={styles.actionText}> Opciones</Text>
+                  </TouchableOpacity>
                 </View>
               </View>
-              <Text style={styles.cardDetail}>📅 {new Date(item.fechaReprogramada || item.fechaHora).toLocaleString()}</Text>
-              {item.notas && <Text style={styles.cardDetail}>📝 {item.notas}</Text>}
-              
-              <View style={styles.cardActions}>
-                <TouchableOpacity style={styles.actionBtn} onPress={() => openReprogramar(item)}>
-                  <Ionicons name="calendar" size={16} color={Colors.textPrimary} />
-                  <Text style={styles.actionText}> Reprogramar</Text>
-                </TouchableOpacity>
-                <TouchableOpacity style={[styles.actionBtn, { borderColor: Colors.borderLight }]} onPress={() => promptCambiarEstado(item)}>
-                  <Ionicons name="people-outline" size={16} color={Colors.textPrimary} />
-                  <Text style={styles.actionText}> Opciones</Text>
-                </TouchableOpacity>
-              </View>
-            </View>
-          )}
+            );
+          }}
           ListEmptyComponent={<Text style={{color: Colors.textMuted, textAlign: 'center', marginTop: 20}}>No hay amistosos programados.</Text>}
         />
       ) : (
@@ -292,25 +301,47 @@ export default function AdminPartidosScreen() {
             </View>
           </View>
 
-          <Text style={styles.label}>Modalidad</Text>
+          <Text style={styles.label}>Deporte</Text>
           <View style={styles.stateSelector}>
             {[
-              { label: 'F7', value: 2 },
-              { label: 'F6', value: 1 },
-              { label: 'F5', value: 0 },
-              { label: 'F8', value: 3 },
-              { label: 'F9', value: 4 },
-              { label: 'F11', value: 5 }
+              { label: 'Fútbol', value: 'Futbol' },
+              { label: 'Vóley', value: 'Voley' }
             ].map(m => (
               <TouchableOpacity 
                 key={m.value}
-                style={[styles.stateBtn, newModalidad === m.value && styles.stateBtnActive]}
-                onPress={() => setNewModalidad(m.value)}
+                style={[styles.stateBtn, newDeporte === m.value && styles.stateBtnActive]}
+                onPress={() => {
+                   setNewDeporte(m.value as 'Futbol' | 'Voley');
+                   if (m.value === 'Voley') setNewModalidad(5);
+                   else setNewModalidad(2); // Futbol7 default
+                }}
               >
-                <Text style={[styles.stateText, newModalidad === m.value && styles.stateTextActive]}>{m.label}</Text>
+                <Text style={[styles.stateText, newDeporte === m.value && styles.stateTextActive]}>{m.label}</Text>
               </TouchableOpacity>
             ))}
           </View>
+
+          {newDeporte === 'Futbol' && (
+            <>
+              <Text style={styles.label}>Modalidad (Fútbol)</Text>
+              <View style={styles.stateSelector}>
+                {[
+                  { label: 'F6', value: 1 },
+                  { label: 'F7', value: 2 },
+                  { label: 'F9', value: 3 },
+                  { label: 'F11', value: 4 }
+                ].map(m => (
+                  <TouchableOpacity 
+                    key={m.value}
+                    style={[styles.stateBtn, newModalidad === m.value && styles.stateBtnActive]}
+                    onPress={() => setNewModalidad(m.value)}
+                  >
+                    <Text style={[styles.stateText, newModalidad === m.value && styles.stateTextActive]}>{m.label}</Text>
+                  </TouchableOpacity>
+                ))}
+              </View>
+            </>
+          )}
 
           <Text style={styles.label}>Costo Total (S/)</Text>
           <TextInput
@@ -379,25 +410,47 @@ export default function AdminPartidosScreen() {
               </View>
             </View>
 
-            <Text style={styles.label}>Modalidad</Text>
+            <Text style={styles.label}>Deporte</Text>
             <View style={styles.stateSelector}>
               {[
-                { label: 'F7', value: 2 },
-                { label: 'F6', value: 1 },
-                { label: 'F5', value: 0 },
-                { label: 'F8', value: 3 },
-                { label: 'F9', value: 4 },
-                { label: 'F11', value: 5 }
+                { label: 'Fútbol', value: 'Futbol' },
+                { label: 'Vóley', value: 'Voley' }
               ].map(m => (
                 <TouchableOpacity 
                   key={m.value}
-                  style={[styles.stateBtn, repModalidad === m.value && styles.stateBtnActive]}
-                  onPress={() => setRepModalidad(m.value)}
+                  style={[styles.stateBtn, repDeporte === m.value && styles.stateBtnActive]}
+                  onPress={() => {
+                     setRepDeporte(m.value as 'Futbol' | 'Voley');
+                     if (m.value === 'Voley') setRepModalidad(5);
+                     else setRepModalidad(2); // Futbol7 default
+                  }}
                 >
-                  <Text style={[styles.stateText, repModalidad === m.value && styles.stateTextActive]}>{m.label}</Text>
+                  <Text style={[styles.stateText, repDeporte === m.value && styles.stateTextActive]}>{m.label}</Text>
                 </TouchableOpacity>
               ))}
             </View>
+
+            {repDeporte === 'Futbol' && (
+              <>
+                <Text style={styles.label}>Modalidad (Fútbol)</Text>
+                <View style={styles.stateSelector}>
+                  {[
+                    { label: 'F6', value: 1 },
+                    { label: 'F7', value: 2 },
+                    { label: 'F9', value: 3 },
+                    { label: 'F11', value: 4 }
+                  ].map(m => (
+                    <TouchableOpacity 
+                      key={m.value}
+                      style={[styles.stateBtn, repModalidad === m.value && styles.stateBtnActive]}
+                      onPress={() => setRepModalidad(m.value)}
+                    >
+                      <Text style={[styles.stateText, repModalidad === m.value && styles.stateTextActive]}>{m.label}</Text>
+                    </TouchableOpacity>
+                  ))}
+                </View>
+              </>
+            )}
 
             <View style={styles.row}>
               <View style={{flex: 1, marginRight: Spacing.sm}}>

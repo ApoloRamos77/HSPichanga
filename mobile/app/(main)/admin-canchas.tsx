@@ -4,7 +4,9 @@ import { SafeAreaView } from 'react-native-safe-area-context';
 import { router } from 'expo-router';
 import { Ionicons } from '@expo/vector-icons';
 import { Colors, Spacing, Radius, Typography, Shadows } from '../../src/theme';
-import { canchasService, CanchaAdminDto } from '../../src/services/api';
+import { canchasService, CanchaAdminDto, usuariosService, UsuarioDto, uploadService } from '../../src/services/api';
+import * as ImagePicker from 'expo-image-picker';
+import * as Location from 'expo-location';
 
 // Forced UI refresh for domain fields
 export default function AdminCanchasScreen() {
@@ -18,6 +20,12 @@ export default function AdminCanchasScreen() {
   const [modalEstadoVisible, setModalEstadoVisible] = useState(false);
   const [canchaForEstado, setCanchaForEstado] = useState<CanchaAdminDto | null>(null);
   
+  // Admins
+  const [adminUsers, setAdminUsers] = useState<UsuarioDto[]>([]);
+  const [modalAdminVisible, setModalAdminVisible] = useState(false);
+  const [pickingForEdit, setPickingForEdit] = useState(false);
+  const [isUploading, setIsUploading] = useState(false);
+  
   // Edit Form State
   const [editForm, setEditForm] = useState({
     nombre: '',
@@ -28,8 +36,9 @@ export default function AdminCanchasScreen() {
     tieneLuz: false,
     tieneEstacionamiento: false,
     estadoCancha: 'Activa',
-    celularYape: '',
-    celularPlin: ''
+    administradorId: '',
+    latitude: 0,
+    longitude: 0
   });
 
   // Tab Nueva Cancha
@@ -42,8 +51,9 @@ export default function AdminCanchasScreen() {
     zonaId: '11111111-1111-1111-1111-111111111111', // Miraflores por defecto
     tieneLuz: true,
     tieneEstacionamiento: true,
-    celularYape: '',
-    celularPlin: ''
+    administradorId: '',
+    latitude: 0,
+    longitude: 0
   });
 
   useEffect(() => {
@@ -55,10 +65,73 @@ export default function AdminCanchasScreen() {
     try {
       const res = await canchasService.getAllAdmin();
       setCanchas(res.data);
+      const userRes = await usuariosService.getAll();
+      setAdminUsers(userRes.data.filter(u => u.rol === 'Administrador'));
     } catch (e) {
       console.log('Error admin canchas', e);
     } finally {
       setLoading(false);
+    }
+  };
+
+  const pickImage = async (forEdit: boolean) => {
+    let result = await ImagePicker.launchImageLibraryAsync({
+      mediaTypes: ['images'],
+      allowsEditing: true,
+      quality: 0.7,
+    });
+    if (!result.canceled && result.assets && result.assets.length > 0) {
+      handleUploadImage(result.assets[0].uri, forEdit);
+    }
+  };
+
+  const handleUploadImage = async (uri: string, forEdit: boolean) => {
+    setIsUploading(true);
+    try {
+      const filename = uri.split('/').pop() || 'image.jpg';
+      const match = /\.(\w+)$/.exec(filename);
+      const type = match ? `image/${match[1]}` : `image`;
+
+      const formData = new FormData();
+      // @ts-ignore
+      formData.append('file', { uri, name: filename, type });
+
+      const res = await uploadService.upload(formData);
+      if (res.data && res.data.url) {
+        if (forEdit) {
+          const currentUrls = editForm.fotosUrlStr ? editForm.fotosUrlStr + ', ' : '';
+          setEditForm({...editForm, fotosUrlStr: currentUrls + res.data.url});
+        } else {
+          const currentUrls = form.fotosUrlStr ? form.fotosUrlStr + ', ' : '';
+          setForm({...form, fotosUrlStr: currentUrls + res.data.url});
+        }
+      }
+    } catch (e) {
+      Alert.alert('Error', 'No se pudo subir la imagen.');
+    } finally {
+      setIsUploading(false);
+    }
+  };
+
+  const getLocation = async (forEdit: boolean) => {
+    let { status } = await Location.requestForegroundPermissionsAsync();
+    if (status !== 'granted') {
+      Alert.alert('Permiso denegado', 'No se puede acceder a la ubicación');
+      return;
+    }
+    try {
+      let location = await Location.getCurrentPositionAsync({});
+      const lat = location.coords.latitude;
+      const lng = location.coords.longitude;
+      const url = `https://www.google.com/maps/search/?api=1&query=${lat},${lng}`;
+      if (forEdit) {
+        setEditForm({...editForm, latitude: lat, longitude: lng, ubicacionGoogleMaps: url});
+      } else {
+        setForm({...form, latitude: lat, longitude: lng, ubicacionGoogleMaps: url});
+      }
+      Alert.alert('Ubicación Obtenida', 'Coordenadas actualizadas.');
+    } catch(e) {
+      Alert.alert('Error', 'No se pudo obtener la ubicación.');
     }
   };
 
@@ -70,11 +143,14 @@ export default function AdminCanchasScreen() {
       }
       await canchasService.crearCancha({
         ...form,
+        latitude: form.latitude || null,
+        longitude: form.longitude || null,
+        administradorId: form.administradorId || null,
         ubicacionGoogleMaps: form.ubicacionGoogleMaps || null,
         fotosUrls: form.fotosUrlStr ? form.fotosUrlStr.split(',').map(s=>s.trim()).filter(s=>s.length>0) : []
       });
       Alert.alert('Éxito', 'La cancha ha sido registrada.');
-      setForm({ ...form, nombre: '', descripcion: '', direccion: '', ubicacionGoogleMaps: '', fotosUrlStr: '', celularYape: '', celularPlin: '' });
+      setForm({ ...form, nombre: '', descripcion: '', direccion: '', ubicacionGoogleMaps: '', fotosUrlStr: '', administradorId: '', latitude: 0, longitude: 0 });
       setTab('CANCHAS');
       loadData();
     } catch (e: any) {
@@ -99,8 +175,9 @@ export default function AdminCanchasScreen() {
       tieneLuz: c.tieneLuz,
       tieneEstacionamiento: c.tieneEstacionamiento,
       estadoCancha: stString,
-      celularYape: c.celularYape || '',
-      celularPlin: c.celularPlin || ''
+      administradorId: c.administradorId || '',
+      latitude: c.latitude || 0,
+      longitude: c.longitude || 0
     });
     setModalEditVisible(true);
   };
@@ -123,8 +200,9 @@ export default function AdminCanchasScreen() {
         fotosUrls: editForm.fotosUrlStr ? editForm.fotosUrlStr.split(',').map(s=>s.trim()).filter(s=>s.length>0) : [],
         tieneLuz: editForm.tieneLuz,
         tieneEstacionamiento: editForm.tieneEstacionamiento,
-        celularYape: editForm.celularYape,
-        celularPlin: editForm.celularPlin
+        administradorId: editForm.administradorId || undefined,
+        latitude: editForm.latitude || undefined,
+        longitude: editForm.longitude || undefined
       });
       
       // 2. Update status if changed or just update it anyway
@@ -243,7 +321,12 @@ export default function AdminCanchasScreen() {
             onChangeText={(val) => setForm({ ...form, descripcion: val })}
           />
 
-          <Text style={styles.label}>Ubicación Google Maps (URL)</Text>
+          <View style={styles.row}>
+             <Text style={styles.label}>Ubicación Google Maps (URL)</Text>
+             <TouchableOpacity onPress={() => getLocation(false)}>
+                <Ionicons name="location-outline" size={24} color={Colors.accent} />
+             </TouchableOpacity>
+          </View>
           <TextInput
             style={styles.input}
             placeholder="https://maps.google.com/..."
@@ -252,7 +335,12 @@ export default function AdminCanchasScreen() {
             onChangeText={(val) => setForm({ ...form, ubicacionGoogleMaps: val })}
           />
 
-          <Text style={styles.label}>Fotos (URLs separadas por coma)</Text>
+          <View style={styles.row}>
+             <Text style={styles.label}>Fotos (URLs separadas por coma)</Text>
+             <TouchableOpacity onPress={() => pickImage(false)} disabled={isUploading}>
+                <Ionicons name="camera-outline" size={24} color={isUploading ? Colors.textMuted : Colors.accent} />
+             </TouchableOpacity>
+          </View>
           <TextInput
             style={[styles.input, { height: 60 }]}
             placeholder="https://imagen1.jpg, https://imagen2.jpg"
@@ -262,25 +350,15 @@ export default function AdminCanchasScreen() {
             onChangeText={(val) => setForm({ ...form, fotosUrlStr: val })}
           />
 
-          <Text style={styles.label}>Celular Yape (Opcional)</Text>
-          <TextInput
-            style={styles.input}
-            placeholder="999000111"
-            placeholderTextColor={Colors.textMuted}
-            keyboardType="numeric"
-            value={form.celularYape}
-            onChangeText={(val) => setForm({ ...form, celularYape: val })}
-          />
-
-          <Text style={styles.label}>Celular Plin (Opcional)</Text>
-          <TextInput
-            style={styles.input}
-            placeholder="999000111"
-            placeholderTextColor={Colors.textMuted}
-            keyboardType="numeric"
-            value={form.celularPlin}
-            onChangeText={(val) => setForm({ ...form, celularPlin: val })}
-          />
+          <Text style={styles.label}>Administrador Encargado</Text>
+          <TouchableOpacity 
+             style={styles.inputPicker} 
+             onPress={() => { setPickingForEdit(false); setModalAdminVisible(true); }}
+          >
+             <Text style={{color: form.administradorId ? Colors.textPrimary : Colors.textMuted}}>
+               {form.administradorId ? adminUsers.find(u => u.id === form.administradorId)?.nombreCompleto || 'Seleccionado' : 'Seleccionar Administrador'}
+             </Text>
+          </TouchableOpacity>
 
           <View style={styles.switchRow}>
              <Text style={styles.label}>Tiene Luz</Text>
@@ -326,14 +404,24 @@ export default function AdminCanchasScreen() {
                 onChangeText={(val) => setEditForm({ ...editForm, direccion: val })}
               />
 
-              <Text style={styles.label}>Ubicación Google Maps (URL)</Text>
+              <View style={styles.row}>
+                <Text style={styles.label}>Ubicación Google Maps (URL)</Text>
+                <TouchableOpacity onPress={() => getLocation(true)}>
+                  <Ionicons name="location-outline" size={24} color={Colors.accent} />
+                </TouchableOpacity>
+              </View>
               <TextInput
                 style={styles.input}
                 value={editForm.ubicacionGoogleMaps}
                 onChangeText={(val) => setEditForm({ ...editForm, ubicacionGoogleMaps: val })}
               />
               
-              <Text style={styles.label}>Fotos (URLs separadas por coma)</Text>
+              <View style={styles.row}>
+                <Text style={styles.label}>Fotos (URLs separadas por coma)</Text>
+                <TouchableOpacity onPress={() => pickImage(true)} disabled={isUploading}>
+                  <Ionicons name="camera-outline" size={24} color={isUploading ? Colors.textMuted : Colors.accent} />
+                </TouchableOpacity>
+              </View>
               <TextInput
                 style={[styles.input, { height: 60 }]}
                 multiline
@@ -341,21 +429,15 @@ export default function AdminCanchasScreen() {
                 onChangeText={(val) => setEditForm({ ...editForm, fotosUrlStr: val })}
               />
 
-              <Text style={styles.label}>Celular Yape</Text>
-              <TextInput
-                style={styles.input}
-                value={editForm.celularYape}
-                keyboardType="numeric"
-                onChangeText={(val) => setEditForm({ ...editForm, celularYape: val })}
-              />
-
-              <Text style={styles.label}>Celular Plin</Text>
-              <TextInput
-                style={styles.input}
-                value={editForm.celularPlin}
-                keyboardType="numeric"
-                onChangeText={(val) => setEditForm({ ...editForm, celularPlin: val })}
-              />
+              <Text style={styles.label}>Administrador Encargado</Text>
+              <TouchableOpacity 
+                style={styles.inputPicker} 
+                onPress={() => { setPickingForEdit(true); setModalAdminVisible(true); }}
+              >
+                <Text style={{color: editForm.administradorId ? Colors.textPrimary : Colors.textMuted}}>
+                  {editForm.administradorId ? adminUsers.find(u => u.id === editForm.administradorId)?.nombreCompleto || 'Seleccionado' : 'Seleccionar Administrador'}
+                </Text>
+              </TouchableOpacity>
               
               <View style={styles.switchRow}>
                 <Text style={styles.label}>Tiene Luz</Text>
@@ -444,6 +526,45 @@ export default function AdminCanchasScreen() {
         </View>
       </Modal>
 
+      {/* Modal Seleccionar Administrador */}
+      <Modal visible={modalAdminVisible} transparent animationType="fade">
+        <View style={styles.modalOverlay}>
+          <View style={[styles.modalContent, { maxHeight: '80%' }]}>
+            <Text style={styles.modalTitle}>Seleccionar Administrador</Text>
+            
+            <ScrollView showsVerticalScrollIndicator={false}>
+              {adminUsers.map(u => (
+                <TouchableOpacity 
+                  key={u.id}
+                  style={{ paddingVertical: Spacing.sm, borderBottomWidth: 1, borderBottomColor: Colors.borderLight }}
+                  onPress={() => {
+                    if(pickingForEdit) {
+                      setEditForm({...editForm, administradorId: u.id});
+                    } else {
+                      setForm({...form, administradorId: u.id});
+                    }
+                    setModalAdminVisible(false);
+                  }}
+                >
+                  <Text style={{ color: Colors.textPrimary, fontSize: Typography.size.base }}>{u.nombreCompleto}</Text>
+                  <Text style={{ color: Colors.textSecondary, fontSize: Typography.size.sm }}>{u.email}</Text>
+                </TouchableOpacity>
+              ))}
+              {adminUsers.length === 0 && (
+                <Text style={{ color: Colors.textMuted, textAlign: 'center', marginVertical: Spacing.md }}>No hay administradores registrados.</Text>
+              )}
+            </ScrollView>
+
+            <TouchableOpacity 
+              style={[styles.btnCrear, { backgroundColor: Colors.surfaceHover, marginTop: Spacing.md }]} 
+              onPress={() => setModalAdminVisible(false)}
+            >
+              <Text style={[styles.btnText, { color: Colors.textPrimary }]}>CERRAR</Text>
+            </TouchableOpacity>
+          </View>
+        </View>
+      </Modal>
+
     </SafeAreaView>
   );
 }
@@ -483,6 +604,15 @@ const styles = StyleSheet.create({
     marginBottom: Spacing.sm,
     borderWidth: 1,
     borderColor: Colors.border,
+  },
+  inputPicker: {
+    backgroundColor: Colors.surface,
+    padding: Spacing.md,
+    borderRadius: Radius.md,
+    marginBottom: Spacing.sm,
+    borderWidth: 1,
+    borderColor: Colors.border,
+    alignItems: 'flex-start'
   },
   btnCrear: {
     backgroundColor: Colors.accent,
