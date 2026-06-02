@@ -30,11 +30,17 @@ export const LoginPage = () => {
   };
 
   return (
-    <div style={{ display: 'flex', justifyContent: 'center', alignItems: 'center', height: '100vh', background: 'linear-gradient(135deg, #0f172a 0%, #1e293b 100%)' }}>
-      <div className="premium-card glass" style={{ width: '400px' }}>
+    <div style={{ display: 'flex', justifyContent: 'center', alignItems: 'center', height: '100vh', background: 'linear-gradient(135deg, #071A0E 0%, #0D2914 50%, #071A0E 100%)' }}>
+      <div className="premium-card glass" style={{ width: '420px' }}>
         <div style={{ textAlign: 'center', marginBottom: '32px' }}>
-          <h1 style={{ fontSize: '1.5rem', fontWeight: 'bold', marginBottom: '8px' }}>HSPichanga Admin</h1>
-          <p style={{ color: 'var(--text-secondary)' }}>Ingresa tus credenciales</p>
+          <img 
+            src="/logo.png" 
+            alt="ChapatuCancha" 
+            style={{ width: '90px', height: '90px', borderRadius: '50%', objectFit: 'cover', border: '3px solid #2EAB3A', marginBottom: '16px', boxShadow: '0 0 24px rgba(46, 171, 58, 0.35)' }} 
+          />
+          <h1 style={{ fontSize: '1.6rem', fontWeight: 'bold', marginBottom: '4px', color: '#2EAB3A' }}>ChapatuCancha</h1>
+          <p style={{ fontSize: '0.75rem', color: '#86efac', letterSpacing: '0.1em', marginBottom: '4px' }}>PICHANGAS DEPORTIVAS</p>
+          <p style={{ color: 'var(--text-secondary)', fontSize: '0.875rem' }}>Panel de Administración</p>
         </div>
 
         <form onSubmit={handleLogin}>
@@ -44,7 +50,7 @@ export const LoginPage = () => {
               type="email" 
               value={email} 
               onChange={(e) => setEmail(e.target.value)} 
-              placeholder="admin@hspichanga.com"
+              placeholder="admin@chapatucancha.com"
               required 
             />
           </div>

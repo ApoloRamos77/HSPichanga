@@ -1,16 +1,19 @@
 :root {
-  --primary: #0ea5e9;
-  --primary-dark: #0284c7;
-  --accent: #10b981;
-  --background: #0f172a;
-  --surface: #1e293b;
-  --surface-light: #334155;
-  --text-primary: #f8fafc;
-  --text-secondary: #94a3b8;
-  --text-muted: #64748b;
-  --border: #334155;
+  /* ChapatuCancha - Paleta oficial del logo */
+  --primary: #2EAB3A;        /* Verde principal del logo */
+  --primary-dark: #1E7A28;   /* Verde oscuro hover */
+  --primary-light: #4DC95A;  /* Verde claro */
+  --accent: #1B75D0;         /* Azul del logo (letras) */
+  --accent-dark: #1459A8;    /* Azul oscuro */
+  --background: #071A0E;     /* Fondo oscuro con tono verde */
+  --surface: #0D2914;        /* Superficie tarjetas verde oscuro */
+  --surface-light: #173D20;  /* Tarjeta hover */
+  --text-primary: #f0fdf4;
+  --text-secondary: #86efac;
+  --text-muted: #4ade80;
+  --border: #1E7A28;
   --danger: #ef4444;
-  --success: #10b981;
+  --success: #2EAB3A;
 }
 
 * {
@@ -47,12 +50,12 @@ button {
   display: flex;
   align-items: center;
   gap: 8px;
-  box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1), 0 2px 4px -1px rgba(0, 0, 0, 0.06);
+  box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1), 0 2px 4px -1px rgba(46, 171, 58, 0.25);
 }
 
 .premium-btn:hover {
   transform: translateY(-1px);
-  box-shadow: 0 10px 15px -3px rgba(14, 165, 233, 0.3);
+  box-shadow: 0 10px 15px -3px rgba(46, 171, 58, 0.4);
 }
 
 .premium-card {
@@ -90,10 +93,10 @@ button {
 }
 
 .glass {
-  background: rgba(30, 41, 59, 0.7);
+  background: rgba(13, 41, 20, 0.75);
   backdrop-filter: blur(12px);
   -webkit-backdrop-filter: blur(12px);
-  border: 1px solid rgba(255, 255, 255, 0.1);
+  border: 1px solid rgba(46, 171, 58, 0.2);
 }
 
 /* Scrollbar */

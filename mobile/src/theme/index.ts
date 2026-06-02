@@ -1,58 +1,60 @@
-// Paleta corporativa ADHSOFT SPORT
+// Paleta corporativa ChapatuCancha
 export const Colors = {
-  // Identidad principal (ADHSOFT SPORT LOGO)
-  primary:         '#1C4A85',   // Azul marino (Logo texto)
-  primaryLight:    '#15ADE5',   // Azul Cyan/Celeste (Logo interno)
-  accent:          '#50AB46',   // Verde Suave (Estrellas / Borde externo)
-  accentDark:      '#3F8737',   // Verde oscuro hover
+  // Identidad principal (ChapatuCancha LOGO)
+  primary:         '#2EAB3A',   // Verde principal del logo
+  primaryLight:    '#4DC95A',   // Verde claro
+  primaryDark:     '#1E7A28',   // Verde oscuro hover
+  accent:          '#1B75D0',   // Azul del logo (letras "ChapatuCancha")
+  accentLight:     '#3A96ED',   // Azul claro
+  accentDark:      '#1459A8',   // Azul oscuro hover
 
   // Estado
-  success:         '#27AE60',
+  success:         '#2EAB3A',
   warning:         '#F39C12',
   danger:          '#E74C3C',
-  info:            '#3498DB',
+  info:            '#1B75D0',
 
-  // Fondos (Dark Mode Premium adaptado al logo)
-  background:      '#05111F',   // Fondo principal azul super oscuro
-  surface:         '#10243C',   // Superficie de tarjetas azul marino
-  surfaceHover:    '#183350',   // Tarjeta hover
-  border:          '#1C4A85',   // Bordes sutiles (Color Primario puro)
-  borderLight:     '#2963A8',   // Bordes visibles
+  // Fondos (Dark Mode Premium - tonos verdes oscuros)
+  background:      '#051208',   // Fondo principal verde super oscuro
+  surface:         '#0A2010',   // Superficie de tarjetas verde oscuro
+  surfaceHover:    '#12311A',   // Tarjeta hover
+  border:          '#1E7A28',   // Bordes sutiles (Verde primario)
+  borderLight:     '#2EAB3A',   // Bordes visibles
 
   // Texto
-  textPrimary:     '#FFFFFF',
-  textSecondary:   '#8BA3BC',
-  textMuted:       '#5A7A99',
-  textInverse:     '#0D1B2A',
+  textPrimary:     '#F0FDF4',
+  textSecondary:   '#86EFAC',
+  textMuted:       '#4ADE80',
+  textInverse:     '#051208',
 
   // Gradientes
-  gradientMain:    ['#1C4A85', '#05111F'] as const,
-  gradientAccent:  ['#50AB46', '#3F8737'] as const,
-  gradientCard:    ['#10243C', '#05111F'] as const,
-  gradientHero:    ['#15ADE5', '#1C4A85', '#05111F'] as const,
+  gradientMain:    ['#1E7A28', '#051208'] as const,
+  gradientAccent:  ['#2EAB3A', '#1E7A28'] as const,
+  gradientCard:    ['#0A2010', '#051208'] as const,
+  gradientHero:    ['#4DC95A', '#2EAB3A', '#051208'] as const,
 
   // Badges de categoría
   categoryColors: {
     FutbolFemeninoLibre: '#E91E8E',
-    AdultosLibre:        '#3498DB',
+    AdultosLibre:        '#1B75D0',
     Master:              '#9B59B6',
-    Sub15:               '#27AE60',
+    Sub15:               '#2EAB3A',
     Sub17:               '#F39C12',
     VoleyLibre:          '#E74C3C',
   } as Record<string, string>,
 
   // Estados de partido
   estadoColors: {
-    Abierto:    '#27AE60',
+    Abierto:    '#2EAB3A',
     Completo:   '#E74C3C',
-    Cancelado:  '#E74C3C', // Red for Cancelado instead of grey which is used for Finalizado
-    Finalizado: '#3498DB',
+    Cancelado:  '#E74C3C',
+    Finalizado: '#1B75D0',
     Reprogramado: '#F39C12'
   } as Record<string, string>,
 
   // Estados de cancha
   estadoCanchaColors: {
-    Activa: '#27AE60',
+    Activa: '#2EAB3A',
     Inactiva: '#F39C12',
     Anulada: '#E74C3C'
   } as Record<string, string>,
@@ -102,16 +104,16 @@ export const Radius = {
 
 export const Shadows = {
   card: {
-    shadowColor: '#15ADE5',
+    shadowColor: '#2EAB3A',
     shadowOffset: { width: 0, height: 4 },
-    shadowOpacity: 0.15,
+    shadowOpacity: 0.2,
     shadowRadius: 12,
     elevation: 8,
   },
   button: {
-    shadowColor: '#50AB46',
+    shadowColor: '#2EAB3A',
     shadowOffset: { width: 0, height: 4 },
-    shadowOpacity: 0.4,
+    shadowOpacity: 0.45,
     shadowRadius: 8,
     elevation: 6,
   }

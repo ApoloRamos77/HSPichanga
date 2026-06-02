@@ -15,8 +15,16 @@ export const DashboardLayout = () => {
     <div style={{ display: 'flex', minHeight: '100vh' }}>
       {/* Sidebar */}
       <aside className="glass" style={{ width: '280px', padding: '24px', display: 'flex', flexDirection: 'column', borderRight: '1px solid var(--border)' }}>
-        <div style={{ marginBottom: '48px' }}>
-          <h2 style={{ fontSize: '1.25rem', fontWeight: 'bold', color: 'var(--primary)' }}>HSPichanga Admin</h2>
+        <div style={{ marginBottom: '40px', display: 'flex', alignItems: 'center', gap: '12px' }}>
+          <img 
+            src="/logo.png" 
+            alt="ChapatuCancha" 
+            style={{ width: '48px', height: '48px', borderRadius: '50%', objectFit: 'cover', border: '2px solid var(--primary)' }} 
+          />
+          <div>
+            <h2 style={{ fontSize: '1rem', fontWeight: 'bold', color: 'var(--primary)', lineHeight: '1.2' }}>ChapatuCancha</h2>
+            <p style={{ fontSize: '0.7rem', color: 'var(--text-muted)', letterSpacing: '0.05em' }}>ADMIN PANEL</p>
+          </div>
         </div>
 
         <nav style={{ flex: 1, display: 'flex', flexDirection: 'column', gap: '8px' }}>

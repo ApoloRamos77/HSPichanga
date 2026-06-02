@@ -1,9 +1,9 @@
 {
   "expo": {
-    "name": "HSPichanga",
-    "slug": "hspichanga",
+    "name": "ChapatuCancha",
+    "slug": "chapatucancha",
     "version": "1.0.0",
-    "scheme": "hspichanga",
+    "scheme": "chapatucancha",
     "orientation": "portrait",
     "icon": "./assets/icon.png",
     "userInterfaceStyle": "dark",
@@ -11,19 +11,19 @@
     "splash": {
       "image": "./assets/splash-icon.png",
       "resizeMode": "contain",
-      "backgroundColor": "#0D1B2A"
+      "backgroundColor": "#051208"
     },
     "ios": {
       "supportsTablet": true,
-      "bundleIdentifier": "com.adhsoftsport.hspichanga"
+      "bundleIdentifier": "com.adhsoftsport.chapatucancha"
     },
     "android": {
       "adaptiveIcon": {
         "foregroundImage": "./assets/adaptive-icon.png",
-        "backgroundColor": "#0D1B2A"
+        "backgroundColor": "#051208"
       },
       "edgeToEdgeEnabled": true,
-      "package": "com.adhsoftsport.hspichanga",
+      "package": "com.adhsoftsport.chapatucancha",
       "versionCode": 1
     },
     "web": {

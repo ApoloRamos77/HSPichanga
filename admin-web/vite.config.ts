@@ -6,6 +6,14 @@ export default defineConfig({
   plugins: [react()],
   build: {
     outDir: 'publish',
-    emptyOutDir: false,
+    emptyOutDir: false,   // Preserva Dockerfile y nginx.conf en publish/
+    rollupOptions: {
+      output: {
+        // Nombres estables para evitar acumulación de chunks con hash
+        entryFileNames: 'assets/index.js',
+        chunkFileNames: 'assets/[name].js',
+        assetFileNames: 'assets/index[extname]',
+      }
+    }
   },
 })

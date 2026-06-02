@@ -69,8 +69,8 @@ export default function LoginScreen() {
                 resizeMode="cover"
               />
             </View>
-            <Text style={styles.brandName}>ADHSOFT SPORT</Text>
-            <Text style={styles.tagline}>Reserva tu cancha · Únete a la pichanga</Text>
+            <Text style={styles.brandName}>ChapatuCancha</Text>
+            <Text style={styles.tagline}>Fútbol · Vóley · Mixto  ·  Pichangas Deportivas</Text>
           </View>
 
           {/* Card glassmorphism */}
@@ -149,7 +149,7 @@ export default function LoginScreen() {
             </TouchableOpacity>
           </View>
 
-          <Text style={styles.footer}>HSPichanga v1.0  ·  ADHSOFT SPORT © 2026</Text>
+          <Text style={styles.footer}>ChapatuCancha v1.0  ·  ADHSOFT SPORT © 2026</Text>
         </ScrollView>
       </KeyboardAvoidingView>
     </View>

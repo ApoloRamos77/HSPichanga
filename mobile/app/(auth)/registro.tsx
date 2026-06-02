@@ -70,7 +70,7 @@ export default function RegistroScreen() {
           <View style={styles.header}>
             <Ionicons name="person-add" size={40} color={Colors.accent} />
             <Text style={styles.title}>Crear cuenta</Text>
-            <Text style={styles.subtitle}>Únete a la comunidad HSPichanga</Text>
+            <Text style={styles.subtitle}>Únete a la comunidad ChapatuCancha</Text>
           </View>
 
           <View style={styles.card}>
