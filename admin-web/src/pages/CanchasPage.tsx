@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+﻿import React, { useState, useEffect } from 'react';
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
 import { canchasService, uploadService, usuariosService } from '../services/api';
 import { Plus, Edit2, Trash2, MapPin, Camera, Loader2, X, Search } from 'lucide-react';
@@ -201,8 +201,8 @@ export const CanchasPage = () => {
     <div style={{ maxWidth: '1200px', margin: '0 auto' }}>
       <header style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '40px' }}>
         <div>
-          <h1 style={{ fontSize: '2rem', fontWeight: 'bold' }}>Gestión de Canchas</h1>
-          <p style={{ color: 'var(--text-secondary)' }}>Administra las sedes deportivas de la plataforma</p>
+          <h1 className="page-title">Gestión de Canchas</h1>
+          <p className="page-subtitle">Administra las sedes deportivas de la plataforma</p>
         </div>
         {!isEditing && (
           <button onClick={() => setIsEditing(true)} className="premium-btn">
@@ -357,3 +357,4 @@ export const CanchasPage = () => {
     </div>
   );
 };
+

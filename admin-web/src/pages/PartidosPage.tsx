@@ -1,4 +1,4 @@
-import { useState } from 'react';
+﻿import { useState } from 'react';
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
 import { partidosService } from '../services/api';
 import { Calendar, Users, Loader2 } from 'lucide-react';
@@ -41,7 +41,7 @@ export const PartidosPage = () => {
   return (
     <div style={{ maxWidth: '1200px', margin: '0 auto' }}>
       <header style={{ marginBottom: '40px' }}>
-        <h1 style={{ fontSize: '2rem', fontWeight: 'bold' }}>Control de Partidos</h1>
+        <h1 className="page-title">Control de Partidos</h1>
         <p style={{ color: 'var(--text-secondary)' }}>Gestiona los amistosos y ve quiénes están inscritos</p>
       </header>
 
@@ -142,3 +142,4 @@ export const PartidosPage = () => {
     </div>
   );
 };
+

@@ -1,4 +1,4 @@
-import { useState, useMemo } from 'react';
+﻿import { useState, useMemo } from 'react';
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
 import { usuariosService, uploadService } from '../services/api';
 import {
@@ -122,8 +122,8 @@ export const SettingsPage = () => {
 
       <header style={{ marginBottom: '40px', display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start' }}>
         <div>
-          <h1 style={{ fontSize: '2rem', fontWeight: 'bold' }}>Configuración</h1>
-          <p style={{ color: 'var(--text-secondary)' }}>Administra los responsables de sede y sus métodos de cobro</p>
+          <h1 className="page-title">Configuración</h1>
+          <p className="page-subtitle">Administra los responsables de sede y sus métodos de cobro</p>
         </div>
         <button onClick={() => setShowCreate(true)} className="premium-btn" style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
           <UserPlus size={18} /> Nuevo Administrador
@@ -295,3 +295,4 @@ const modalHeaderStyle: React.CSSProperties = { display: 'flex', justifyContent:
 const closeBtnStyle: React.CSSProperties = { background: 'none', border: 'none', cursor: 'pointer', padding: '4px' };
 const labelStyle: React.CSSProperties = { fontSize: '0.875rem', fontWeight: '600', marginBottom: '6px', display: 'block' };
 const cancelBtnStyle: React.CSSProperties = { padding: '10px 16px', borderRadius: '8px', border: '1px solid var(--border)', background: 'transparent', cursor: 'pointer', fontWeight: '500' };
+

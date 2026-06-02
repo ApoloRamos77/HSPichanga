@@ -1,19 +1,50 @@
+@import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800;900&display=swap');
+
 :root {
-  /* ChapatuCancha - Paleta oficial del logo */
-  --primary: #2EAB3A;        /* Verde principal del logo */
-  --primary-dark: #1E7A28;   /* Verde oscuro hover */
-  --primary-light: #4DC95A;  /* Verde claro */
-  --accent: #1B75D0;         /* Azul del logo (letras) */
-  --accent-dark: #1459A8;    /* Azul oscuro */
-  --background: #071A0E;     /* Fondo oscuro con tono verde */
-  --surface: #0D2914;        /* Superficie tarjetas verde oscuro */
-  --surface-light: #173D20;  /* Tarjeta hover */
-  --text-primary: #f0fdf4;
-  --text-secondary: #86efac;
-  --text-muted: #4ade80;
-  --border: #1E7A28;
-  --danger: #ef4444;
-  --success: #2EAB3A;
+  /* ChapatuCancha - Paleta oficial VIVA */
+  --primary:        #16A34A;   /* Verde vivo del logo - fondo principal */
+  --primary-dark:   #15803D;   /* Verde oscuro sidebar */
+  --primary-darker: #166534;   /* Verde más oscuro para depth */
+  --primary-light:  #22C55E;   /* Verde claro para hovers */
+  --primary-glow:   #4ADE80;   /* Verde brillante acentos */
+
+  --accent:         #1B75D0;   /* Azul del logo (letras ChapatuCancha) */
+  --accent-dark:    #1459A8;   /* Azul oscuro */
+  --accent-light:   #3A9EED;   /* Azul claro */
+  --cyan:           #06B6D4;   /* Celeste del logo */
+  --cyan-light:     #22D3EE;   /* Celeste claro */
+
+  /* Fondos - fondo VERDE vivo */
+  --background:     #16A34A;   /* Fondo verde vivo */
+  --bg-gradient:    linear-gradient(135deg, #15803D 0%, #16A34A 50%, #15803D 100%);
+
+  /* Superficies - blancas/claras para contraste premium */
+  --surface:        rgba(255, 255, 255, 0.95);
+  --surface-hover:  rgba(255, 255, 255, 1);
+  --surface-tint:   rgba(255, 255, 255, 0.12);
+  --surface-light:  rgba(22, 163, 74, 0.12);
+
+  /* Sidebar oscuro */
+  --sidebar-bg:     #166534;
+  --sidebar-border: rgba(255,255,255,0.12);
+  --sidebar-text:   rgba(255,255,255,0.85);
+  --sidebar-active: rgba(255,255,255,0.15);
+
+  /* Texto - OSCURO sobre superficies claras */
+  --text-primary:   #0F2A1A;   /* Verde muy oscuro / casi negro */
+  --text-secondary: #1A4731;   /* Verde oscuro */
+  --text-muted:     #4D7A5E;   /* Verde medio */
+  --text-on-green:  #FFFFFF;   /* Blanco sobre fondos verdes */
+  --text-on-green-soft: rgba(255,255,255,0.8);
+
+  --border:         rgba(22, 163, 74, 0.25);
+  --border-card:    rgba(255,255,255,0.6);
+
+  --danger:         #DC2626;
+  --danger-light:   #FEE2E2;
+  --success:        #16A34A;
+  --warning:        #D97706;
+  --info:           #1B75D0;
 }
 
 * {
@@ -24,7 +55,8 @@
 }
 
 body {
-  background-color: var(--background);
+  background: var(--bg-gradient);
+  background-attachment: fixed;
   color: var(--text-primary);
   min-height: 100vh;
 }
@@ -41,31 +73,56 @@ button {
   transition: all 0.2s ease;
 }
 
+/* ─── Botón principal */
 .premium-btn {
-  background: linear-gradient(135deg, var(--primary), var(--primary-dark));
+  background: linear-gradient(135deg, var(--accent), var(--accent-dark));
   color: white;
   padding: 12px 24px;
-  border-radius: 8px;
-  font-weight: 600;
+  border-radius: 10px;
+  font-weight: 700;
+  font-size: 0.875rem;
   display: flex;
   align-items: center;
   gap: 8px;
-  box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1), 0 2px 4px -1px rgba(46, 171, 58, 0.25);
+  letter-spacing: 0.02em;
+  box-shadow: 0 4px 14px rgba(27, 117, 208, 0.4);
+  transition: all 0.2s ease;
 }
 
 .premium-btn:hover {
-  transform: translateY(-1px);
-  box-shadow: 0 10px 15px -3px rgba(46, 171, 58, 0.4);
+  transform: translateY(-2px);
+  box-shadow: 0 8px 22px rgba(27, 117, 208, 0.55);
+  background: linear-gradient(135deg, var(--accent-light), var(--accent));
 }
 
+.premium-btn:active {
+  transform: translateY(0);
+}
+
+/* ─── Tarjeta blanca premium */
 .premium-card {
-  background-color: var(--surface);
-  border: 1px solid var(--border);
-  border-radius: 12px;
+  background: var(--surface);
+  border: 1px solid var(--border-card);
+  border-radius: 16px;
   padding: 24px;
-  box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1);
+  box-shadow:
+    0 2px 8px rgba(0,0,0,0.08),
+    0 8px 32px rgba(0,0,0,0.12),
+    0 0 0 1px rgba(255,255,255,0.5) inset;
 }
 
+/* ─── Glass sobre fondo verde */
+.glass {
+  background: rgba(255, 255, 255, 0.92);
+  backdrop-filter: blur(20px);
+  -webkit-backdrop-filter: blur(20px);
+  border: 1px solid rgba(255, 255, 255, 0.65);
+  box-shadow:
+    0 4px 24px rgba(0, 0, 0, 0.12),
+    0 0 0 1px rgba(255,255,255,0.4) inset;
+}
+
+/* ─── Inputs */
 .input-group {
   margin-bottom: 20px;
 }
@@ -75,41 +132,88 @@ button {
   margin-bottom: 8px;
   color: var(--text-secondary);
   font-size: 0.875rem;
+  font-weight: 600;
 }
 
-.input-group input, .input-group textarea, .input-group select {
+.input-group input,
+.input-group textarea,
+.input-group select,
+.form-input {
   width: 100%;
-  padding: 12px;
-  background-color: var(--surface-light);
-  border: 1px solid var(--border);
-  border-radius: 8px;
+  padding: 12px 16px;
+  background: #F0FDF4;
+  border: 1.5px solid #BBF7D0;
+  border-radius: 10px;
   color: var(--text-primary);
   outline: none;
-  transition: border-color 0.2s;
+  transition: all 0.2s;
+  font-size: 0.925rem;
 }
 
-.input-group input:focus {
+.input-group input:focus,
+.input-group textarea:focus,
+.input-group select:focus,
+.form-input:focus {
   border-color: var(--primary);
+  background: #FFFFFF;
+  box-shadow: 0 0 0 3px rgba(22, 163, 74, 0.15);
 }
 
-.glass {
-  background: rgba(13, 41, 20, 0.75);
-  backdrop-filter: blur(12px);
-  -webkit-backdrop-filter: blur(12px);
-  border: 1px solid rgba(46, 171, 58, 0.2);
+/* ─── Navegación lateral */
+.nav-link {
+  color: var(--sidebar-text) !important;
+  transition: all 0.2s ease;
+  border-radius: 10px;
 }
 
-/* Scrollbar */
-::-webkit-scrollbar {
-  width: 8px;
+.nav-link:hover {
+  background: var(--sidebar-active) !important;
+  color: white !important;
+  transform: translateX(4px);
 }
-::-webkit-scrollbar-track {
-  background: var(--background);
+
+/* ─── Tabla */
+.table-row-hover:hover {
+  background: rgba(22, 163, 74, 0.05);
+  transition: background 0.15s ease;
 }
-::-webkit-scrollbar-thumb {
-  background: var(--surface-light);
-  border-radius: 4px;
+
+/* ─── Badge verde activo */
+.badge-success {
+  background: #DCFCE7;
+  color: #166534;
+  padding: 3px 10px;
+  border-radius: 20px;
+  font-size: 0.75rem;
+  font-weight: 700;
 }
-::-webkit-scrollbar-thumb:hover {
-  background: var(--text-muted);
+
+/* ─── Scrollbar */
+::-webkit-scrollbar { width: 6px; }
+::-webkit-scrollbar-track { background: rgba(22,163,74,0.1); }
+::-webkit-scrollbar-thumb { background: rgba(22,163,74,0.4); border-radius: 4px; }
+::-webkit-scrollbar-thumb:hover { background: rgba(22,163,74,0.6); }
+
+/* ─── Encabezados de página (van sobre fondo verde) */
+.page-title {
+  color: #FFFFFF;
+  font-weight: 900;
+  font-size: 2rem;
+  letter-spacing: -0.02em;
+  text-shadow: 0 2px 8px rgba(0,0,0,0.15);
 }
+
+.page-subtitle {
+  color: rgba(255,255,255,0.8);
+  font-size: 0.9rem;
+  margin-top: 4px;
+}
+
+/* ─── Animación fade-in */
+@keyframes fadeInUp {
+  from { opacity: 0; transform: translateY(12px); }
+  to   { opacity: 1; transform: translateY(0); }
+}
+
+.animate-spin { animation: spin 1s linear infinite; }
+@keyframes spin { from { transform: rotate(0deg); } to { transform: rotate(360deg); } }

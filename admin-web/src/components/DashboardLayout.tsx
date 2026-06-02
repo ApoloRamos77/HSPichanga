@@ -13,55 +13,76 @@ export const DashboardLayout = () => {
 
   return (
     <div style={{ display: 'flex', minHeight: '100vh' }}>
-      {/* Sidebar */}
-      <aside className="glass" style={{ width: '280px', padding: '24px', display: 'flex', flexDirection: 'column', borderRight: '1px solid var(--border)' }}>
-        <div style={{ marginBottom: '40px', display: 'flex', alignItems: 'center', gap: '12px' }}>
-          <img 
-            src="/logo.png" 
-            alt="ChapatuCancha" 
-            style={{ width: '48px', height: '48px', borderRadius: '50%', objectFit: 'cover', border: '2px solid var(--primary)' }} 
+      {/* Sidebar - verde oscuro premium */}
+      <aside style={{
+        width: '272px',
+        minWidth: '272px',
+        padding: '24px 16px',
+        display: 'flex',
+        flexDirection: 'column',
+        background: 'linear-gradient(180deg, #166534 0%, #14532D 100%)',
+        borderRight: '1px solid rgba(255,255,255,0.1)',
+        boxShadow: '4px 0 24px rgba(0,0,0,0.2)',
+        position: 'relative',
+        zIndex: 10,
+      }}>
+        {/* Logo + Brand */}
+        <div style={{ marginBottom: '36px', display: 'flex', alignItems: 'center', gap: '12px', padding: '8px 8px 20px', borderBottom: '1px solid rgba(255,255,255,0.12)' }}>
+          <img
+            src="/logo.png"
+            alt="ChapatuCancha"
+            style={{ width: '52px', height: '52px', borderRadius: '50%', objectFit: 'cover', border: '2.5px solid #06B6D4', boxShadow: '0 0 12px rgba(6,182,212,0.5)' }}
           />
           <div>
-            <h2 style={{ fontSize: '1rem', fontWeight: 'bold', color: 'var(--primary)', lineHeight: '1.2' }}>ChapatuCancha</h2>
-            <p style={{ fontSize: '0.7rem', color: 'var(--text-muted)', letterSpacing: '0.05em' }}>ADMIN PANEL</p>
+            <h2 style={{ fontSize: '1rem', fontWeight: '800', color: '#FFFFFF', lineHeight: '1.2', letterSpacing: '-0.01em' }}>ChapatuCancha</h2>
+            <p style={{ fontSize: '0.65rem', color: 'rgba(255,255,255,0.55)', letterSpacing: '0.12em', textTransform: 'uppercase', marginTop: '2px' }}>Admin Panel</p>
           </div>
         </div>
 
-        <nav style={{ flex: 1, display: 'flex', flexDirection: 'column', gap: '8px' }}>
-          <SidebarLink to="/dashboard" icon={<LayoutDashboard size={20} />} label="Dashboard" />
-          <SidebarLink to="/canchas" icon={<MapPinned size={20} />} label="Gestión de Canchas" />
-          <SidebarLink to="/partidos" icon={<Calendar size={20} />} label="Control de Partidos" />
-          <SidebarLink to="/usuarios" icon={<UserIcon size={20} />} label="Usuarios Registrados" />
-          <SidebarLink to="/settings" icon={<Settings size={20} />} label="Configuración" />
+        {/* Navegación */}
+        <nav style={{ flex: 1, display: 'flex', flexDirection: 'column', gap: '4px' }}>
+          <SidebarLink to="/dashboard"  icon={<LayoutDashboard size={19} />} label="Dashboard" />
+          <SidebarLink to="/canchas"    icon={<MapPinned size={19} />}        label="Gestión de Canchas" />
+          <SidebarLink to="/partidos"   icon={<Calendar size={19} />}         label="Control de Partidos" />
+          <SidebarLink to="/usuarios"   icon={<UserIcon size={19} />}         label="Usuarios Registrados" />
+          <SidebarLink to="/settings"   icon={<Settings size={19} />}         label="Configuración" />
         </nav>
 
-        <div style={{ paddingTop: '24px', borderTop: '1px solid var(--border)' }}>
-          <div style={{ display: 'flex', alignItems: 'center', gap: '12px', marginBottom: '24px' }}>
-            <div style={{ width: '40px', height: '40px', borderRadius: '50%', backgroundColor: 'var(--surface-light)', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
-              <UserIcon size={20} />
+        {/* Footer del sidebar */}
+        <div style={{ paddingTop: '20px', borderTop: '1px solid rgba(255,255,255,0.12)' }}>
+          <div style={{ display: 'flex', alignItems: 'center', gap: '10px', marginBottom: '16px', padding: '10px', borderRadius: '10px', background: 'rgba(255,255,255,0.08)' }}>
+            <div style={{ width: '38px', height: '38px', borderRadius: '50%', background: 'linear-gradient(135deg, #1B75D0, #06B6D4)', display: 'flex', alignItems: 'center', justifyContent: 'center', flexShrink: 0 }}>
+              <UserIcon size={18} color="white" />
             </div>
-            <div>
-              <p style={{ fontSize: '0.875rem', fontWeight: '600' }}>{user.nombreCompleto}</p>
-              <p style={{ fontSize: '0.75rem', color: 'var(--text-secondary)' }}>Administrador</p>
+            <div style={{ overflow: 'hidden' }}>
+              <p style={{ fontSize: '0.825rem', fontWeight: '700', color: '#FFFFFF', whiteSpace: 'nowrap', overflow: 'hidden', textOverflow: 'ellipsis' }}>{user.nombreCompleto}</p>
+              <p style={{ fontSize: '0.7rem', color: 'rgba(255,255,255,0.5)', marginTop: '1px' }}>Administrador</p>
             </div>
           </div>
-          <button onClick={handleLogout} className="premium-btn" style={{ width: '100%', background: 'transparent', border: '1px solid var(--danger)', color: 'var(--danger)', boxShadow: 'none' }}>
-            <LogOut size={18} /> Salir
+          <button onClick={handleLogout} style={{ width: '100%', display: 'flex', alignItems: 'center', justifyContent: 'center', gap: '8px', padding: '10px', borderRadius: '10px', background: 'rgba(220,38,38,0.15)', border: '1px solid rgba(220,38,38,0.35)', color: '#FCA5A5', fontWeight: '600', fontSize: '0.875rem', cursor: 'pointer', transition: 'all 0.2s' }}
+            onMouseEnter={e => { (e.currentTarget as HTMLButtonElement).style.background = 'rgba(220,38,38,0.3)'; }}
+            onMouseLeave={e => { (e.currentTarget as HTMLButtonElement).style.background = 'rgba(220,38,38,0.15)'; }}
+          >
+            <LogOut size={17} /> Cerrar Sesión
           </button>
         </div>
       </aside>
 
-      {/* Main Content */}
-      <main style={{ flex: 1, padding: '40px', overflowY: 'auto' }}>
+      {/* Área de contenido - transparente sobre fondo verde */}
+      <main style={{ flex: 1, padding: '40px', overflowY: 'auto', minHeight: '100vh' }}>
         <Outlet />
       </main>
     </div>
   );
 };
 
-const SidebarLink = ({ to, icon, label }: { to: string, icon: any, label: string }) => (
-  <Link to={to} style={{ display: 'flex', alignItems: 'center', gap: '12px', padding: '12px 16px', borderRadius: '8px', color: 'var(--text-secondary)', transition: 'all 0.2s' }} className="nav-link">
+const SidebarLink = ({ to, icon, label }: { to: string; icon: any; label: string }) => (
+  <Link
+    to={to}
+    style={{ display: 'flex', alignItems: 'center', gap: '12px', padding: '11px 14px', borderRadius: '10px', color: 'rgba(255,255,255,0.75)', transition: 'all 0.2s', fontWeight: '500', fontSize: '0.875rem' }}
+    className="nav-link"
+  >
     {icon}
-    <span style={{ fontWeight: '500' }}>{label}</span>
+    <span>{label}</span>
   </Link>
 );

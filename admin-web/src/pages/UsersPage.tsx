@@ -1,4 +1,4 @@
-import { useState, useMemo } from 'react';
+﻿import { useState, useMemo } from 'react';
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
 import { usuariosService } from '../services/api';
 import {
@@ -168,8 +168,8 @@ export const UsersPage = () => {
       {/* ── Header ── */}
       <header style={{ marginBottom: '40px', display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start' }}>
         <div>
-          <h1 style={{ fontSize: '2rem', fontWeight: 'bold' }}>Gestión de Usuarios</h1>
-          <p style={{ color: 'var(--text-secondary)' }}>Administra cuentas, roles y accesos de la plataforma</p>
+          <h1 className="page-title">Gestión de Usuarios</h1>
+          <p className="page-subtitle">Administra cuentas, roles y accesos de la plataforma</p>
         </div>
         <button
           onClick={() => setShowCreate(true)}
@@ -547,3 +547,4 @@ const cancelBtnStyle: React.CSSProperties = {
   padding: '10px 16px', borderRadius: '8px', border: '1px solid var(--border)',
   background: 'transparent', cursor: 'pointer', fontWeight: '500',
 };
+
