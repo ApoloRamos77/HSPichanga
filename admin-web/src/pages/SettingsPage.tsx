@@ -1,10 +1,10 @@
-﻿import { useState, useMemo } from 'react';
+import { useState, useMemo } from 'react';
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
 import { usuariosService, uploadService } from '../services/api';
 import {
   Mail, Loader2, Search, X, Save,
   UserPlus, UserCheck, UserX, ShieldAlert, CheckCircle2,
-  Image as ImageIcon
+  Image as ImageIcon, Key
 } from 'lucide-react';
 
 interface UsuarioAdmin {
@@ -82,6 +82,15 @@ export const SettingsPage = () => {
       showToast('Estado cambiado correctamente.');
     },
     onError: (err: any) => showToast('Error: ' + (err.response?.data?.mensaje ?? err.message), 'error'),
+  });
+
+  const resetPassMutation = useMutation({
+    mutationFn: (id: string) => usuariosService.resetPasswordAdmin(id),
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ['usuarios-admin'] });
+      showToast('Clave restablecida. Se envió un email al administrador con la clave temporal.');
+    },
+    onError: (err: any) => showToast('Error al resetear: ' + (err.response?.data?.mensaje ?? err.message), 'error'),
   });
 
   const handleEditClick = (u: UsuarioAdmin) => {
@@ -274,11 +283,32 @@ export const SettingsPage = () => {
                 </div>
               </div>
 
-              <div style={{ display: 'flex', justifyContent: 'flex-end', gap: '12px', marginTop: '16px' }}>
-                <button type="button" onClick={() => setSelectedUser(null)} style={cancelBtnStyle}>Cancelar</button>
-                <button type="submit" disabled={updateMutation.isPending} className="premium-btn" style={{ display: 'flex', gap: '8px', alignItems: 'center' }}>
-                  <Save size={16} /> {updateMutation.isPending ? 'Guardando...' : 'Guardar Cambios'}
+              <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginTop: '16px' }}>
+                <button
+                  type="button"
+                  disabled={resetPassMutation.isPending}
+                  onClick={() => {
+                    if (confirm(`¿Resetear la contraseña de ${selectedUser.nombreCompleto}?\n\nSe enviará un email con una clave temporal.`)) {
+                      resetPassMutation.mutate(selectedUser.id);
+                    }
+                  }}
+                  style={{
+                    padding: '10px 14px', borderRadius: '8px', border: 'none', cursor: 'pointer',
+                    fontWeight: '600', fontSize: '0.85rem',
+                    backgroundColor: '#f59e0b22', color: '#f59e0b',
+                    display: 'flex', alignItems: 'center', gap: '7px',
+                    transition: 'all 0.2s',
+                  }}
+                >
+                  <Key size={15} />
+                  {resetPassMutation.isPending ? 'Reseteando...' : 'Resetear Clave'}
                 </button>
+                <div style={{ display: 'flex', gap: '12px' }}>
+                  <button type="button" onClick={() => setSelectedUser(null)} style={cancelBtnStyle}>Cancelar</button>
+                  <button type="submit" disabled={updateMutation.isPending} className="premium-btn" style={{ display: 'flex', gap: '8px', alignItems: 'center' }}>
+                    <Save size={16} /> {updateMutation.isPending ? 'Guardando...' : 'Guardar Cambios'}
+                  </button>
+                </div>
               </div>
             </form>
           </div>
