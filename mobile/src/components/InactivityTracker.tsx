@@ -2,7 +2,7 @@ import React, { useRef, useEffect } from 'react';
 import { PanResponder, View, StyleSheet } from 'react-native';
 import { useAuthStore } from '../stores/authStore';
 
-const INACTIVITY_TIMEOUT = 60000; // 60 segundos
+const INACTIVITY_TIMEOUT = 900000; // 15 minutos
 
 export const InactivityTracker = ({ children }: { children: React.ReactNode }) => {
   const logout = useAuthStore((s) => s.logout);

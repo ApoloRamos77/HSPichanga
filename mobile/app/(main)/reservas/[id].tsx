@@ -174,8 +174,26 @@ export default function ReservaDetailScreen() {
             </View>
           )}
 
-          {/* Pagos Billetera Digital */}
-          {partido.estado === 'Abierto' && partido.cuposDisponibles > 0 ? (
+          {/* Pagos Billetera Digital o Vista Admin */}
+          {usuario?.rol === 'Administrador' ? (
+            <View style={styles.paymentSection}>
+              <Text style={styles.sectionTitle}>Modo Administrador</Text>
+              <View style={[styles.card, { alignItems: 'center', padding: Spacing.xl }]}>
+                <Ionicons name="shield-checkmark" size={48} color={Colors.accent} />
+                <Text style={{ color: Colors.textPrimary, fontSize: Typography.size.md, fontWeight: 'bold', marginTop: Spacing.md, textAlign: 'center' }}>
+                  No puedes unirte como jugador
+                </Text>
+                <Text style={{ color: Colors.textSecondary, textAlign: 'center', marginTop: 8, marginBottom: Spacing.lg }}>
+                  Para visualizar los jugadores inscritos y gestionar la pichanga, dirígete al panel administrativo.
+                </Text>
+                <Button
+                  title="IR AL PANEL DE AMISTOSOS"
+                  onPress={() => router.replace('/(main)/admin-partidos')}
+                  variant="accent"
+                />
+              </View>
+            </View>
+          ) : partido.estado === 'Abierto' && partido.cuposDisponibles > 0 ? (
             <View style={styles.paymentSection}>
               <Text style={styles.sectionTitle}>Método de Pago</Text>
               <View style={styles.walletTabs}>

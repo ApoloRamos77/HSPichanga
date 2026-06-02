@@ -15,6 +15,8 @@ export default function AdminCanchasScreen() {
   const [loading, setLoading] = useState(false);
   const [selectedCancha, setSelectedCancha] = useState<CanchaAdminDto | null>(null);
   const [modalEditVisible, setModalEditVisible] = useState(false);
+  const [modalEstadoVisible, setModalEstadoVisible] = useState(false);
+  const [canchaForEstado, setCanchaForEstado] = useState<CanchaAdminDto | null>(null);
   
   // Edit Form State
   const [editForm, setEditForm] = useState({
@@ -139,6 +141,7 @@ export default function AdminCanchasScreen() {
   const handleCambiarEstado = async (id: string, nuevoEstado: 1 | 2 | 3) => {
     try {
       await canchasService.cambiarEstado(id, nuevoEstado);
+      setModalEstadoVisible(false);
       loadData();
     } catch (e: any) {
       Alert.alert('Error', e.response?.data?.mensaje || 'Error al cambiar estado');
@@ -146,16 +149,8 @@ export default function AdminCanchasScreen() {
   };
 
   const promptEstado = (c: CanchaAdminDto) => {
-    Alert.alert(
-      "Opciones de Cancha",
-       `¿Qué deseas hacer con ${c.nombre}?`,
-      [
-        { text: "Activar", onPress: () => handleCambiarEstado(c.id, 1) },
-        { text: "Desactivar", onPress: () => handleCambiarEstado(c.id, 2) },
-        { text: "Anular (Eliminar)", onPress: () => handleCambiarEstado(c.id, 3), style: "destructive" },
-        { text: "Cancelar", style: "cancel" }
-      ]
-    );
+    setCanchaForEstado(c);
+    setModalEstadoVisible(true);
   };
 
   return (
@@ -405,6 +400,46 @@ export default function AdminCanchasScreen() {
                 </TouchableOpacity>
               </View>
             </ScrollView>
+          </View>
+        </View>
+      </Modal>
+
+      {/* Modal Opciones Estado */}
+      <Modal visible={modalEstadoVisible} transparent animationType="fade">
+        <View style={styles.modalOverlay}>
+          <View style={[styles.modalContent, { maxWidth: 340, width: '100%' }]}>
+            <Text style={[styles.modalTitle, { textAlign: 'center' }]}>Opciones de Cancha</Text>
+            <Text style={{ color: Colors.textSecondary, textAlign: 'center', marginBottom: Spacing.lg }}>
+              ¿Qué deseas hacer con {canchaForEstado?.nombre}?
+            </Text>
+            
+            <TouchableOpacity 
+              style={[styles.btnCrear, { backgroundColor: Colors.danger, marginTop: 0, marginBottom: Spacing.sm }]} 
+              onPress={() => handleCambiarEstado(canchaForEstado!.id, 3)}
+            >
+              <Text style={styles.btnText}>ANULAR (ELIMINAR)</Text>
+            </TouchableOpacity>
+            
+            <TouchableOpacity 
+              style={[styles.btnCrear, { backgroundColor: Colors.warning, marginTop: 0, marginBottom: Spacing.sm }]} 
+              onPress={() => handleCambiarEstado(canchaForEstado!.id, 2)}
+            >
+              <Text style={styles.btnText}>DESACTIVAR</Text>
+            </TouchableOpacity>
+
+            <TouchableOpacity 
+              style={[styles.btnCrear, { backgroundColor: Colors.success, marginTop: 0, marginBottom: Spacing.lg }]} 
+              onPress={() => handleCambiarEstado(canchaForEstado!.id, 1)}
+            >
+              <Text style={styles.btnText}>ACTIVAR</Text>
+            </TouchableOpacity>
+
+            <TouchableOpacity 
+              style={[styles.btnCrear, { backgroundColor: Colors.surfaceHover, marginTop: 0 }]} 
+              onPress={() => setModalEstadoVisible(false)}
+            >
+              <Text style={[styles.btnText, { color: Colors.textPrimary }]}>CERRAR</Text>
+            </TouchableOpacity>
           </View>
         </View>
       </Modal>
