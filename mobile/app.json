@@ -1,9 +1,9 @@
 {
   "expo": {
     "name": "ChapatuCancha",
-    "slug": "chapatucancha",
+    "slug": "hspichanga",
     "version": "1.0.0",
-    "scheme": "chapatucancha",
+    "scheme": "hspichanga",
     "orientation": "portrait",
     "icon": "./assets/icon.png",
     "userInterfaceStyle": "dark",
@@ -15,7 +15,7 @@
     },
     "ios": {
       "supportsTablet": true,
-      "bundleIdentifier": "com.adhsoftsport.chapatucancha"
+      "bundleIdentifier": "com.adhsoftsport.hspichanga"
     },
     "android": {
       "adaptiveIcon": {
@@ -23,7 +23,7 @@
         "backgroundColor": "#051208"
       },
       "edgeToEdgeEnabled": true,
-      "package": "com.adhsoftsport.chapatucancha",
+      "package": "com.adhsoftsport.hspichanga",
       "versionCode": 1
     },
     "web": {
