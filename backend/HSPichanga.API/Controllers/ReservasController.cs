@@ -43,4 +43,36 @@ public class ReservasController : ControllerBase
         var result = await _mediator.Send(new HSPichanga.Application.Features.Reservas.Queries.GetMisReservas.GetMisReservasQuery(jugadorId), ct);
         return Ok(result);
     }
+
+    /// <summary>Confirmar pago de reserva (Admin)</summary>
+    [HttpPut("{id}/confirmar")]
+    [ProducesResponseType(204)]
+    [ProducesResponseType(400)]
+    [ProducesResponseType(404)]
+    public async Task<IActionResult> ConfirmarPago(Guid id, CancellationToken ct)
+    {
+        try
+        {
+            await _mediator.Send(new HSPichanga.Application.Features.Reservas.Commands.ConfirmarPago.ConfirmarPagoReservaCommand(id), ct);
+            return NoContent();
+        }
+        catch (DomainException ex) { return BadRequest(new { mensaje = ex.Message }); }
+        catch (KeyNotFoundException ex) { return NotFound(new { mensaje = ex.Message }); }
+    }
+
+    /// <summary>Rechazar pago de reserva (Admin)</summary>
+    [HttpPut("{id}/rechazar")]
+    [ProducesResponseType(204)]
+    [ProducesResponseType(400)]
+    [ProducesResponseType(404)]
+    public async Task<IActionResult> RechazarPago(Guid id, CancellationToken ct)
+    {
+        try
+        {
+            await _mediator.Send(new HSPichanga.Application.Features.Reservas.Commands.RechazarPago.RechazarPagoReservaCommand(id), ct);
+            return NoContent();
+        }
+        catch (DomainException ex) { return BadRequest(new { mensaje = ex.Message }); }
+        catch (KeyNotFoundException ex) { return NotFound(new { mensaje = ex.Message }); }
+    }
 }

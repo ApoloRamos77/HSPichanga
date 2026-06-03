@@ -25,7 +25,15 @@ public record PartidoAdminDto(
     string? Notas,
     string OrganizadorNombre,
     DateTime FechaCreacion,
-    List<string>? Jugadores = null
+    List<ReservaAdminDto>? Reservas = null
+);
+
+public record ReservaAdminDto(
+    Guid ReservaId,
+    string JugadorNombre,
+    string EstadoPago,
+    string? MetodoPago,
+    string? EvidenciaPagoUrl
 );
 
 public class GetPartidosAdminQueryHandler : IRequestHandler<GetPartidosAdminQuery, IEnumerable<PartidoAdminDto>>
@@ -54,8 +62,14 @@ public class GetPartidosAdminQueryHandler : IRequestHandler<GetPartidosAdminQuer
             p.Notas,
             p.Organizador?.NombreCompleto ?? "",
             p.FechaCreacion,
-            p.Reservas?.Where(r => r.EstadoPago != EstadoPago.Devuelto)
-                     .Select(r => r.Jugador?.NombreCompleto ?? "Anónimo")
+            p.Reservas?.Where(r => r.EstadoPago != EstadoPago.Devuelto && r.EstadoPago != EstadoPago.Rechazado)
+                     .Select(r => new ReservaAdminDto(
+                         r.Id,
+                         r.Jugador?.NombreCompleto ?? "Anónimo",
+                         r.EstadoPago.ToString(),
+                         r.MetodoPago?.ToString(),
+                         r.EvidenciaPagoUrl
+                     ))
                      .ToList()
         ));
     }

@@ -48,4 +48,9 @@ public class Reserva
     public void MarcarPagado() => EstadoPago = Enums.EstadoPago.Pagado;
     public void MarcarDevuelto() => EstadoPago = Enums.EstadoPago.Devuelto;
     public void MarcarEnVerificacion() => EstadoPago = Enums.EstadoPago.EnVerificacion;
+    public void MarcarRechazado() 
+    {
+        EstadoPago = Enums.EstadoPago.Rechazado;
+        Partido.LiberarCupo();
+    }
 }

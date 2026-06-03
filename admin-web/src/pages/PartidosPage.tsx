@@ -1,6 +1,6 @@
-﻿import { useState } from 'react';
+import { useState } from 'react';
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
-import { partidosService } from '../services/api';
+import { partidosService, reservasService } from '../services/api';
 import { Calendar, Users, Loader2 } from 'lucide-react';
 
 export const PartidosPage = () => {
@@ -23,6 +23,16 @@ export const PartidosPage = () => {
       queryClient.invalidateQueries({ queryKey: ['partidos-admin'] });
       setSelectedPartido(null);
     }
+  });
+
+  const confirmarPagoMutation = useMutation({
+    mutationFn: (reservaId: string) => reservasService.confirmarPago(reservaId),
+    onSuccess: () => queryClient.invalidateQueries({ queryKey: ['partidos-admin'] })
+  });
+
+  const rechazarPagoMutation = useMutation({
+    mutationFn: (reservaId: string) => reservasService.rechazarPago(reservaId),
+    onSuccess: () => queryClient.invalidateQueries({ queryKey: ['partidos-admin'] })
   });
 
   if (isLoading) return <div style={{ display: 'flex', justifyContent: 'center', marginTop: '100px' }}><Loader2 className="animate-spin" /></div>;
@@ -99,12 +109,62 @@ export const PartidosPage = () => {
             </div>
 
             <div style={{ marginBottom: '24px' }}>
-              <p style={{ fontSize: '0.875rem', color: 'var(--text-secondary)', marginBottom: '8px' }}>Jugadores Inscritos</p>
+              <p style={{ fontSize: '0.875rem', color: 'var(--text-secondary)', marginBottom: '8px' }}>Reservas e Inscritos</p>
               <div style={{ display: 'flex', flexDirection: 'column', gap: '8px' }}>
-                {selectedPartido.jugadores && selectedPartido.jugadores.length > 0 ? (
-                  selectedPartido.jugadores.map((name: string, i: number) => (
-                    <div key={i} style={{ padding: '8px 12px', backgroundColor: 'var(--surface-light)', borderRadius: '6px', fontSize: '0.875rem' }}>
-                      {i + 1}. {name}
+                {selectedPartido.reservas && selectedPartido.reservas.length > 0 ? (
+                  selectedPartido.reservas.map((r: any, i: number) => (
+                    <div key={r.reservaId || i} style={{ 
+                      padding: '12px', 
+                      backgroundColor: r.estadoPago === 'EnVerificacion' ? 'rgba(234, 179, 8, 0.1)' : 'var(--surface-light)', 
+                      borderLeft: r.estadoPago === 'EnVerificacion' ? '4px solid #eab308' : 'none',
+                      borderRadius: '6px', 
+                      fontSize: '0.875rem' 
+                    }}>
+                      <div style={{ display: 'flex', justifyContent: 'space-between', marginBottom: '8px' }}>
+                        <strong style={{ fontSize: '1rem' }}>{i + 1}. {r.jugadorNombre}</strong>
+                        <span style={{ 
+                          fontSize: '0.75rem', 
+                          padding: '2px 6px', 
+                          borderRadius: '4px',
+                          backgroundColor: r.estadoPago === 'EnVerificacion' ? '#eab30822' : '#22c55e22',
+                          color: r.estadoPago === 'EnVerificacion' ? '#eab308' : '#22c55e'
+                        }}>
+                          {r.estadoPago}
+                        </span>
+                      </div>
+                      <div style={{ color: 'var(--text-secondary)', fontSize: '0.8rem', marginBottom: '8px' }}>
+                        Método: {r.metodoPago || 'No especificado'}
+                      </div>
+                      
+                      {r.estadoPago === 'EnVerificacion' && (
+                        <div style={{ display: 'flex', gap: '8px', marginTop: '12px' }}>
+                          {r.evidenciaPagoUrl && (
+                            <button 
+                              className="premium-btn" 
+                              style={{ padding: '6px 12px', fontSize: '0.8rem', backgroundColor: 'var(--primary)' }}
+                              onClick={() => window.open(r.evidenciaPagoUrl, '_blank')}
+                            >
+                              Ver Voucher
+                            </button>
+                          )}
+                          <button 
+                            className="premium-btn" 
+                            style={{ padding: '6px 12px', fontSize: '0.8rem', backgroundColor: 'var(--success)' }}
+                            onClick={() => confirmarPagoMutation.mutate(r.reservaId)}
+                            disabled={confirmarPagoMutation.isPending}
+                          >
+                            Confirmar
+                          </button>
+                          <button 
+                            className="premium-btn" 
+                            style={{ padding: '6px 12px', fontSize: '0.8rem', backgroundColor: 'var(--danger)' }}
+                            onClick={() => rechazarPagoMutation.mutate(r.reservaId)}
+                            disabled={rechazarPagoMutation.isPending}
+                          >
+                            Rechazar
+                          </button>
+                        </div>
+                      )}
                     </div>
                   ))
                 ) : (

@@ -7,7 +7,8 @@ import { useQuery, useMutation } from '@tanstack/react-query';
 import { Ionicons } from '@expo/vector-icons';
 import { LinearGradient } from 'expo-linear-gradient';
 import { SafeAreaView } from 'react-native-safe-area-context';
-import { partidosService, reservasService } from '../../../src/services/api';
+import * as ImagePicker from 'expo-image-picker';
+import { partidosService, reservasService, uploadService } from '../../../src/services/api';
 import { useAuthStore } from '../../../src/stores/authStore';
 import { Button } from '../../../src/components/Button';
 import { Colors, Spacing, Radius, Typography, Shadows } from '../../../src/theme';
@@ -17,6 +18,7 @@ export default function ReservaDetailScreen() {
   const usuario = useAuthStore((s) => s.usuario);
   const [metodoPago, setMetodoPago] = useState<number>(2); // 2: Yape, 3: Plin
   const [numeroOperacion, setNumeroOperacion] = useState('');
+  const [voucherUri, setVoucherUri] = useState<string | null>(null);
   const [modalVisible, setModalVisible] = useState(false);
   const [modalConfig, setModalConfig] = useState({ title: '', message: '', type: 'success' as 'success'|'error', extra: '' });
 
@@ -37,11 +39,29 @@ export default function ReservaDetailScreen() {
   const partido = partidos?.find(p => p.id === id);
 
   const mutation = useMutation({
-    mutationFn: () => reservasService.crear(id!, usuario!.id, metodoPago, numeroOperacion.trim() === '' ? undefined : numeroOperacion.trim()),
-    onSuccess: (data) => {
+    mutationFn: async () => {
+      let evidenciaUrl;
+      if (voucherUri) {
+        const fileMatch = voucherUri.match(/\/([^\/?#]+)$/i);
+        const name = fileMatch ? fileMatch[1] : 'voucher.jpg';
+        const type = `image/${name.split('.').pop()}`;
+        
+        const formData = new FormData();
+        formData.append('file', {
+          uri: Platform.OS === 'ios' ? voucherUri.replace('file://', '') : voucherUri,
+          name,
+          type
+        } as any);
+        
+        const uploadRes = await uploadService.upload(formData);
+        evidenciaUrl = uploadRes.data.url;
+      }
+      return reservasService.crear(id!, usuario!.id, metodoPago, numeroOperacion.trim() === '' ? undefined : numeroOperacion.trim(), evidenciaUrl);
+    },
+    onSuccess: (data: any) => {
       setModalConfig({
-        title: '¡Cupo Reservado! 🎉',
-        message: `Tu código de confirmación es:\n\n${data.data.codigoConfirmacion}`,
+        title: '¡Cupo en Verificación! 🎉',
+        message: `El administrador validará tu pago y confirmará la reserva.\nTu código es:\n\n${data.data.codigoConfirmacion}`,
         extra: `Monto: S/. ${data.data.montoPagado.toFixed(2)}`,
         type: 'success'
       });
@@ -53,6 +73,18 @@ export default function ReservaDetailScreen() {
       setModalVisible(true);
     },
   });
+
+  const pickImage = async () => {
+    let result = await ImagePicker.launchImageLibraryAsync({
+      mediaTypes: ['images'],
+      allowsEditing: true,
+      quality: 0.7,
+    });
+
+    if (!result.canceled) {
+      setVoucherUri(result.assets[0].uri);
+    }
+  };
 
   if (isLoading) {
     return (
@@ -247,6 +279,16 @@ export default function ReservaDetailScreen() {
                   onChangeText={setNumeroOperacion}
                   keyboardType="numeric"
                 />
+
+                <TouchableOpacity 
+                  style={{ width: '100%', padding: Spacing.md, borderWidth: 1, borderColor: Colors.border, borderStyle: 'dashed', borderRadius: Radius.md, alignItems: 'center', backgroundColor: Colors.background, marginTop: Spacing.sm }}
+                  onPress={pickImage}
+                >
+                  <Ionicons name="image-outline" size={24} color={Colors.textSecondary} />
+                  <Text style={{ color: Colors.textSecondary, marginTop: 4, fontSize: Typography.size.sm }}>
+                    {voucherUri ? 'Voucher adjuntado (Toca para cambiar)' : 'Adjuntar Voucher (Opcional)'}
+                  </Text>
+                </TouchableOpacity>
               </View>
 
               {yaReservado ? (

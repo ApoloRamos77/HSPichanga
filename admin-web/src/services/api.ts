@@ -38,8 +38,13 @@ export const usuariosService = {
   create: (data: { nombreCompleto: string; email: string; telefono: string; rol: number }) =>
     api.post('/Usuarios', data),
   update: (id: string, data: any) => api.put(`/Usuarios/${id}`, data),
-  toggleActivo: (id: string) => api.patch(`/Usuarios/${id}/toggle-activo`),
+    toggleActivo: (id: string) => api.patch(`/Usuarios/${id}/toggle-activo`),
   resetPasswordAdmin: (id: string) => api.post(`/Usuarios/${id}/reset-password-admin`),
+};
+
+export const reservasService = {
+  confirmarPago: (id: string) => api.put(`/Reservas/${id}/confirmar`),
+  rechazarPago: (id: string) => api.put(`/Reservas/${id}/rechazar`),
 };
 
 export const uploadService = {

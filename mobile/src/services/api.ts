@@ -157,8 +157,8 @@ export type MisReservasDto = {
 };
 
 export const reservasService = {
-  crear: (partidoId: string, jugadorId: string, metodoPago?: number, numeroOperacion?: string) =>
-    apiClient.post<CrearReservaResponse>('/Reservas', { partidoId, jugadorId, metodoPago, numeroOperacion }),
+  crear: (partidoId: string, jugadorId: string, metodoPago?: number, numeroOperacion?: string, evidenciaPagoUrl?: string) =>
+    apiClient.post<CrearReservaResponse>('/Reservas', { partidoId, jugadorId, metodoPago, numeroOperacion, evidenciaPagoUrl }),
   getMisReservas: (jugadorId: string) =>
     apiClient.get<MisReservasDto[]>(`/Reservas/jugador/${jugadorId}`),
 };

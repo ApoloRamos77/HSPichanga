@@ -5,5 +5,6 @@ public enum EstadoPago
     Pendiente = 1,
     Pagado = 2,
     Devuelto = 3,
-    EnVerificacion = 4
+    EnVerificacion = 4,
+    Rechazado = 5
 }
