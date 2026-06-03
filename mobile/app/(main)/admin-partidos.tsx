@@ -5,7 +5,7 @@ import { router } from 'expo-router';
 import { Ionicons } from '@expo/vector-icons';
 import DateTimePicker from '@react-native-community/datetimepicker';
 import { Colors, Spacing, Radius, Typography, Shadows } from '../../src/theme';
-import { canchasService, partidosService, CanchaAdminDto, PartidoAdminDto } from '../../src/services/api';
+import { canchasService, partidosService, reservasService, CanchaAdminDto, PartidoAdminDto, ReservaAdminDto } from '../../src/services/api';
 import { useAuthStore } from '../../src/stores/authStore';
 
 export default function AdminPartidosScreen() {
@@ -21,7 +21,7 @@ export default function AdminPartidosScreen() {
   const [modalOpcionesVisible, setModalOpcionesVisible] = useState(false);
   const [modalEstadoVisible, setModalEstadoVisible] = useState(false);
   const [modalSuccessVisible, setModalSuccessVisible] = useState(false);
-  const [jugadoresList, setJugadoresList] = useState<string[]>([]);
+  const [jugadoresList, setJugadoresList] = useState<ReservaAdminDto[]>([]);
   
   // Reprogramación / Edición state
   const [repDate, setRepDate] = useState(new Date());
@@ -160,6 +160,28 @@ export default function AdminPartidosScreen() {
       loadData();
     } catch (e: any) {
       Alert.alert('Error', e.response?.data?.mensaje || 'Error al cambiar estado');
+    }
+  };
+
+  const handleConfirmarPago = async (reservaId: string) => {
+    try {
+      await reservasService.confirmarPago(reservaId);
+      Alert.alert('Éxito', 'Pago confirmado. Cupo asegurado.');
+      setModalJugadoresVisible(false);
+      loadData();
+    } catch (e: any) {
+      Alert.alert('Error', e.response?.data?.mensaje || 'Error al confirmar pago');
+    }
+  };
+
+  const handleRechazarPago = async (reservaId: string) => {
+    try {
+      await reservasService.rechazarPago(reservaId);
+      Alert.alert('Éxito', 'Pago rechazado. Cupo liberado.');
+      setModalJugadoresVisible(false);
+      loadData();
+    } catch (e: any) {
+      Alert.alert('Error', e.response?.data?.mensaje || 'Error al rechazar pago');
     }
   };
 
@@ -538,9 +560,44 @@ export default function AdminPartidosScreen() {
 
             <ScrollView style={{maxHeight: 300}}>
               {jugadoresList.length > 0 ? (
-                jugadoresList.map((name, i) => (
-                  <View key={i} style={styles.playerItem}>
-                    <Text style={styles.playerName}>{i + 1}. {name}</Text>
+                jugadoresList.map((r, i) => (
+                  <View key={r.reservaId || i} style={[styles.playerItem, r.estadoPago === 'EnVerificacion' && { backgroundColor: 'rgba(234, 179, 8, 0.1)', borderLeftWidth: 4, borderLeftColor: '#eab308' }]}>
+                    <View style={{flexDirection: 'row', justifyContent: 'space-between', marginBottom: 4}}>
+                      <Text style={styles.playerName}>{i + 1}. {r.jugadorNombre}</Text>
+                      <Text style={{ fontSize: Typography.size.xs, color: r.estadoPago === 'EnVerificacion' ? '#eab308' : Colors.success, fontWeight: 'bold' }}>
+                        {r.estadoPago}
+                      </Text>
+                    </View>
+                    <Text style={{color: Colors.textSecondary, fontSize: Typography.size.xs, marginBottom: 8}}>Método: {r.metodoPago || 'No especificado'}</Text>
+                    
+                    {r.estadoPago === 'EnVerificacion' && selectedPartido?.estado !== 'Finalizado' && (
+                      <View style={{flexDirection: 'row', gap: Spacing.sm}}>
+                        {r.evidenciaPagoUrl && (
+                          <TouchableOpacity 
+                            style={{ flex: 1, backgroundColor: Colors.primary, padding: 8, borderRadius: Radius.sm, alignItems: 'center' }}
+                            // Normally you'd open this in a webview or linking, simple alert or linking here
+                            onPress={() => {
+                              // We can just open the URL using Linking or let them know it's not fully supported if linking fails
+                              Alert.alert('Voucher', 'La URL del voucher es:\n' + r.evidenciaPagoUrl);
+                            }}
+                          >
+                            <Text style={{color: '#FFF', fontSize: Typography.size.xs, fontWeight: 'bold'}}>Voucher</Text>
+                          </TouchableOpacity>
+                        )}
+                        <TouchableOpacity 
+                          style={{ flex: 1, backgroundColor: Colors.success, padding: 8, borderRadius: Radius.sm, alignItems: 'center' }}
+                          onPress={() => handleConfirmarPago(r.reservaId)}
+                        >
+                          <Text style={{color: '#FFF', fontSize: Typography.size.xs, fontWeight: 'bold'}}>Confirmar</Text>
+                        </TouchableOpacity>
+                        <TouchableOpacity 
+                          style={{ flex: 1, backgroundColor: Colors.danger, padding: 8, borderRadius: Radius.sm, alignItems: 'center' }}
+                          onPress={() => handleRechazarPago(r.reservaId)}
+                        >
+                          <Text style={{color: '#FFF', fontSize: Typography.size.xs, fontWeight: 'bold'}}>Rechazar</Text>
+                        </TouchableOpacity>
+                      </View>
+                    )}
                   </View>
                 ))
               ) : (
@@ -571,19 +628,21 @@ export default function AdminPartidosScreen() {
               style={[styles.btnCrear, { backgroundColor: Colors.primaryLight, marginTop: 0, marginBottom: Spacing.sm }]} 
               onPress={() => {
                 setModalOpcionesVisible(false);
-                setJugadoresList(selectedPartido?.jugadores || []);
+                setJugadoresList(selectedPartido?.reservas || []);
                 setModalJugadoresVisible(true);
               }}
             >
               <Text style={styles.btnText}>VER JUGADORES</Text>
             </TouchableOpacity>
             
-            <TouchableOpacity 
-              style={[styles.btnCrear, { backgroundColor: Colors.accent, marginTop: 0, marginBottom: Spacing.lg }]} 
-              onPress={promptSoloEstado}
-            >
-              <Text style={styles.btnText}>CAMBIAR ESTADO</Text>
-            </TouchableOpacity>
+            {selectedPartido?.estado !== 'Finalizado' && (
+              <TouchableOpacity 
+                style={[styles.btnCrear, { backgroundColor: Colors.accent, marginTop: 0, marginBottom: Spacing.lg }]} 
+                onPress={promptSoloEstado}
+              >
+                <Text style={styles.btnText}>CAMBIAR ESTADO</Text>
+              </TouchableOpacity>
+            )}
 
             <TouchableOpacity 
               style={[styles.btnCrear, { backgroundColor: Colors.surfaceHover, marginTop: 0 }]} 

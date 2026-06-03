@@ -136,7 +136,7 @@ export const PartidosPage = () => {
                         Método: {r.metodoPago || 'No especificado'}
                       </div>
                       
-                      {r.estadoPago === 'EnVerificacion' && (
+                      {r.estadoPago === 'EnVerificacion' && selectedPartido.estado !== 'Finalizado' && (
                         <div style={{ display: 'flex', gap: '8px', marginTop: '12px' }}>
                           {r.evidenciaPagoUrl && (
                             <button 

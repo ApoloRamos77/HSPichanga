@@ -116,6 +116,15 @@ export type PartidoDto = {
   ubicacionGoogleMaps?: string;
 };
 
+export type ReservaAdminDto = {
+  reservaId: string;
+  jugadorId: string;
+  jugadorNombre: string;
+  metodoPago: string;
+  estadoPago: string;
+  evidenciaPagoUrl?: string;
+};
+
 // ─── Partidos (admin) ─────────────────────────────────────────────────────────
 export type PartidoAdminDto = {
   id: string; canchaId: string; canchaNombre: string; zonaNombre: string;
@@ -125,7 +134,7 @@ export type PartidoAdminDto = {
   cuotaIndividual: number; cuposDisponibles: number; cuposTotales: number;
   modalidad: string; notas?: string; organizadorNombre: string;
   fechaCreacion: string;
-  jugadores?: string[];
+  reservas?: ReservaAdminDto[];
 };
 
 export const partidosService = {
@@ -161,6 +170,10 @@ export const reservasService = {
     apiClient.post<CrearReservaResponse>('/Reservas', { partidoId, jugadorId, metodoPago, numeroOperacion, evidenciaPagoUrl }),
   getMisReservas: (jugadorId: string) =>
     apiClient.get<MisReservasDto[]>(`/Reservas/jugador/${jugadorId}`),
+  confirmarPago: (reservaId: string) =>
+    apiClient.put(`/Reservas/${reservaId}/confirmar`),
+  rechazarPago: (reservaId: string) =>
+    apiClient.put(`/Reservas/${reservaId}/rechazar`),
 };
 
 // ─── Usuarios (admin) ────────────────────────────────────────────────────────
