@@ -423,7 +423,7 @@ const styles = StyleSheet.create({
   yaReservadoBox: { flexDirection: 'row', alignItems: 'center', justifyContent: 'center', backgroundColor: Colors.success + '22', borderRadius: Radius.md, padding: Spacing.md, marginTop: Spacing.md, borderWidth: 1, borderColor: Colors.success + '44', gap: 8 },
   yaReservadoText: { color: Colors.success, fontSize: Typography.size.sm, fontWeight: Typography.weight.bold },
   modalOverlay: { flex: 1, backgroundColor: 'rgba(0,0,0,0.7)', justifyContent: 'center', padding: Spacing.xl },
-  modalContent: { backgroundColor: Colors.surface, borderRadius: Radius.xl, padding: Spacing.xl, alignItems: 'center', gap: Spacing.sm, borderWidth: 1, borderColor: Colors.border, elevation: Shadows.lg.elevation, shadowColor: '#000', shadowOffset: Shadows.lg.shadowOffset, shadowOpacity: Shadows.lg.shadowOpacity, shadowRadius: Shadows.lg.shadowRadius },
+  modalContent: { backgroundColor: Colors.surface, borderRadius: Radius.xl, padding: Spacing.xl, alignItems: 'center', gap: Spacing.sm, borderWidth: 1, borderColor: Colors.border, elevation: Shadows.card.elevation, shadowColor: '#000', shadowOffset: Shadows.card.shadowOffset, shadowOpacity: Shadows.card.shadowOpacity, shadowRadius: Shadows.card.shadowRadius },
   modalIconContainer: { marginBottom: Spacing.xs },
   modalTitle: { fontSize: Typography.size.xl, fontWeight: Typography.weight.bold, color: Colors.textPrimary, textAlign: 'center' },
   modalMessage: { fontSize: Typography.size.md, color: Colors.textSecondary, textAlign: 'center', lineHeight: 22 },
