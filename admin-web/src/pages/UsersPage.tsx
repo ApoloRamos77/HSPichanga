@@ -56,7 +56,7 @@ export const UsersPage = () => {
     if (!search.trim()) return jugadores;
     const q = search.toLowerCase();
     return jugadores.filter(
-      (u) => u.nombreCompleto.toLowerCase().includes(q) || u.email.toLowerCase().includes(q)
+      (u) => u.nombreCompleto.toLowerCase().includes(q) || (u.email && u.email.toLowerCase().includes(q)) || (u.telefono && u.telefono.toLowerCase().includes(q))
     );
   }, [usuarios, search]);
 
@@ -76,9 +76,9 @@ export const UsersPage = () => {
       const rolMap: Record<string, number> = { Jugador: 0, Administrador: 1 };
       return usuariosService.create({
         nombreCompleto: createForm.nombreCompleto,
-        email: createForm.email,
-        telefono: createForm.telefono,
-        alias: createForm.alias,
+        email: createForm.email || undefined,
+        telefono: createForm.telefono || undefined,
+        alias: createForm.alias || undefined,
         rol: rolMap[createForm.rol] ?? 0,
       });
     },
