@@ -8,7 +8,8 @@ public record GetUsuariosQuery() : IRequest<IEnumerable<UsuarioAdminDto>>;
 public record UsuarioAdminDto(
     Guid Id,
     string NombreCompleto,
-    string Email,
+    string? Alias,
+    string? Email,
     string Telefono,
     string Rol,
     bool Activo,
@@ -33,6 +34,7 @@ public class GetUsuariosQueryHandler : IRequestHandler<GetUsuariosQuery, IEnumer
         return usuarios.Select(u => new UsuarioAdminDto(
             u.Id,
             u.NombreCompleto,
+            u.ObtenerAliasMostrable(),
             u.Email,
             u.Telefono ?? "",
             u.Rol.ToString(),

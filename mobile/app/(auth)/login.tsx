@@ -12,20 +12,20 @@ import { Button } from '../../src/components/Button';
 import { Colors, Spacing, Radius, Typography } from '../../src/theme';
 
 export default function LoginScreen() {
-  const [email, setEmail]       = useState('');
+  const [identificador, setIdentificador] = useState('');
   const [password, setPassword] = useState('');
   const [showPass, setShowPass] = useState(false);
   const [loading, setLoading]   = useState(false);
   const setAuth = useAuthStore((s) => s.setAuth);
 
   const handleLogin = async () => {
-    if (!email.trim() || !password.trim()) {
-      Alert.alert('Campos requeridos', 'Ingresa tu email y contraseña.');
+    if (!identificador.trim() || !password.trim()) {
+      Alert.alert('Campos requeridos', 'Ingresa tu correo o celular y contraseña.');
       return;
     }
     setLoading(true);
     try {
-      const { data } = await authService.login({ email: email.trim(), password });
+      const { data } = await authService.login({ identificador: identificador.trim(), password });
       await setAuth(data.token, data.usuario);
 
       // Si el admin reseteó la clave, redirigir a cambio obligatorio
@@ -79,18 +79,17 @@ export default function LoginScreen() {
 
             {/* Email */}
             <View style={styles.inputGroup}>
-              <Text style={styles.label}>Correo electrónico</Text>
+              <Text style={styles.label}>Correo electrónico o Celular</Text>
               <View style={styles.inputContainer}>
                 <Ionicons name="mail-outline" size={18} color={Colors.textMuted} style={styles.inputIcon} />
                 <TextInput
                   style={styles.input}
-                  value={email}
-                  onChangeText={setEmail}
-                  placeholder="tu@correo.com"
+                  value={identificador}
+                  onChangeText={setIdentificador}
+                  placeholder="tu@correo.com o +51999..."
                   placeholderTextColor={Colors.textMuted}
-                  keyboardType="email-address"
+                  keyboardType="default"
                   autoCapitalize="none"
-                  autoComplete="email"
                 />
               </View>
             </View>

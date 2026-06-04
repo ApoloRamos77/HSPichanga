@@ -35,24 +35,25 @@ apiClient.interceptors.response.use(
 export default apiClient;
 
 // ─── Auth ─────────────────────────────────────────────────────────────────────
-export type LoginRequest  = { email: string; password: string };
+export type LoginRequest  = { identificador: string; password: string };
 export type UsuarioDto = { 
   id: string; 
   nombreCompleto: string; 
-  email: string; 
+  alias?: string;
+  email: string | null; 
   rol: string; 
-  telefono: string; 
+  telefono: string | null; 
   fotoUrl?: string;
   fechaRegistro?: string;
   requiereCambioPassword?: boolean;
 };
-export type RegistroRequest = { nombreCompleto: string; email: string; password: string; telefono: string };
+export type RegistroRequest = { nombreCompleto: string; alias?: string; email?: string; password: string; telefono?: string };
 export type LoginResponse  = { token: string; usuario: UsuarioDto };
 
 export const authService = {
   login:          (data: LoginRequest)   => apiClient.post<LoginResponse>('/Auth/login', data),
   registro:       (data: RegistroRequest)=> apiClient.post('/Auth/registro', data),
-  forgotPassword: (email: string)        => apiClient.post('/Auth/forgot-password', { email }),
+  forgotPassword: (identificador: string)        => apiClient.post('/Auth/forgot-password', { identificador }),
   resetPassword:  (email: string, token: string, newPassword: string) =>
                     apiClient.post('/Auth/reset-password', { email, token, newPassword }),
   changePassword: (newPassword: string)  => apiClient.post('/Usuarios/change-password', { newPassword }),

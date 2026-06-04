@@ -32,6 +32,7 @@ public static class DependencyInjection
         services.AddScoped<IUnitOfWork, UnitOfWork>();
         services.AddScoped<IJwtTokenService, JwtTokenService>();
         services.AddScoped<IEmailService, GmailEmailService>();
+        services.AddScoped<ISmsService, HSPichanga.Infrastructure.Services.MockSmsService>();
 
         return services;
     }

@@ -9,6 +9,7 @@ public record EditUsuarioCommand(
     string NombreCompleto,
     string Telefono,
     RolUsuario Rol,
+    string? Alias = null,
     string? YapeNumero = null,
     string? YapeQrUrl = null,
     string? PlinNumero = null,
@@ -25,7 +26,7 @@ public class EditUsuarioCommandHandler : IRequestHandler<EditUsuarioCommand, boo
         var usuario = await _uow.Usuarios.GetByIdAsync(request.Id, cancellationToken);
         if (usuario == null) return false;
 
-        usuario.ActualizarPerfil(request.NombreCompleto, request.Telefono, request.Rol);
+        usuario.ActualizarPerfil(request.NombreCompleto, request.Telefono, request.Rol, request.Alias);
 
         // Si es administrador, actualizar sus datos de cobro
         if (request.Rol == RolUsuario.Administrador)

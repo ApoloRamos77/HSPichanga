@@ -6,7 +6,8 @@ public class Usuario
 {
     public Guid Id { get; private set; }
     public string NombreCompleto { get; private set; } = string.Empty;
-    public string Email { get; private set; } = string.Empty;
+    public string? Alias { get; private set; }
+    public string? Email { get; private set; }
     public string PasswordHash { get; private set; } = string.Empty;
     public RolUsuario Rol { get; private set; }
     public string Telefono { get; private set; } = string.Empty;
@@ -32,22 +33,36 @@ public class Usuario
 
     public static Usuario Crear(
         string nombreCompleto,
-        string email,
+        string? email,
         string passwordHash,
         RolUsuario rol,
-        string telefono)
+        string telefono,
+        string? alias = null)
     {
         return new Usuario
         {
             Id = Guid.NewGuid(),
             NombreCompleto = nombreCompleto,
-            Email = email.ToLowerInvariant(),
+            Email = email?.ToLowerInvariant(),
+            Alias = alias,
             PasswordHash = passwordHash,
             Rol = rol,
             Telefono = telefono,
             Activo = true,
             FechaRegistro = DateTime.UtcNow
         };
+    }
+
+    public string ObtenerAliasMostrable()
+    {
+        if (!string.IsNullOrWhiteSpace(Alias))
+            return Alias;
+        
+        var partes = NombreCompleto.Split(' ', StringSplitOptions.RemoveEmptyEntries);
+        if (partes.Length >= 2)
+            return $"{partes[0]} {partes[1].Substring(0, 1)}.";
+        
+        return partes.Length > 0 ? partes[0] : "Usuario";
     }
 
     public void ActualizarFoto(string url) => FotoUrl = url;
@@ -74,11 +89,12 @@ public class Usuario
         ResetTokenExpiry = null;
     }
     
-    public void ActualizarPerfil(string nombre, string telefono, RolUsuario rol)
+    public void ActualizarPerfil(string nombre, string telefono, RolUsuario rol, string? alias = null)
     {
         NombreCompleto = nombre;
         Telefono = telefono;
         Rol = rol;
+        Alias = alias;
     }
 
     public void ActualizarDatosCobro(string? yapeNum, string? yapeUrl, string? plinNum, string? plinUrl)

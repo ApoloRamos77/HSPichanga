@@ -1,4 +1,4 @@
-﻿import { useState, useMemo } from 'react';
+import { useState, useMemo } from 'react';
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
 import { usuariosService } from '../services/api';
 import {
@@ -10,8 +10,9 @@ import {
 interface Usuario {
   id: string;
   nombreCompleto: string;
-  email: string;
-  telefono: string;
+  alias?: string;
+  email: string | null;
+  telefono: string | null;
   rol: string;
   fechaRegistro: string;
   activo: boolean;
@@ -31,8 +32,8 @@ export const UsersPage = () => {
   const [search, setSearch]               = useState('');
   const [selectedUser, setSelectedUser]   = useState<Usuario | null>(null);
   const [showCreate, setShowCreate]       = useState(false);
-  const [formData, setFormData]           = useState({ nombreCompleto: '', telefono: '', rol: 'Jugador' });
-  const [createForm, setCreateForm]       = useState({ nombreCompleto: '', email: '', telefono: '', rol: 'Jugador' });
+  const [formData, setFormData]           = useState({ nombreCompleto: '', alias: '', telefono: '', rol: 'Jugador' });
+  const [createForm, setCreateForm]       = useState({ nombreCompleto: '', alias: '', email: '', telefono: '', rol: 'Jugador' });
   const [toast, setToast]                 = useState<{ msg: string; type: 'success' | 'error' } | null>(null);
 
   const showToast = (msg: string, type: 'success' | 'error' = 'success') => {
@@ -77,13 +78,14 @@ export const UsersPage = () => {
         nombreCompleto: createForm.nombreCompleto,
         email: createForm.email,
         telefono: createForm.telefono,
+        alias: createForm.alias,
         rol: rolMap[createForm.rol] ?? 0,
       });
     },
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ['usuarios-admin'] });
       setShowCreate(false);
-      setCreateForm({ nombreCompleto: '', email: '', telefono: '', rol: 'Jugador' });
+      setCreateForm({ nombreCompleto: '', alias: '', email: '', telefono: '', rol: 'Jugador' });
       showToast('Usuario creado. Se envió el email con la clave temporal.');
     },
     onError: (err: any) => showToast('Error al crear: ' + (err.response?.data?.mensaje ?? err.message), 'error'),
@@ -142,7 +144,7 @@ export const UsersPage = () => {
 
   const handleEditClick = (u: Usuario) => {
     setSelectedUser(u);
-    setFormData({ nombreCompleto: u.nombreCompleto, telefono: u.telefono, rol: u.rol });
+    setFormData({ nombreCompleto: u.nombreCompleto, alias: u.alias || '', telefono: u.telefono || '', rol: u.rol });
   };
 
   return (
@@ -234,8 +236,8 @@ export const UsersPage = () => {
                     </td>
                     <td style={{ padding: '16px 24px' }}>
                       <div style={{ display: 'flex', flexDirection: 'column', gap: '4px' }}>
-                        <div style={{ display: 'flex', alignItems: 'center', gap: '6px' }}><Mail size={14} /> {u.email}</div>
-                        <div style={{ display: 'flex', alignItems: 'center', gap: '6px' }}><Phone size={14} /> {u.telefono}</div>
+                        <div style={{ display: 'flex', alignItems: 'center', gap: '6px' }}><Mail size={14} /> {u.email || '-'}</div>
+                        <div style={{ display: 'flex', alignItems: 'center', gap: '6px' }}><Phone size={14} /> {u.telefono || '-'}</div>
                       </div>
                     </td>
                     <td style={{ padding: '16px 24px' }}>
@@ -324,13 +326,22 @@ export const UsersPage = () => {
                 />
               </div>
               <div>
-                <label style={labelStyle}>Correo Electrónico *</label>
+                <label style={labelStyle}>Alias (Opcional)</label>
+                <input
+                  type="text"
+                  className="form-input"
+                  value={createForm.alias}
+                  onChange={(e) => setCreateForm({ ...createForm, alias: e.target.value })}
+                  placeholder="Ej: Juan P."
+                />
+              </div>
+              <div>
+                <label style={labelStyle}>Correo Electrónico</label>
                 <input
                   type="email"
                   className="form-input"
                   value={createForm.email}
                   onChange={(e) => setCreateForm({ ...createForm, email: e.target.value })}
-                  required
                   placeholder="usuario@email.com"
                 />
               </div>
@@ -422,7 +433,7 @@ export const UsersPage = () => {
               onSubmit={(e) => {
                 e.preventDefault();
                 const rolMap: Record<string, number> = { Jugador: 0, Administrador: 1 };
-                updateMutation.mutate({ id: selectedUser.id, nombreCompleto: formData.nombreCompleto, telefono: formData.telefono, rol: rolMap[formData.rol] ?? 0 });
+                updateMutation.mutate({ id: selectedUser.id, nombreCompleto: formData.nombreCompleto, alias: formData.alias, telefono: formData.telefono, rol: rolMap[formData.rol] ?? 0 });
               }}
               style={{ display: 'flex', flexDirection: 'column', gap: '14px', marginTop: '4px' }}
             >
@@ -433,8 +444,13 @@ export const UsersPage = () => {
               </div>
               <div>
                 <label style={labelStyle}>Correo (Solo lectura)</label>
-                <input type="text" className="form-input" value={selectedUser.email} disabled
+                <input type="text" className="form-input" value={selectedUser.email || 'Sin correo'} disabled
                   style={{ backgroundColor: 'var(--surface-light)', cursor: 'not-allowed' }} />
+              </div>
+              <div>
+                <label style={labelStyle}>Alias (Opcional)</label>
+                <input type="text" className="form-input" value={formData.alias}
+                  onChange={(e) => setFormData({ ...formData, alias: e.target.value })} />
               </div>
               <div>
                 <label style={labelStyle}>Teléfono</label>

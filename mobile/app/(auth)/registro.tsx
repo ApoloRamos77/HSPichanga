@@ -12,7 +12,7 @@ import { Colors, Spacing, Radius, Typography } from '../../src/theme';
 
 export default function RegistroScreen() {
   const [form, setForm] = useState({
-    nombreCompleto: '', email: '', telefono: '', password: '', confirmPassword: ''
+    nombreCompleto: '', alias: '', email: '', telefono: '', password: '', confirmPassword: ''
   });
   const [loading, setLoading] = useState(false);
 
@@ -20,8 +20,12 @@ export default function RegistroScreen() {
     setForm(prev => ({ ...prev, [field]: value }));
 
   const handleRegistro = async () => {
-    if (!form.nombreCompleto || !form.email || !form.telefono || !form.password) {
-      Alert.alert('Campos requeridos', 'Completa todos los campos.');
+    if (!form.nombreCompleto || !form.password) {
+      Alert.alert('Campos requeridos', 'Completa tu nombre y contraseña.');
+      return;
+    }
+    if (!form.email && !form.telefono) {
+      Alert.alert('Campos requeridos', 'Debes ingresar al menos tu correo electrónico o celular.');
       return;
     }
     if (form.password !== form.confirmPassword) {
@@ -36,6 +40,7 @@ export default function RegistroScreen() {
     try {
       await authService.registro({
         nombreCompleto: form.nombreCompleto,
+        alias: form.alias,
         email: form.email,
         password: form.password,
         telefono: form.telefono,
@@ -76,6 +81,7 @@ export default function RegistroScreen() {
           <View style={styles.card}>
             {[
               { label: 'Nombre completo', field: 'nombreCompleto', icon: 'person-outline', placeholder: 'Juan Pérez', type: 'default' },
+              { label: 'Alias (Opcional)', field: 'alias', icon: 'person-circle-outline', placeholder: 'Juan P.', type: 'default' },
               { label: 'Correo electrónico', field: 'email', icon: 'mail-outline', placeholder: 'juan@correo.com', type: 'email-address' },
               { label: 'Teléfono', field: 'telefono', icon: 'call-outline', placeholder: '+51 999 000 000', type: 'phone-pad' },
               { label: 'Contraseña', field: 'password', icon: 'lock-closed-outline', placeholder: '••••••••', secure: true, type: 'default' },

@@ -11,18 +11,18 @@ import { Button } from '../../src/components/Button';
 import { Colors, Spacing, Radius, Typography } from '../../src/theme';
 
 export default function ForgotPasswordScreen() {
-  const [email, setEmail]     = useState('');
+  const [identificador, setIdentificador] = useState('');
   const [loading, setLoading] = useState(false);
   const [sent, setSent]       = useState(false);
 
   const handleSend = async () => {
-    if (!email.trim()) {
-      Alert.alert('Campo requerido', 'Ingresa tu correo electrónico.');
+    if (!identificador.trim()) {
+      Alert.alert('Campo requerido', 'Ingresa tu correo electrónico o celular.');
       return;
     }
     setLoading(true);
     try {
-      await authService.forgotPassword(email.trim().toLowerCase());
+      await authService.forgotPassword(identificador.trim().toLowerCase());
       setSent(true);
     } catch {
       // Por seguridad siempre mostramos el mismo mensaje
@@ -53,25 +53,24 @@ export default function ForgotPasswordScreen() {
 
           <Text style={styles.title}>¿Olvidaste tu contraseña?</Text>
           <Text style={styles.subtitle}>
-            Ingresa tu correo y te enviaremos un código para restablecer tu contraseña.
+            Ingresa tu correo o celular y te enviaremos un código para restablecer tu contraseña.
           </Text>
 
           <View style={styles.card}>
             {!sent ? (
               <>
                 <View style={styles.inputGroup}>
-                  <Text style={styles.label}>Correo electrónico</Text>
+                  <Text style={styles.label}>Correo electrónico o Celular</Text>
                   <View style={styles.inputContainer}>
                     <Ionicons name="mail-outline" size={18} color={Colors.textMuted} style={styles.inputIcon} />
                     <TextInput
                       style={styles.input}
-                      value={email}
-                      onChangeText={setEmail}
-                      placeholder="tu@correo.com"
+                      value={identificador}
+                      onChangeText={setIdentificador}
+                      placeholder="tu@correo.com o +51..."
                       placeholderTextColor={Colors.textMuted}
-                      keyboardType="email-address"
+                      keyboardType="default"
                       autoCapitalize="none"
-                      autoComplete="email"
                     />
                   </View>
                 </View>
@@ -98,7 +97,7 @@ export default function ForgotPasswordScreen() {
                 </Text>
                 <Button
                   title="INGRESAR CÓDIGO"
-                  onPress={() => router.push({ pathname: '/(auth)/reset-password', params: { email } })}
+                  onPress={() => router.push({ pathname: '/(auth)/reset-password', params: { email: identificador } })}
                   size="lg"
                   variant="accent"
                   style={{ marginTop: Spacing.lg }}

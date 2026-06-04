@@ -15,7 +15,7 @@ export const LoginPage = () => {
     setLoading(true);
     setError('');
     try {
-      const { data } = await authService.login({ email, password });
+      const { data } = await authService.login({ identificador: email, password });
       if (data.usuario.rol !== 'Administrador') {
         throw new Error('No tienes permisos de administrador.');
       }
@@ -70,12 +70,12 @@ export const LoginPage = () => {
 
         <form onSubmit={handleLogin}>
           <div className="input-group">
-            <label style={{ color: '#1A4731', fontWeight: '600' }}><Mail size={14} style={{ display: 'inline', marginRight: '6px', verticalAlign: 'middle' }} />Correo electrónico</label>
+            <label style={{ color: '#1A4731', fontWeight: '600' }}><Mail size={14} style={{ display: 'inline', marginRight: '6px', verticalAlign: 'middle' }} />Correo o Celular</label>
             <input
-              type="email"
+              type="text"
               value={email}
               onChange={(e) => setEmail(e.target.value)}
-              placeholder="admin@chapatucancha.com"
+              placeholder="admin@chapatucancha.com o +51999999999"
               required
             />
           </div>

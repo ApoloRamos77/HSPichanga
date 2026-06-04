@@ -13,7 +13,7 @@ import { Colors, Spacing, Radius, Typography } from '../../src/theme';
 export default function ResetPasswordScreen() {
   const { email: emailParam } = useLocalSearchParams<{ email?: string }>();
 
-  const [email, setEmail]           = useState(emailParam ?? '');
+  const [identificador, setIdentificador] = useState(emailParam ?? '');
   const [token, setToken]           = useState('');
   const [newPass, setNewPass]       = useState('');
   const [confirmPass, setConfirm]   = useState('');
@@ -22,7 +22,7 @@ export default function ResetPasswordScreen() {
   const [success, setSuccess]       = useState(false);
 
   const handleReset = async () => {
-    if (!email.trim() || !token.trim() || !newPass.trim()) {
+    if (!identificador.trim() || !token.trim() || !newPass.trim()) {
       Alert.alert('Campos requeridos', 'Completa todos los campos.');
       return;
     }
@@ -36,7 +36,7 @@ export default function ResetPasswordScreen() {
     }
     setLoading(true);
     try {
-      await authService.resetPassword(email.trim().toLowerCase(), token.trim().toUpperCase(), newPass);
+      await authService.resetPassword(identificador.trim().toLowerCase(), token.trim().toUpperCase(), newPass);
       setSuccess(true);
     } catch (err: any) {
       const msg = err.response?.data?.mensaje ?? 'Código inválido o expirado. Solicita uno nuevo.';
@@ -87,21 +87,21 @@ export default function ResetPasswordScreen() {
             <Ionicons name="key-outline" size={40} color={Colors.accent} />
           </View>
           <Text style={styles.title}>Restablecer Contraseña</Text>
-          <Text style={styles.subtitle}>Ingresa el código que recibiste en tu correo y tu nueva contraseña.</Text>
+          <Text style={styles.subtitle}>Ingresa el código que recibiste y tu nueva contraseña.</Text>
 
           <View style={styles.card}>
             {/* Email */}
             <View style={styles.inputGroup}>
-              <Text style={styles.label}>Correo electrónico</Text>
+              <Text style={styles.label}>Correo electrónico o Celular</Text>
               <View style={styles.inputContainer}>
                 <Ionicons name="mail-outline" size={18} color={Colors.textMuted} style={styles.inputIcon} />
                 <TextInput
                   style={styles.input}
-                  value={email}
-                  onChangeText={setEmail}
-                  placeholder="tu@correo.com"
+                  value={identificador}
+                  onChangeText={setIdentificador}
+                  placeholder="tu@correo.com o +51..."
                   placeholderTextColor={Colors.textMuted}
-                  keyboardType="email-address"
+                  keyboardType="default"
                   autoCapitalize="none"
                 />
               </View>
@@ -122,7 +122,7 @@ export default function ResetPasswordScreen() {
                   maxLength={8}
                 />
               </View>
-              <Text style={styles.hint}>El código tiene 8 caracteres y fue enviado a tu correo.</Text>
+              <Text style={styles.hint}>El código tiene 8 caracteres y fue enviado a tu correo o celular.</Text>
             </View>
 
             {/* New password */}

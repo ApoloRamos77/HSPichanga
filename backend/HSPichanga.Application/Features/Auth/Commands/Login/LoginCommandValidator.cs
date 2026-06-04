@@ -6,9 +6,8 @@ public class LoginCommandValidator : AbstractValidator<LoginCommand>
 {
     public LoginCommandValidator()
     {
-        RuleFor(x => x.Email)
-            .NotEmpty().WithMessage("El email no puede estar vacío.")
-            .EmailAddress().WithMessage("Formato de email inválido.");
+        RuleFor(x => x.Identificador)
+            .NotEmpty().WithMessage("El identificador no puede estar vacío.");
 
         RuleFor(x => x.Password)
             .NotEmpty().WithMessage("La contraseña es requerida.");
