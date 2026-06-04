@@ -52,9 +52,10 @@ export const UsersPage = () => {
   });
 
   const filteredUsuarios = useMemo(() => {
-    if (!search.trim()) return usuarios;
+    const jugadores = usuarios.filter((u: any) => u.rol === 'Jugador');
+    if (!search.trim()) return jugadores;
     const q = search.toLowerCase();
-    return usuarios.filter(
+    return jugadores.filter(
       (u) => u.nombreCompleto.toLowerCase().includes(q) || (u.email && u.email.toLowerCase().includes(q)) || (u.telefono && u.telefono.toLowerCase().includes(q))
     );
   }, [usuarios, search]);
