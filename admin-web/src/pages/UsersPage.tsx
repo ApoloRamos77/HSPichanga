@@ -72,13 +72,13 @@ export const UsersPage = () => {
 
   const createMutation = useMutation({
     mutationFn: () => {
-      const rolMap: Record<string, number> = { Jugador: 0, Administrador: 1 };
+      const rolMap: Record<string, number> = { Jugador: 2, Administrador: 1 };
       return usuariosService.create({
         nombreCompleto: createForm.nombreCompleto,
         email: createForm.email || undefined,
         telefono: createForm.telefono || undefined,
         alias: createForm.alias || undefined,
-        rol: rolMap[createForm.rol] ?? 0,
+        rol: rolMap[createForm.rol] ?? 2,
       });
     },
     onSuccess: () => {
@@ -453,8 +453,8 @@ export const UsersPage = () => {
             <form
               onSubmit={(e) => {
                 e.preventDefault();
-                const rolMap: Record<string, number> = { Jugador: 0, Administrador: 1 };
-                updateMutation.mutate({ id: selectedUser.id, nombreCompleto: formData.nombreCompleto, alias: formData.alias, telefono: formData.telefono, rol: rolMap[formData.rol] ?? 0 });
+                const rolMap: Record<string, number> = { Jugador: 2, Administrador: 1 };
+                updateMutation.mutate({ id: selectedUser.id, nombreCompleto: formData.nombreCompleto, alias: formData.alias, telefono: formData.telefono, rol: rolMap[formData.rol] ?? 2 });
               }}
               style={{ display: 'flex', flexDirection: 'column', gap: '14px', marginTop: '4px' }}
             >
