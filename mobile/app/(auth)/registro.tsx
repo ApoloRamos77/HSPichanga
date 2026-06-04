@@ -83,7 +83,56 @@ export default function RegistroScreen() {
               { label: 'Nombre completo', field: 'nombreCompleto', icon: 'person-outline', placeholder: 'Juan Pérez', type: 'default' },
               { label: 'Alias (Opcional)', field: 'alias', icon: 'person-circle-outline', placeholder: 'Juan P.', type: 'default' },
               { label: 'Correo electrónico', field: 'email', icon: 'mail-outline', placeholder: 'juan@correo.com', type: 'email-address' },
-              { label: 'Teléfono', field: 'telefono', icon: 'call-outline', placeholder: '+51 999 000 000', type: 'phone-pad' },
+            ].map(({ label, field, icon, placeholder, secure, type }) => (
+              <View key={field} style={styles.inputGroup}>
+                <Text style={styles.label}>{label}</Text>
+                <View style={styles.inputContainer}>
+                  <Ionicons name={icon as any} size={18} color={Colors.textMuted} style={{ marginRight: Spacing.sm }} />
+                  <TextInput
+                    style={styles.input}
+                    value={(form as any)[field]}
+                    onChangeText={update(field as any)}
+                    placeholder={placeholder}
+                    placeholderTextColor={Colors.textMuted}
+                    secureTextEntry={secure}
+                    keyboardType={type as any}
+                    autoCapitalize={type === 'email-address' ? 'none' : 'words'}
+                  />
+                </View>
+              </View>
+            ))}
+
+            {/* Teléfono */}
+            <View style={styles.inputGroup}>
+              <Text style={styles.label}>Teléfono</Text>
+              <View style={[styles.inputContainer, { paddingHorizontal: 0, overflow: 'hidden' }]}>
+                <Ionicons name="call-outline" size={18} color={Colors.textMuted} style={{ marginLeft: Spacing.md, marginRight: Spacing.xs }} />
+                <TextInput
+                  style={{ color: Colors.textPrimary, fontSize: Typography.size.base, minWidth: 45, textAlign: 'center', paddingRight: 8, borderRightWidth: 1, borderRightColor: Colors.border }}
+                  value={form.telefono ? form.telefono.split(' ')[0] : '+51'}
+                  onChangeText={(val) => {
+                    const number = form.telefono.includes(' ') ? form.telefono.substring(form.telefono.indexOf(' ') + 1) : '';
+                    update('telefono')(`${val} ${number}`.trim());
+                  }}
+                  placeholder="+51"
+                  placeholderTextColor={Colors.textMuted}
+                  keyboardType="phone-pad"
+                />
+                <TextInput
+                  style={[styles.input, { paddingLeft: 8 }]}
+                  value={form.telefono.includes(' ') ? form.telefono.substring(form.telefono.indexOf(' ') + 1) : form.telefono}
+                  onChangeText={(val) => {
+                    const prefix = form.telefono.includes(' ') ? form.telefono.split(' ')[0] : '+51';
+                    update('telefono')(`${prefix} ${val}`.trim());
+                  }}
+                  placeholder="999 000 000"
+                  placeholderTextColor={Colors.textMuted}
+                  keyboardType="phone-pad"
+                />
+              </View>
+            </View>
+
+            {[
               { label: 'Contraseña', field: 'password', icon: 'lock-closed-outline', placeholder: '••••••••', secure: true, type: 'default' },
               { label: 'Confirmar contraseña', field: 'confirmPassword', icon: 'shield-checkmark-outline', placeholder: '••••••••', secure: true, type: 'default' },
             ].map(({ label, field, icon, placeholder, secure, type }) => (

@@ -52,10 +52,9 @@ export const UsersPage = () => {
   });
 
   const filteredUsuarios = useMemo(() => {
-    const jugadores = usuarios.filter(u => u.rol === 'Jugador');
-    if (!search.trim()) return jugadores;
+    if (!search.trim()) return usuarios;
     const q = search.toLowerCase();
-    return jugadores.filter(
+    return usuarios.filter(
       (u) => u.nombreCompleto.toLowerCase().includes(q) || (u.email && u.email.toLowerCase().includes(q)) || (u.telefono && u.telefono.toLowerCase().includes(q))
     );
   }, [usuarios, search]);
@@ -347,13 +346,35 @@ export const UsersPage = () => {
               </div>
               <div>
                 <label style={labelStyle}>Teléfono</label>
-                <input
-                  type="text"
-                  className="form-input"
-                  value={createForm.telefono}
-                  onChange={(e) => setCreateForm({ ...createForm, telefono: e.target.value })}
-                  placeholder="+51 999 000 000"
-                />
+                <div style={{ display: 'flex', gap: '8px' }}>
+                  <select
+                    style={{ ...labelStyle, padding: '0 12px', borderRadius: '6px', borderWidth: 1, borderColor: '#e2e8f0', backgroundColor: '#ffffff', color: '#1e293b' }}
+                    value={createForm.telefono.split(' ')[0] || '+51'}
+                    onChange={(e) => {
+                      const number = createForm.telefono.substring(createForm.telefono.indexOf(' ') + 1) || '';
+                      setCreateForm({ ...createForm, telefono: `${e.target.value} ${number}`.trim() });
+                    }}
+                  >
+                    <option value="+51">🇵🇪 +51</option>
+                    <option value="+54">🇦🇷 +54</option>
+                    <option value="+56">🇨🇱 +56</option>
+                    <option value="+57">🇨🇴 +57</option>
+                    <option value="+52">🇲🇽 +52</option>
+                    <option value="+593">🇪🇨 +593</option>
+                    <option value="+591">🇧🇴 +591</option>
+                  </select>
+                  <input
+                    type="text"
+                    className="form-input"
+                    style={{ flex: 1 }}
+                    value={createForm.telefono.substring(createForm.telefono.indexOf(' ') + 1)}
+                    onChange={(e) => {
+                      const prefix = createForm.telefono.split(' ')[0] || '+51';
+                      setCreateForm({ ...createForm, telefono: `${prefix} ${e.target.value}`.trim() });
+                    }}
+                    placeholder="999 000 000"
+                  />
+                </div>
               </div>
               <div>
                 <label style={labelStyle}>Rol</label>
@@ -454,8 +475,35 @@ export const UsersPage = () => {
               </div>
               <div>
                 <label style={labelStyle}>Teléfono</label>
-                <input type="text" className="form-input" value={formData.telefono}
-                  onChange={(e) => setFormData({ ...formData, telefono: e.target.value })} />
+                <div style={{ display: 'flex', gap: '8px' }}>
+                  <select
+                    style={{ ...labelStyle, padding: '0 12px', borderRadius: '6px', borderWidth: 1, borderColor: '#e2e8f0', backgroundColor: '#ffffff', color: '#1e293b' }}
+                    value={formData.telefono.split(' ')[0] || '+51'}
+                    onChange={(e) => {
+                      const number = formData.telefono.substring(formData.telefono.indexOf(' ') + 1) || '';
+                      setFormData({ ...formData, telefono: `${e.target.value} ${number}`.trim() });
+                    }}
+                  >
+                    <option value="+51">🇵🇪 +51</option>
+                    <option value="+54">🇦🇷 +54</option>
+                    <option value="+56">🇨🇱 +56</option>
+                    <option value="+57">🇨🇴 +57</option>
+                    <option value="+52">🇲🇽 +52</option>
+                    <option value="+593">🇪🇨 +593</option>
+                    <option value="+591">🇧🇴 +591</option>
+                  </select>
+                  <input
+                    type="text"
+                    className="form-input"
+                    style={{ flex: 1 }}
+                    value={formData.telefono.substring(formData.telefono.indexOf(' ') + 1)}
+                    onChange={(e) => {
+                      const prefix = formData.telefono.split(' ')[0] || '+51';
+                      setFormData({ ...formData, telefono: `${prefix} ${e.target.value}`.trim() });
+                    }}
+                    placeholder="999 000 000"
+                  />
+                </div>
               </div>
               <div>
                 <label style={labelStyle}>Rol</label>
