@@ -1,11 +1,14 @@
-
 import { Link } from 'react-router-dom';
 
 export const LandingNavbar = () => {
   return (
     <nav className="landing-navbar">
       <div className="landing-logo">
-        <span>Chapa</span>TuCancha
+        <img src="/logo.png" alt="ChapaTuCancha" className="landing-logo-img" />
+        <div className="landing-logo-text">
+          <strong>ChapaTuCancha</strong>
+          <span>Pichangas Deportivas</span>
+        </div>
       </div>
       <div className="nav-links">
         <a href="#about">¿Qué es?</a>

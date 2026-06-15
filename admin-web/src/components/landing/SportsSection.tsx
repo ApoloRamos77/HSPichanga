@@ -1,4 +1,3 @@
-
 import soccerImg from '../../assets/hero_soccer.png';
 import volleyImg from '../../assets/volleyball.png';
 
@@ -6,15 +5,19 @@ export const SportsSection = () => {
   return (
     <section className="sports-section" id="sports">
       <div className="landing-container">
+        <div className="section-tag">
+          <span>Modalidades</span>
+        </div>
         <h2 className="section-title">Deportes Disponibles</h2>
         <p className="section-subtitle">
-          Ya sea que busques armar una pichanga de fútbol o un partido intenso de vóley, tenemos opciones para todos.
+          Ya sea que busques armar una pichanga de fútbol o un partido de vóley, tenemos opciones para todos los niveles y gustos.
         </p>
 
         <div className="sports-grid">
           <div className="sport-card">
             <img src={soccerImg} alt="Fútbol" className="sport-img" />
             <div className="sport-overlay">
+              <div className="sport-badge">⚽ Fútbol</div>
               <h3 className="sport-title">Fútbol</h3>
               <div className="sport-modalities">
                 <span className="modality-tag">Fútbol 6</span>
@@ -24,10 +27,11 @@ export const SportsSection = () => {
               </div>
             </div>
           </div>
-          
+
           <div className="sport-card">
             <img src={volleyImg} alt="Vóley" className="sport-img" />
             <div className="sport-overlay">
+              <div className="sport-badge">🏐 Vóley</div>
               <h3 className="sport-title">Vóley</h3>
               <div className="sport-modalities">
                 <span className="modality-tag">Vóley Mixto</span>
