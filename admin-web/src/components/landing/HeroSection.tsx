@@ -1,11 +1,14 @@
-import heroImg from '../../assets/hero_soccer.png';
-import mockupImg from '../../assets/app_mockup.png';
+import heroImgDefault from '../../assets/hero_soccer.png';
+import mockupImgDefault from '../../assets/app_mockup.png';
 
-export const HeroSection = () => {
+export const HeroSection = ({ settings }: { settings?: Record<string, string> }) => {
+  const heroBgUrl = settings?.hero_bg || heroImgDefault;
+  const mockupUrl = settings?.mockup_img || mockupImgDefault;
+
   return (
     <section className="hero-section">
       <div className="hero-bg">
-        <img src={heroImg} alt="Jugadores de fútbol" />
+        <img src={heroBgUrl} alt="Fondo hero" />
       </div>
 
       {/* Partículas decorativas */}
@@ -27,9 +30,15 @@ export const HeroSection = () => {
               Descubre partidos cerca de tu ubicación, inscríbete desde la app y disfruta del deporte sin preocuparte por la organización.
             </p>
             <div className="hero-buttons">
-              <button className="btn-primary">
-                📱 Descargar App
-              </button>
+              {settings?.apk_file ? (
+                <a href={settings.apk_file} className="btn-primary" style={{ textDecoration: 'none' }} download>
+                  📱 Descargar App
+                </a>
+              ) : (
+                <button className="btn-primary" onClick={() => alert('La aplicación estará disponible muy pronto.')}>
+                  📱 Descargar App
+                </button>
+              )}
               <button className="btn-secondary">
                 Crear Cuenta
               </button>
@@ -86,7 +95,7 @@ export const HeroSection = () => {
 
           <div className="hero-mockup">
             <div className="mockup-glow" />
-            <img src={mockupImg} alt="ChapaTuCancha App" className="mockup-img" />
+            <img src={mockupUrl} alt="ChapaTuCancha App" className="mockup-img" />
           </div>
         </div>
       </div>

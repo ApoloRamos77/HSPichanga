@@ -16,6 +16,8 @@ public class UploadController : ControllerBase
 
     [HttpPost]
     [Authorize]
+    [RequestSizeLimit(104857600)] // 100 MB
+    [RequestFormLimits(MultipartBodyLengthLimit = 104857600)]
     [ProducesResponseType(typeof(UploadResult), 200)]
     public async Task<IActionResult> Upload(IFormFile file)
     {

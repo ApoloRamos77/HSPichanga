@@ -55,6 +55,19 @@ export const uploadService = {
       headers: { 'Content-Type': 'multipart/form-data' },
     });
   },
+  uploadApk: (file: File, onUploadProgress?: (progressEvent: any) => void) => {
+    const formData = new FormData();
+    formData.append('file', file);
+    return api.post('/Upload', formData, {
+      headers: { 'Content-Type': 'multipart/form-data' },
+      onUploadProgress,
+    });
+  },
+};
+
+export const landingSettingsService = {
+  getAll: () => api.get('/LandingSettings'),
+  update: (settings: Record<string, string | null>) => api.post('/LandingSettings', settings),
 };
 
 export default api;

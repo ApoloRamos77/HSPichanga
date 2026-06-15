@@ -9,6 +9,7 @@ import { UsersPage } from './pages/UsersPage';
 import { SettingsPage } from './pages/SettingsPage';
 
 import { LandingPage } from './pages/LandingPage';
+import { LandingManagerPage } from './pages/LandingManagerPage';
 
 const queryClient = new QueryClient();
 
@@ -36,6 +37,7 @@ function App() {
             <Route path="/canchas" element={<CanchasPage />} />
             <Route path="/partidos" element={<PartidosPage />} />
             <Route path="/usuarios" element={<UsersPage />} />
+            <Route path="/landing-manager" element={<LandingManagerPage />} />
             <Route path="/settings" element={<SettingsPage />} />
           </Route>
 

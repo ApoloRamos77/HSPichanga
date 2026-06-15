@@ -1,7 +1,10 @@
-import soccerImg from '../../assets/hero_soccer.png';
-import volleyImg from '../../assets/volleyball.png';
+import soccerImgDefault from '../../assets/hero_soccer.png';
+import volleyImgDefault from '../../assets/volleyball.png';
 
-export const SportsSection = () => {
+export const SportsSection = ({ settings }: { settings?: Record<string, string> }) => {
+  const soccerUrl = settings?.sport_soccer || soccerImgDefault;
+  const volleyUrl = settings?.sport_volley || volleyImgDefault;
+
   return (
     <section className="sports-section" id="sports">
       <div className="landing-container">
@@ -15,7 +18,7 @@ export const SportsSection = () => {
 
         <div className="sports-grid">
           <div className="sport-card">
-            <img src={soccerImg} alt="Fútbol" className="sport-img" />
+            <img src={soccerUrl} alt="Fútbol" className="sport-img" />
             <div className="sport-overlay">
               <div className="sport-badge">⚽ Fútbol</div>
               <h3 className="sport-title">Fútbol</h3>
@@ -29,7 +32,7 @@ export const SportsSection = () => {
           </div>
 
           <div className="sport-card">
-            <img src={volleyImg} alt="Vóley" className="sport-img" />
+            <img src={volleyUrl} alt="Vóley" className="sport-img" />
             <div className="sport-overlay">
               <div className="sport-badge">🏐 Vóley</div>
               <h3 className="sport-title">Vóley</h3>

@@ -1,5 +1,5 @@
 import { useNavigate, Link, Outlet } from 'react-router-dom';
-import { LayoutDashboard, MapPinned, Settings, LogOut, User as UserIcon, Calendar } from 'lucide-react';
+import { LayoutDashboard, MapPinned, Settings, LogOut, User as UserIcon, Calendar, Smartphone } from 'lucide-react';
 
 export const DashboardLayout = () => {
   const navigate = useNavigate();
@@ -56,6 +56,7 @@ export const DashboardLayout = () => {
           <SidebarLink to="/canchas"    icon={<MapPinned size={19} />}        label="Gestión de Canchas" />
           <SidebarLink to="/partidos"   icon={<Calendar size={19} />}         label="Control de Partidos" />
           <SidebarLink to="/usuarios"   icon={<UserIcon size={19} />}         label="Usuarios Registrados" />
+          <SidebarLink to="/landing-manager" icon={<Smartphone size={19} />}  label="Gestión de Landing" />
           <SidebarLink to="/settings"   icon={<Settings size={19} />}         label="Configuración" />
         </nav>
 
