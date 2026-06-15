@@ -19,7 +19,7 @@ const ProtectedRoute = ({ children }: { children: React.ReactNode }) => {
 function App() {
   return (
     <QueryClientProvider client={queryClient}>
-      <BrowserRouter basename="/chapatucancha">
+      <BrowserRouter>
         <Routes>
           <Route path="/login" element={<LoginPage />} />
           
