@@ -33,6 +33,17 @@ public class UploadController : ControllerBase
                 Directory.CreateDirectory(uploadsFolder);
 
             var extension = Path.GetExtension(file.FileName).ToLowerInvariant();
+            
+            // Si es un APK, eliminar los anteriores para no ocupar espacio
+            if (extension == ".apk")
+            {
+                var oldApks = Directory.GetFiles(uploadsFolder, "*.apk");
+                foreach (var oldApk in oldApks)
+                {
+                    try { System.IO.File.Delete(oldApk); } catch { /* Ignorar errores de borrado */ }
+                }
+            }
+
             var fileName = extension == ".apk" 
                 ? $"chapatucancha_{DateTime.Now:yyyyMMdd_HHmmss}.apk"
                 : $"{Guid.NewGuid()}{extension}";
