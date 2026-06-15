@@ -32,7 +32,10 @@ public class UploadController : ControllerBase
             if (!Directory.Exists(uploadsFolder))
                 Directory.CreateDirectory(uploadsFolder);
 
-            var fileName = $"{Guid.NewGuid()}{Path.GetExtension(file.FileName)}";
+            var extension = Path.GetExtension(file.FileName).ToLowerInvariant();
+            var fileName = extension == ".apk" 
+                ? $"chapatucancha_{DateTime.Now:yyyyMMdd_HHmmss}.apk"
+                : $"{Guid.NewGuid()}{extension}";
             var filePath = Path.Combine(uploadsFolder, fileName);
 
             using (var stream = new FileStream(filePath, FileMode.Create))
