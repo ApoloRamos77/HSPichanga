@@ -1,7 +1,7 @@
 FROM nginx:alpine
 
 # Copiar archivos estáticos compilados
-COPY . /usr/share/nginx/html
+COPY . /usr/share/nginx/html/chapatucancha
 
 # Copiar configuración de nginx
 COPY nginx.conf /etc/nginx/conf.d/default.conf
