@@ -171,13 +171,18 @@ var envPaths = app.Services.GetRequiredService<IWebHostEnvironment>();
 var finalWebRoot = envPaths.WebRootPath ?? Path.Combine(envPaths.ContentRootPath, "wwwroot");
 var finalUploadsPath = Path.Combine(finalWebRoot, "uploads");
 
+var provider = new Microsoft.AspNetCore.StaticFiles.FileExtensionContentTypeProvider();
+// Agregar soporte para descargar archivos APK
+provider.Mappings[".apk"] = "application/vnd.android.package-archive";
+
 app.UseStaticFiles(); // Servir archivos desde wwwroot por defecto
 
 // Configuración explícita para la carpeta de subidas
 app.UseStaticFiles(new StaticFileOptions
 {
     FileProvider = new Microsoft.Extensions.FileProviders.PhysicalFileProvider(finalUploadsPath),
-    RequestPath = "/uploads"
+    RequestPath = "/uploads",
+    ContentTypeProvider = provider
 });
 
 app.UseAuthentication();
