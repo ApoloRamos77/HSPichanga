@@ -8,7 +8,7 @@ export const HeroSection = () => {
         <img src={heroImg} alt="Jugadores de fútbol" />
       </div>
 
-      {/* Partículas decorativas con colores corporativos */}
+      {/* Partículas decorativas */}
       <div className="hero-particles">
         <div className="hero-particle" />
         <div className="hero-particle" />
@@ -34,6 +34,8 @@ export const HeroSection = () => {
                 Crear Cuenta
               </button>
             </div>
+
+            {/* Estadísticas */}
             <div className="hero-stats">
               <div className="hero-stat">
                 <strong>500+</strong>
@@ -46,6 +48,38 @@ export const HeroSection = () => {
               <div className="hero-stat">
                 <strong>15+</strong>
                 <span>Canchas aliadas</span>
+              </div>
+            </div>
+
+            {/* Franja de micro-beneficios — visible sin scroll */}
+            <div className="hero-features-strip">
+              <div className="hero-feature-item">
+                <div className="hero-feature-icon">📍</div>
+                <div className="hero-feature-text">
+                  <strong>Cerca de ti</strong>
+                  <span>Partidos en tu zona</span>
+                </div>
+              </div>
+              <div className="hero-feature-item">
+                <div className="hero-feature-icon">⚡</div>
+                <div className="hero-feature-text">
+                  <strong>Inscripción rápida</strong>
+                  <span>En segundos desde la app</span>
+                </div>
+              </div>
+              <div className="hero-feature-item">
+                <div className="hero-feature-icon">🆓</div>
+                <div className="hero-feature-text">
+                  <strong>Gratis</strong>
+                  <span>Sin costo para jugadores</span>
+                </div>
+              </div>
+              <div className="hero-feature-item">
+                <div className="hero-feature-icon">🏆</div>
+                <div className="hero-feature-text">
+                  <strong>Fútbol y Vóley</strong>
+                  <span>Múltiples modalidades</span>
+                </div>
               </div>
             </div>
           </div>
