@@ -27,13 +27,13 @@ builder.Services.AddControllers();
 builder.Services.Configure<Microsoft.AspNetCore.Http.Features.FormOptions>(options =>
 {
     options.ValueLengthLimit = int.MaxValue;
-    options.MultipartBodyLengthLimit = 104857600; // 100 MB
+    options.MultipartBodyLengthLimit = int.MaxValue;
     options.MemoryBufferThreshold = int.MaxValue;
 });
 
 builder.WebHost.ConfigureKestrel(serverOptions =>
 {
-    serverOptions.Limits.MaxRequestBodySize = 104857600; // 100 MB
+    serverOptions.Limits.MaxRequestBodySize = null; // Unlimited
 });
 
 // ─── JWT Authentication ───────────────────────────────────────────────────────
