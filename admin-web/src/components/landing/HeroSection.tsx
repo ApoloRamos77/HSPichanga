@@ -68,10 +68,10 @@ export const HeroSection = () => {
                 </div>
               </div>
               <div className="hero-feature-item">
-                <div className="hero-feature-icon">🆓</div>
+                <div className="hero-feature-icon">🎯</div>
                 <div className="hero-feature-text">
-                  <strong>Gratis</strong>
-                  <span>Sin costo para jugadores</span>
+                  <strong>Juega solo</strong>
+                  <span>Sin necesitar equipo</span>
                 </div>
               </div>
               <div className="hero-feature-item">

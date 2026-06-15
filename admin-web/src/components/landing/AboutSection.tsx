@@ -19,10 +19,10 @@ export const AboutSection = () => {
       desc: 'Crea y administra pichangas amistosas con tu equipo de manera sencilla e intuitiva.',
     },
     {
-      icon: '👥',
+      icon: '👤',
       number: '04',
-      title: 'Individual o en equipo',
-      desc: 'Únete solo o lleva a todo tu equipo. Tú decides cómo quieres participar.',
+      title: 'Juega sin equipo',
+      desc: 'No necesitas un equipo completo. Paga tu cuota individual y únete a una pichanga. ¿Tienes equipo? Inscríbelos juntos.',
     },
     {
       icon: '⏱️',
