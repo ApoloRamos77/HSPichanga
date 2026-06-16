@@ -1,26 +1,24 @@
-FROM node:18-alpine
+FROM node:18-bullseye-slim
 
-# Instalar dependencias necesarias para Puppeteer en Alpine Linux
-RUN apk add --no-cache \
-      chromium \
-      nss \
-      freetype \
-      harfbuzz \
-      ca-certificates \
-      ttf-freefont \
-      nodejs \
-      yarn
-
-# Indicarle a Puppeteer que use el ejecutable de Chromium instalado en el sistema
-ENV PUPPETEER_SKIP_CHROMIUM_DOWNLOAD=true \
-    PUPPETEER_EXECUTABLE_PATH=/usr/bin/chromium-browser
+# Instalar dependencias necesarias para que el Chromium de Puppeteer funcione en Debian
+RUN apt-get update && apt-get install -y \
+    wget \
+    gnupg \
+    libnss3 \
+    libxss1 \
+    libasound2 \
+    libatk-bridge2.0-0 \
+    libgtk-3-0 \
+    libgbm-dev \
+    && rm -rf /var/lib/apt/lists/*
 
 # Crear y cambiar al directorio de trabajo de la app
 WORKDIR /usr/src/app
 
 # Copiar package.json y restaurar dependencias
+# NOTA: Puppeteer descargará su propio binario de Chromium garantizado para ser compatible
 COPY package*.json ./
-RUN npm install --production
+RUN npm install
 
 # Copiar el resto del código
 COPY . .
