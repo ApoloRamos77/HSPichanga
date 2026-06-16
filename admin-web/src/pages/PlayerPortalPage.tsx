@@ -427,11 +427,10 @@ export const PlayerPortalPage: React.FC = () => {
     }
   }, [user?.id]);
 
-  useEffect(() => { fetchPartidos(); }, [fetchPartidos]);
-
-  useEffect(() => {
-    if (activeTab === 'reservas') fetchReservas();
-  }, [activeTab, fetchReservas]);
+  useEffect(() => { 
+    fetchPartidos(); 
+    if (user?.id) fetchReservas();
+  }, [fetchPartidos, fetchReservas, user?.id]);
 
   /* ── Filtros partidos ── */
   const partidosFiltrados = partidos.filter(p => {
@@ -545,17 +544,42 @@ export const PlayerPortalPage: React.FC = () => {
                     S/ {p.cuotaIndividual.toFixed(2)}
                     <small>cuota individual</small>
                   </div>
-                  <button
-                    id={`btn-reservar-${p.id}`}
-                    className="btn-reservar"
-                    disabled={p.cuposDisponibles === 0}
-                    onClick={() => {
-                      if (!user) { navigate('/login'); return; }
-                      setSelectedPartido(p);
-                    }}
-                  >
-                    {p.cuposDisponibles === 0 ? 'Sin cupos' : <>Reservar <ChevronRight size={15} /></>}
-                  </button>
+                  {(() => {
+                    const miReserva = reservas.find(r => r.partidoId === p.id && r.estadoPago.toLowerCase() !== 'rechazado' && r.estadoPago.toLowerCase() !== 'devuelto');
+                    if (miReserva) {
+                      const lower = miReserva.estadoPago.toLowerCase();
+                      const isPending = lower === 'pendiente' || lower === 'enverificacion';
+                      const isConfirmed = lower === 'pagado' || lower === 'confirmado';
+                      
+                      if (isPending) {
+                        return (
+                          <button className="btn-reservar" disabled style={{ backgroundColor: 'rgba(251,191,36,0.15)', color: '#fbbf24', border: '1px solid rgba(251,191,36,0.4)', opacity: 1, fontWeight: 'bold' }}>
+                            Verificando... ⏳
+                          </button>
+                        );
+                      }
+                      if (isConfirmed) {
+                        return (
+                          <button className="btn-reservar" disabled style={{ backgroundColor: 'rgba(22,163,74,0.15)', color: '#4ade80', border: '1px solid rgba(74,222,128,0.4)', opacity: 1, fontWeight: 'bold' }}>
+                            ¡Inscrito! ✅
+                          </button>
+                        );
+                      }
+                    }
+                    return (
+                      <button
+                        id={`btn-reservar-${p.id}`}
+                        className="btn-reservar"
+                        disabled={p.cuposDisponibles === 0}
+                        onClick={() => {
+                          if (!user) { navigate('/login'); return; }
+                          setSelectedPartido(p);
+                        }}
+                      >
+                        {p.cuposDisponibles === 0 ? 'Sin cupos' : <>Reservar <ChevronRight size={15} /></>}
+                      </button>
+                    );
+                  })()}
                 </div>
               </div>
             </div>
