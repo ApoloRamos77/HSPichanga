@@ -69,7 +69,9 @@ const getMetodoPagoNum = (metodo: 'yape' | 'plin') => metodo === 'yape' ? 1 : 2;
 const EstadoBadge: React.FC<{ estado: string }> = ({ estado }) => {
   const lower = estado.toLowerCase();
   const map: Record<string, { cls: string; icon: string; label: string }> = {
-    pendiente: { cls: 'pendiente', icon: '🟡', label: 'En Validación' },
+    pendiente: { cls: 'pendiente', icon: '🟡', label: 'Pendiente' },
+    enverificacion: { cls: 'pendiente', icon: '⏳', label: 'En Proceso de Verificación' },
+    pagado: { cls: 'confirmado', icon: '✅', label: 'Confirmado' },
     confirmado: { cls: 'confirmado', icon: '✅', label: 'Confirmado' },
     rechazado:  { cls: 'rechazado',  icon: '❌', label: 'Rechazado' },
   };
@@ -80,8 +82,10 @@ const EstadoBadge: React.FC<{ estado: string }> = ({ estado }) => {
 const EstadoDescripcion: React.FC<{ estado: string }> = ({ estado }) => {
   const lower = estado.toLowerCase();
   const desc: Record<string, string> = {
-    pendiente: 'Tu pago está en proceso de validación por el administrador.',
-    confirmado: '¡Pago confirmado! Ya estás inscrito en este partido.',
+    pendiente: 'Aún no se ha registrado el pago de tu reserva.',
+    enverificacion: 'Tu pago está en proceso de verificación por el administrador. Pronto se confirmará tu cupo.',
+    pagado: '¡Pago confirmado! Ya estás inscrito en este partido.',
+    confirmado: '¡Reserva confirmada! Ya estás inscrito en este partido.',
     rechazado: 'Pago rechazado. Contacta al administrador para más información.',
   };
   return (
@@ -112,6 +116,13 @@ const ReservaModal: React.FC<ReservaModalProps> = ({ partido, jugadorId, onClose
   const hasPlin = !!partido.celularPlin;
   const requiresPago = hasYape || hasPlin;
 
+  useEffect(() => {
+    if (!metodoPago) {
+      if (hasYape) setMetodoPago('yape');
+      else if (hasPlin) setMetodoPago('plin');
+    }
+  }, [hasYape, hasPlin, metodoPago]);
+
   const handleEvidencia = (e: React.ChangeEvent<HTMLInputElement>) => {
     const file = e.target.files?.[0];
     if (file) setEvidenciaFile(file);
@@ -123,8 +134,8 @@ const ReservaModal: React.FC<ReservaModalProps> = ({ partido, jugadorId, onClose
       setError('Selecciona un método de pago.');
       return;
     }
-    if (requiresPago && !numeroOp.trim()) {
-      setError('Ingresa el número de operación del pago.');
+    if (requiresPago && !numeroOp.trim() && !evidenciaFile) {
+      setError('Debes ingresar el número de operación o subir la captura del comprobante.');
       return;
     }
     setLoading(true);
@@ -182,9 +193,9 @@ const ReservaModal: React.FC<ReservaModalProps> = ({ partido, jugadorId, onClose
             <p>Tu código de confirmación es:</p>
             <div className="codigo">{codigoConfirmacion}</div>
             <div className="info-pendiente">
-              🟡 <strong>Estado: En Validación</strong><br />
-              Tu reserva está pendiente de confirmación por el administrador.
-              Una vez que valide tu pago, el estado cambiará a <strong>Confirmado</strong>.
+              🟡 <strong>Estado: En Proceso de Verificación</strong><br />
+              Tu reserva está en proceso de verificación por el administrador.
+              Una vez que valide tus datos y confirme tu pago, el estado cambiará a <strong>Confirmado</strong>.
               Puedes revisar el estado en la pestaña <em>"Mis Reservas"</em>.
             </div>
             <br />
@@ -284,7 +295,7 @@ const ReservaModal: React.FC<ReservaModalProps> = ({ partido, jugadorId, onClose
 
                 {/* Número de operación */}
                 <div className="pago-field">
-                  <label htmlFor="num-operacion">Número de operación *</label>
+                  <label htmlFor="num-operacion">Número de operación {evidenciaFile ? '(Opcional)' : '*'}</label>
                   <input
                     id="num-operacion"
                     type="text"
@@ -298,7 +309,7 @@ const ReservaModal: React.FC<ReservaModalProps> = ({ partido, jugadorId, onClose
 
                 {/* Evidencia */}
                 <div className="pago-field">
-                  <label>Captura del comprobante <span style={{ opacity: 0.5, fontWeight: 400 }}>(Opcional)</span></label>
+                  <label>Captura del comprobante {numeroOp.trim() ? '(Opcional)' : '*'}</label>
                   <label className="evidencia-upload-area" htmlFor="evidencia-input">
                     <input
                       id="evidencia-input"
