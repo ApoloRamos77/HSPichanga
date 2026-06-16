@@ -9,6 +9,7 @@ public interface IUnitOfWork : IDisposable
     IZonaRepository Zonas { get; }
     ICalificacionRepository Calificaciones { get; }
     IMensajeRepository Mensajes { get; }
+    IConfiguracionRepository Configuraciones { get; }
 
     Task<int> SaveChangesAsync(CancellationToken cancellationToken = default);
 }

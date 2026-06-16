@@ -57,6 +57,7 @@ export const DashboardLayout = () => {
           <SidebarLink to="/partidos"   icon={<Calendar size={19} />}         label="Control de Partidos" />
           <SidebarLink to="/usuarios"   icon={<UserIcon size={19} />}         label="Usuarios Registrados" />
           <SidebarLink to="/landing-manager" icon={<Smartphone size={19} />}  label="Gestión de Landing" />
+          <SidebarLink to="/whatsapp-settings" icon={<Smartphone size={19} />} label="WhatsApp (Bot)" />
           <SidebarLink to="/settings"   icon={<Settings size={19} />}         label="Configuración" />
         </nav>
 

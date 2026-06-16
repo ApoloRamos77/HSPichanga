@@ -29,10 +29,15 @@ public static class DependencyInjection
         services.AddScoped<IUsuarioRepository, UsuarioRepository>();
         services.AddScoped<ICalificacionRepository, CalificacionRepository>();
         services.AddScoped<IMensajeRepository, MensajeRepository>();
+        services.AddScoped<IConfiguracionRepository, ConfiguracionRepository>();
         services.AddScoped<IUnitOfWork, UnitOfWork>();
         services.AddScoped<IJwtTokenService, JwtTokenService>();
         services.AddScoped<IEmailService, GmailEmailService>();
         services.AddScoped<ISmsService, HSPichanga.Infrastructure.Services.MockSmsService>();
+
+        // WhatsApp Notification Service
+        services.AddHttpClient<IWhatsAppNotificationService, HSPichanga.Infrastructure.Services.WhatsApp.UnofficialWhatsAppService>();
+        services.AddHostedService<HSPichanga.Infrastructure.Services.WhatsApp.MatchReminderBackgroundService>();
 
         return services;
     }

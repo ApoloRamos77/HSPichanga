@@ -1,7 +1,12 @@
 import heroImgDefault from '../../assets/hero_soccer.png';
 import mockupImgDefault from '../../assets/app_mockup.png';
 
-export const HeroSection = ({ settings }: { settings?: Record<string, string> }) => {
+interface HeroSectionProps {
+  settings?: Record<string, string>;
+  onCrearCuenta?: () => void;
+}
+
+export const HeroSection = ({ settings, onCrearCuenta }: HeroSectionProps) => {
   const heroBgUrl = settings?.hero_bg || heroImgDefault;
   const mockupUrl = settings?.mockup_img || mockupImgDefault;
 
@@ -39,7 +44,11 @@ export const HeroSection = ({ settings }: { settings?: Record<string, string> })
                   📱 Descargar App
                 </button>
               )}
-              <button className="btn-secondary">
+              <button
+                id="btn-crear-cuenta-hero"
+                className="btn-secondary"
+                onClick={onCrearCuenta}
+              >
                 Crear Cuenta
               </button>
             </div>

@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import { useNavigate } from 'react-router-dom';
+import { useNavigate, Link } from 'react-router-dom';
 import { authService } from '../services/api';
 import { LogIn, Lock, Mail } from 'lucide-react';
 
@@ -16,14 +16,19 @@ export const LoginPage = () => {
     setError('');
     try {
       const { data } = await authService.login({ identificador: email, password });
-      if (data.usuario.rol !== 'Administrador') {
-        throw new Error('No tienes permisos de administrador.');
-      }
       localStorage.setItem('token', data.token);
       localStorage.setItem('user', JSON.stringify(data.usuario));
-      navigate('/dashboard');
+
+      // Redirigir según rol
+      const rol = data.usuario?.rol?.toLowerCase?.() ?? '';
+      if (rol === 'administrador' || rol === 'delegado') {
+        navigate('/dashboard');
+      } else {
+        // Jugador u otro rol → portal del jugador
+        navigate('/player');
+      }
     } catch (err: any) {
-      setError(err.response?.data?.Mensaje || err.message || 'Error al iniciar sesión');
+      setError(err.response?.data?.Mensaje || err.response?.data?.mensaje || err.message || 'Error al iniciar sesión');
     } finally {
       setLoading(false);
     }
@@ -40,7 +45,7 @@ export const LoginPage = () => {
       <div style={{ position: 'absolute', bottom: '-80px', left: '-80px', width: '350px', height: '350px', borderRadius: '50%', background: 'rgba(6,182,212,0.1)', pointerEvents: 'none' }} />
       <div style={{ position: 'absolute', top: '30%', left: '10%', width: '200px', height: '200px', borderRadius: '50%', background: 'rgba(27,117,208,0.08)', pointerEvents: 'none' }} />
 
-      {/* Card blanca premium */}
+      {/* Card premium */}
       <div style={{
         width: '440px', background: 'rgba(255,255,255,0.97)', borderRadius: '24px', padding: '44px 40px',
         boxShadow: '0 25px 60px rgba(0,0,0,0.25), 0 0 0 1px rgba(255,255,255,0.6)',
@@ -65,24 +70,32 @@ export const LoginPage = () => {
           </div>
           <h1 style={{ fontSize: '1.75rem', fontWeight: '900', color: '#14532D', marginBottom: '4px', letterSpacing: '-0.02em' }}>ChapatuCancha</h1>
           <p style={{ fontSize: '0.75rem', color: '#16A34A', fontWeight: '700', letterSpacing: '0.15em', textTransform: 'uppercase', marginBottom: '6px' }}>Pichangas Deportivas</p>
-          <p style={{ color: '#4D7A5E', fontSize: '0.875rem' }}>Accede al panel de administración</p>
+          <p style={{ color: '#4D7A5E', fontSize: '0.875rem' }}>Ingresa con tu cuenta de jugador o administrador</p>
         </div>
 
         <form onSubmit={handleLogin}>
           <div className="input-group">
-            <label style={{ color: '#1A4731', fontWeight: '600' }}><Mail size={14} style={{ display: 'inline', marginRight: '6px', verticalAlign: 'middle' }} />Correo o Celular</label>
+            <label style={{ color: '#1A4731', fontWeight: '600' }}>
+              <Mail size={14} style={{ display: 'inline', marginRight: '6px', verticalAlign: 'middle' }} />
+              Correo o Celular
+            </label>
             <input
+              id="login-email"
               type="text"
               value={email}
               onChange={(e) => setEmail(e.target.value)}
-              placeholder="admin@chapatucancha.com o +51999999999"
+              placeholder="correo@email.com o +51999999999"
               required
             />
           </div>
 
           <div className="input-group">
-            <label style={{ color: '#1A4731', fontWeight: '600' }}><Lock size={14} style={{ display: 'inline', marginRight: '6px', verticalAlign: 'middle' }} />Contraseña</label>
+            <label style={{ color: '#1A4731', fontWeight: '600' }}>
+              <Lock size={14} style={{ display: 'inline', marginRight: '6px', verticalAlign: 'middle' }} />
+              Contraseña
+            </label>
             <input
+              id="login-password"
               type="password"
               value={password}
               onChange={(e) => setPassword(e.target.value)}
@@ -91,14 +104,32 @@ export const LoginPage = () => {
             />
           </div>
 
-          {error && <p style={{ color: '#DC2626', marginBottom: '16px', fontSize: '0.875rem', background: '#FEE2E2', padding: '10px 14px', borderRadius: '8px', border: '1px solid #FECACA' }}>{error}</p>}
+          {error && (
+            <p style={{ color: '#DC2626', marginBottom: '16px', fontSize: '0.875rem', background: '#FEE2E2', padding: '10px 14px', borderRadius: '8px', border: '1px solid #FECACA' }}>
+              {error}
+            </p>
+          )}
 
-          <button type="submit" className="premium-btn" style={{ width: '100%', justifyContent: 'center', padding: '14px', fontSize: '0.95rem', letterSpacing: '0.04em' }} disabled={loading}>
-            {loading ? 'Iniciando...' : <><LogIn size={20} /> Ingresar al Panel</>}
+          <button
+            id="btn-login"
+            type="submit"
+            className="premium-btn"
+            style={{ width: '100%', justifyContent: 'center', padding: '14px', fontSize: '0.95rem', letterSpacing: '0.04em' }}
+            disabled={loading}
+          >
+            {loading ? 'Iniciando…' : <><LogIn size={20} /> Iniciar Sesión</>}
           </button>
         </form>
 
-        <p style={{ textAlign: 'center', marginTop: '24px', fontSize: '0.75rem', color: '#4D7A5E' }}>
+        {/* Link a registro */}
+        <div style={{ textAlign: 'center', marginTop: '20px', fontSize: '0.875rem', color: '#4D7A5E' }}>
+          ¿No tienes cuenta?{' '}
+          <Link to="/register" style={{ color: '#16A34A', fontWeight: '700', textDecoration: 'none' }}>
+            Crear cuenta gratis
+          </Link>
+        </div>
+
+        <p style={{ textAlign: 'center', marginTop: '24px', fontSize: '0.72rem', color: '#9CA3AF', borderTop: '1px solid #E5E7EB', paddingTop: '16px' }}>
           ChapatuCancha © 2026 · ADHSOFT SPORT
         </p>
       </div>

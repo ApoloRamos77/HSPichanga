@@ -34,6 +34,7 @@ public interface IReservaRepository
 {
     Task<Reserva?> GetByIdAsync(Guid id, CancellationToken cancellationToken = default);
     Task<IEnumerable<Reserva>> GetByJugadorAsync(Guid jugadorId, CancellationToken cancellationToken = default);
+    Task<IEnumerable<Reserva>> GetByPartidoAsync(Guid partidoId, CancellationToken cancellationToken = default);
     Task<bool> ExisteReservaActivaAsync(Guid partidoId, Guid jugadorId, CancellationToken cancellationToken = default);
     Task AddAsync(Reserva reserva, CancellationToken cancellationToken = default);
 }
@@ -65,4 +66,9 @@ public interface IMensajeRepository
 {
     Task<IEnumerable<Mensaje>> GetByPartidoAsync(Guid partidoId, CancellationToken cancellationToken = default);
     Task AddAsync(Mensaje mensaje, CancellationToken cancellationToken = default);
+}
+
+public interface IConfiguracionRepository
+{
+    Task<string?> ObtenerValorAsync(string clave, CancellationToken cancellationToken = default);
 }

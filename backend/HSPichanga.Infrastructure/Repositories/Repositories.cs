@@ -104,6 +104,11 @@ public class ReservaRepository : IReservaRepository
             .OrderByDescending(r => r.FechaReserva)
             .ToListAsync(cancellationToken);
 
+    public async Task<IEnumerable<Reserva>> GetByPartidoAsync(Guid partidoId, CancellationToken cancellationToken)
+        => await _ctx.Reservas.Include(r => r.Jugador)
+            .Where(r => r.PartidoId == partidoId)
+            .ToListAsync(cancellationToken);
+
     public async Task<bool> ExisteReservaActivaAsync(Guid partidoId, Guid jugadorId, CancellationToken cancellationToken)
         => await _ctx.Reservas.AnyAsync(
             r => r.PartidoId == partidoId && r.JugadorId == jugadorId &&
@@ -153,4 +158,17 @@ public class ZonaRepository : IZonaRepository
 
     public async Task<Zona?> GetByIdAsync(Guid id, CancellationToken cancellationToken)
         => await _ctx.Zonas.FirstOrDefaultAsync(z => z.Id == id, cancellationToken);
+}
+
+public class ConfiguracionRepository : IConfiguracionRepository
+{
+    private readonly AppDbContext _ctx;
+    public ConfiguracionRepository(AppDbContext ctx) => _ctx = ctx;
+
+    public async Task<string?> ObtenerValorAsync(string clave, CancellationToken cancellationToken)
+    {
+        var config = await _ctx.ConfiguracionesLanding
+            .FirstOrDefaultAsync(c => c.Clave == clave, cancellationToken);
+        return config?.Valor;
+    }
 }
