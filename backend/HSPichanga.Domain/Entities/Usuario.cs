@@ -43,8 +43,8 @@ public class Usuario
         {
             Id = Guid.NewGuid(),
             NombreCompleto = nombreCompleto,
-            Email = email?.ToLowerInvariant(),
-            Alias = alias,
+            Email = string.IsNullOrWhiteSpace(email) ? null : email.Trim().ToLowerInvariant(),
+            Alias = string.IsNullOrWhiteSpace(alias) ? null : alias.Trim(),
             PasswordHash = passwordHash,
             Rol = rol,
             Telefono = telefono,
@@ -94,8 +94,8 @@ public class Usuario
         NombreCompleto = nombre;
         Telefono = telefono;
         Rol = rol;
-        Alias = alias;
-        Email = email?.ToLowerInvariant();
+        Alias = string.IsNullOrWhiteSpace(alias) ? null : alias.Trim();
+        Email = string.IsNullOrWhiteSpace(email) ? null : email.Trim().ToLowerInvariant();
     }
 
     public void ActualizarDatosCobro(string? yapeNum, string? yapeUrl, string? plinNum, string? plinUrl)
