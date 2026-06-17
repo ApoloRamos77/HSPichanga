@@ -10,9 +10,9 @@ public class ResetPasswordAdminCommandHandler : IRequestHandler<ResetPasswordAdm
     private readonly IUnitOfWork _uow;
     private readonly IEmailService _email;
     private readonly ISmsService _sms;
-    private readonly IWhatsAppService _whatsapp;
+    private readonly IWhatsAppNotificationService _whatsapp;
 
-    public ResetPasswordAdminCommandHandler(IUnitOfWork uow, IEmailService email, ISmsService sms, IWhatsAppService whatsapp)
+    public ResetPasswordAdminCommandHandler(IUnitOfWork uow, IEmailService email, ISmsService sms, IWhatsAppNotificationService whatsapp)
     {
         _uow = uow;
         _email = email;
@@ -34,7 +34,7 @@ public class ResetPasswordAdminCommandHandler : IRequestHandler<ResetPasswordAdm
         if (request.Canal == "WhatsApp" && !string.IsNullOrWhiteSpace(usuario.Telefono))
         {
             var msg = $"Hola *{usuario.NombreCompleto}*, el administrador ha restablecido tu contraseña en HSPichanga.\n\nClave temporal: *{tempPass}*\n\n⚠️ Al iniciar sesión deberás cambiar esta contraseña por una nueva.";
-            await _whatsapp.SendMessageAsync(usuario.Telefono, msg);
+            await _whatsapp.SendMessageAsync(usuario.Telefono, msg, cancellationToken);
         }
         else if (usuario.Email != null)
         {
