@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import { View, Text, StyleSheet, ScrollView, TextInput, TouchableOpacity, Alert, Modal, FlatList } from 'react-native';
+import { View, Text, StyleSheet, ScrollView, TextInput, TouchableOpacity, Alert, Modal, FlatList, Linking } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import { router } from 'expo-router';
 import { Ionicons } from '@expo/vector-icons';
@@ -568,17 +568,20 @@ export default function AdminPartidosScreen() {
                         {r.estadoPago}
                       </Text>
                     </View>
-                    <Text style={{color: Colors.textSecondary, fontSize: Typography.size.xs, marginBottom: 8}}>Método: {r.metodoPago || 'No especificado'}</Text>
+                    <View style={{ marginBottom: 8 }}>
+                      <Text style={{color: Colors.textSecondary, fontSize: Typography.size.xs}}>Método: {r.metodoPago || 'No especificado'}</Text>
+                      {r.numeroOperacion ? <Text style={{color: Colors.textSecondary, fontSize: Typography.size.xs}}>Operación: <Text style={{color: Colors.textPrimary, fontWeight: 'bold'}}>{r.numeroOperacion}</Text></Text> : null}
+                    </View>
                     
                     {r.estadoPago === 'EnVerificacion' && selectedPartido?.estado !== 'Finalizado' && (
                       <View style={{flexDirection: 'row', gap: Spacing.sm}}>
                         {r.evidenciaPagoUrl && (
                           <TouchableOpacity 
                             style={{ flex: 1, backgroundColor: Colors.primary, padding: 8, borderRadius: Radius.sm, alignItems: 'center' }}
-                            // Normally you'd open this in a webview or linking, simple alert or linking here
                             onPress={() => {
-                              // We can just open the URL using Linking or let them know it's not fully supported if linking fails
-                              Alert.alert('Voucher', 'La URL del voucher es:\n' + r.evidenciaPagoUrl);
+                              Linking.openURL(r.evidenciaPagoUrl!).catch(() => {
+                                Alert.alert('Error', 'No se pudo abrir el enlace del voucher.');
+                              });
                             }}
                           >
                             <Text style={{color: '#FFF', fontSize: Typography.size.xs, fontWeight: 'bold'}}>Voucher</Text>

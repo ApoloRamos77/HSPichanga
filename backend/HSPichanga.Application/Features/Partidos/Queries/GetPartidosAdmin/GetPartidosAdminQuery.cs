@@ -33,7 +33,8 @@ public record ReservaAdminDto(
     string JugadorNombre,
     string EstadoPago,
     string? MetodoPago,
-    string? EvidenciaPagoUrl
+    string? EvidenciaPagoUrl,
+    string? NumeroOperacion
 );
 
 public class GetPartidosAdminQueryHandler : IRequestHandler<GetPartidosAdminQuery, IEnumerable<PartidoAdminDto>>
@@ -68,7 +69,8 @@ public class GetPartidosAdminQueryHandler : IRequestHandler<GetPartidosAdminQuer
                          r.Jugador?.NombreCompleto ?? "Anónimo",
                          r.EstadoPago.ToString(),
                          r.MetodoPago?.ToString(),
-                         r.EvidenciaPagoUrl
+                         r.EvidenciaPagoUrl,
+                         r.NumeroOperacion
                      ))
                      .ToList()
         ));

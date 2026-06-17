@@ -124,6 +124,7 @@ export type ReservaAdminDto = {
   metodoPago: string;
   estadoPago: string;
   evidenciaPagoUrl?: string;
+  numeroOperacion?: string;
 };
 
 // ─── Partidos (admin) ─────────────────────────────────────────────────────────

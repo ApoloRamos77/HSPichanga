@@ -133,7 +133,8 @@ export const PartidosPage = () => {
                         </span>
                       </div>
                       <div style={{ color: 'var(--text-secondary)', fontSize: '0.8rem', marginBottom: '8px' }}>
-                        Método: {r.metodoPago || 'No especificado'}
+                        <div>Método: {r.metodoPago || 'No especificado'}</div>
+                        {r.numeroOperacion && <div>Operación: <strong style={{color: 'var(--text-primary)'}}>{r.numeroOperacion}</strong></div>}
                       </div>
                       
                       {r.estadoPago === 'EnVerificacion' && selectedPartido.estado !== 'Finalizado' && (
