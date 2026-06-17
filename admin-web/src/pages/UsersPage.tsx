@@ -146,7 +146,19 @@ export const UsersPage = () => {
 
   const handleEditClick = (u: Usuario) => {
     setSelectedUser(u);
-    setFormData({ nombreCompleto: u.nombreCompleto, alias: u.alias || '', email: u.email || '', telefono: u.telefono || '', rol: u.rol });
+    
+    let tel = u.telefono || '';
+    if (tel && tel.startsWith('+') && !tel.includes(' ')) {
+      const codes = ['+51', '+54', '+56', '+57', '+52', '+593', '+591'];
+      for (const code of codes) {
+        if (tel.startsWith(code)) {
+          tel = `${code} ${tel.substring(code.length)}`;
+          break;
+        }
+      }
+    }
+
+    setFormData({ nombreCompleto: u.nombreCompleto, alias: u.alias || '', email: u.email || '', telefono: tel, rol: u.rol });
   };
 
   return (
