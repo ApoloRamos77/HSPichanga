@@ -152,7 +152,8 @@ app.UseExceptionHandler(errorApp =>
         }
 
         context.Response.StatusCode = 500;
-        await context.Response.WriteAsJsonAsync(new { Mensaje = $"ERROR GLOBAL: {exception?.Message} | {exception?.StackTrace}" });
+        var innerMsg = exception?.InnerException != null ? $" | Inner: {exception.InnerException.Message}" : "";
+        await context.Response.WriteAsJsonAsync(new { Mensaje = $"ERROR GLOBAL: {exception?.Message}{innerMsg} | {exception?.StackTrace}" });
     });
 });
 
