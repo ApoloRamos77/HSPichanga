@@ -128,9 +128,12 @@ public class UsuarioRepository : IUsuarioRepository
         => await _ctx.Usuarios.FirstOrDefaultAsync(u => u.Email == email, cancellationToken);
 
     public async Task<Usuario?> GetByEmailOrPhoneAsync(string identifier, CancellationToken cancellationToken)
-        => await _ctx.Usuarios.FirstOrDefaultAsync(
-            u => (u.Email != null && u.Email == identifier) || u.Telefono == identifier, 
+    {
+        var cleanId = identifier.Trim().ToLower();
+        return await _ctx.Usuarios.FirstOrDefaultAsync(
+            u => (u.Email != null && u.Email.ToLower() == cleanId) || (u.Telefono != null && u.Telefono.ToLower() == cleanId), 
             cancellationToken);
+    }
 
     public async Task<Usuario?> GetByIdAsync(Guid id, CancellationToken cancellationToken)
         => await _ctx.Usuarios.FindAsync(new object[] { id }, cancellationToken);
@@ -142,10 +145,16 @@ public class UsuarioRepository : IUsuarioRepository
         => await _ctx.Usuarios.AddAsync(usuario, cancellationToken);
 
     public async Task<bool> ExisteEmailAsync(string email, CancellationToken cancellationToken)
-        => await _ctx.Usuarios.AnyAsync(u => u.Email != null && u.Email == email.ToLowerInvariant(), cancellationToken);
+    {
+        var cleanEmail = email.Trim().ToLower();
+        return await _ctx.Usuarios.AnyAsync(u => u.Email != null && u.Email.ToLower() == cleanEmail, cancellationToken);
+    }
 
     public async Task<bool> ExisteTelefonoAsync(string telefono, CancellationToken cancellationToken)
-        => await _ctx.Usuarios.AnyAsync(u => u.Telefono == telefono, cancellationToken);
+    {
+        var cleanTel = telefono.Trim().ToLower();
+        return await _ctx.Usuarios.AnyAsync(u => u.Telefono != null && u.Telefono.ToLower() == cleanTel, cancellationToken);
+    }
 }
 
 public class ZonaRepository : IZonaRepository
