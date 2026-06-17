@@ -90,6 +90,9 @@ export default function HomeScreen() {
             <TouchableOpacity onPress={() => router.push('/(main)/mis-reservas')} style={styles.logoutBtn}>
               <Ionicons name="stopwatch-outline" size={22} color={Colors.textSecondary} />
             </TouchableOpacity>
+            <TouchableOpacity onPress={() => router.push('/(auth)/change-password' as any)} style={styles.logoutBtn}>
+              <Ionicons name="key-outline" size={22} color={Colors.textSecondary} />
+            </TouchableOpacity>
             <TouchableOpacity onPress={handleLogout} style={styles.logoutBtn}>
               <Ionicons name="log-out-outline" size={22} color={Colors.textSecondary} />
             </TouchableOpacity>

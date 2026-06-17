@@ -41,7 +41,16 @@ export default function ChangePasswordScreen() {
       Alert.alert(
         '✅ ¡Listo!',
         'Tu contraseña ha sido actualizada exitosamente.',
-        [{ text: 'Continuar', onPress: () => router.replace('/(main)') }]
+        [{ 
+           text: 'Continuar', 
+           onPress: () => {
+             if (usuario?.requiereCambioPassword) {
+               router.replace('/(main)');
+             } else {
+               router.back();
+             }
+           }
+        }]
       );
     } catch (err: any) {
       const msg = err.response?.data?.mensaje ?? `Fallo de red/servidor: ${err.message} - ${JSON.stringify(err.response?.data || err)}`;
@@ -61,10 +70,12 @@ export default function ChangePasswordScreen() {
         <ScrollView contentContainerStyle={styles.scroll} showsVerticalScrollIndicator={false}>
 
           {/* Warning Banner */}
-          <View style={styles.warningBanner}>
-            <Ionicons name="warning-outline" size={20} color="#f59e0b" />
-            <Text style={styles.warningText}>Por seguridad, debes cambiar tu contraseña antes de continuar.</Text>
-          </View>
+          {usuario?.requiereCambioPassword && (
+            <View style={styles.warningBanner}>
+              <Ionicons name="warning-outline" size={20} color="#f59e0b" />
+              <Text style={styles.warningText}>Por seguridad, debes cambiar tu contraseña antes de continuar.</Text>
+            </View>
+          )}
 
           {/* Icon */}
           <View style={styles.iconWrap}>
@@ -73,8 +84,9 @@ export default function ChangePasswordScreen() {
 
           <Text style={styles.title}>Actualiza tu contraseña</Text>
           <Text style={styles.subtitle}>
-            {usuario?.nombreCompleto ? `Hola ${usuario.nombreCompleto.split(' ')[0]}, el` : 'El'} administrador ha restablecido tu clave.
-            Crea una nueva contraseña para continuar.
+            {usuario?.requiereCambioPassword
+              ? `${usuario?.nombreCompleto ? `Hola ${usuario.nombreCompleto.split(' ')[0]}, el` : 'El'} administrador ha restablecido tu clave. Crea una nueva contraseña para continuar.`
+              : 'Ingresa una nueva contraseña para tu cuenta.'}
           </Text>
 
           <View style={styles.card}>

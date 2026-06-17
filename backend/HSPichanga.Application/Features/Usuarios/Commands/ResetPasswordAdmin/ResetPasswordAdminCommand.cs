@@ -33,7 +33,11 @@ public class ResetPasswordAdminCommandHandler : IRequestHandler<ResetPasswordAdm
 
         if (request.Canal == "WhatsApp" && !string.IsNullOrWhiteSpace(usuario.Telefono))
         {
-            var msg = $"Hola *{usuario.NombreCompleto}*, el administrador ha restablecido tu contraseña en HSPichanga.\n\nClave temporal: *{tempPass}*\n\n⚠️ Al iniciar sesión deberás cambiar esta contraseña por una nueva.";
+            var msgTemplate = await _uow.Configuraciones.ObtenerValorAsync("whatsapp_msg_restauracion", cancellationToken);
+            var msg = string.IsNullOrWhiteSpace(msgTemplate) 
+                ? $"Hola *{usuario.NombreCompleto}*, el administrador ha restablecido tu contraseña en HSPichanga.\n\nClave temporal: *{tempPass}*\n\n⚠️ Al iniciar sesión deberás cambiar esta contraseña por una nueva."
+                : msgTemplate.Replace("{Nombre}", usuario.NombreCompleto).Replace("{ClaveTemporal}", tempPass);
+                
             await _whatsapp.SendMessageAsync(usuario.Telefono, msg, cancellationToken);
         }
         else if (usuario.Email != null)

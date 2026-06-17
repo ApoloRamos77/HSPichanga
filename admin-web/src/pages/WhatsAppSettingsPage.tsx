@@ -7,6 +7,7 @@ export const WhatsAppSettingsPage: React.FC = () => {
   const [reminderHour, setReminderHour] = useState('8');
   const [msgConfirmacion, setMsgConfirmacion] = useState('¡Hola {Nombre}! ⚽\n\nTu pago ha sido validado y tu reserva para el partido en *{Cancha}* el {Fecha} está *CONFIRMADA*.\n\n¡Nos vemos en la cancha!');
   const [msgRecordatorio, setMsgRecordatorio] = useState('¡Hola {Nombre}! ⚽\n\nEste es un recordatorio de que *HOY* tienes tu pichanga en *{Cancha}* a las *{Hora}*.\n\n¡Te esperamos, no faltes!');
+  const [msgRestauracion, setMsgRestauracion] = useState('Hola *{Nombre}*, el administrador ha restablecido tu contraseña en HSPichanga.\n\nClave temporal: *{ClaveTemporal}*\n\n⚠️ Al iniciar sesión deberás cambiar esta contraseña por una nueva.');
   
   const [loading, setLoading] = useState(true);
   const [saving, setSaving] = useState(false);
@@ -29,6 +30,7 @@ export const WhatsAppSettingsPage: React.FC = () => {
       if (data.whatsapp_reminder_hour) setReminderHour(data.whatsapp_reminder_hour);
       if (data.whatsapp_msg_confirmacion) setMsgConfirmacion(data.whatsapp_msg_confirmacion);
       if (data.whatsapp_msg_recordatorio) setMsgRecordatorio(data.whatsapp_msg_recordatorio);
+      if (data.whatsapp_msg_restauracion) setMsgRestauracion(data.whatsapp_msg_restauracion);
     } catch (err) {
       console.error('Error fetching whatsapp settings:', err);
       showToast('Error al cargar la configuración.', 'error');
@@ -44,6 +46,7 @@ export const WhatsAppSettingsPage: React.FC = () => {
       whatsapp_reminder_hour: reminderHour,
       whatsapp_msg_confirmacion: msgConfirmacion,
       whatsapp_msg_recordatorio: msgRecordatorio,
+      whatsapp_msg_restauracion: msgRestauracion,
     };
 
     try {
@@ -118,10 +121,23 @@ export const WhatsAppSettingsPage: React.FC = () => {
               <span style={pillStyle}>{"{Cancha}"}</span>
               <span style={pillStyle}>{"{Fecha}"}</span>
               <span style={pillStyle}>{"{Hora}"}</span>
+              <span style={pillStyle}>{"{ClaveTemporal}"}</span>
             </p>
           </div>
 
           <div style={{ display: 'grid', gridTemplateColumns: '1fr', gap: '24px' }}>
+            <div>
+              <label style={labelStyle}>Mensaje de Restauración de Contraseña</label>
+              <textarea
+                className="form-input"
+                rows={5}
+                style={{ resize: 'vertical' }}
+                value={msgRestauracion}
+                onChange={(e) => setMsgRestauracion(e.target.value)}
+              ></textarea>
+              <p style={{ fontSize: '0.8rem', color: 'var(--text-muted)', marginTop: '6px' }}>Se envía cuando el Administrador restablece la contraseña. Comodines: <code>{"{Nombre}"}</code>, <code>{"{ClaveTemporal}"}</code>.</p>
+            </div>
+
             <div>
               <label style={labelStyle}>Mensaje de Confirmación de Reserva</label>
               <textarea

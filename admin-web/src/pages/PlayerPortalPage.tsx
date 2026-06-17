@@ -2,7 +2,7 @@ import React, { useState, useEffect, useCallback } from 'react';
 import { useNavigate } from 'react-router-dom';
 import {
   LogOut, MapPin, Clock, Users, Trophy, ChevronRight,
-  Upload, X, RefreshCw, Mail, Phone, User, Shield
+  Upload, X, RefreshCw, Mail, Phone, User, Shield, Lock
 } from 'lucide-react';
 import { partidosService, reservasService, uploadService } from '../services/api';
 import './PlayerPortalPage.css';
@@ -695,6 +695,13 @@ export const PlayerPortalPage: React.FC = () => {
       </div>
 
       <div className="perfil-actions">
+        <button
+          className="btn-perfil-action"
+          style={{ backgroundColor: 'rgba(22,163,74,0.1)', color: '#16a34a', border: '1px solid rgba(22,163,74,0.2)', marginBottom: '12px' }}
+          onClick={() => navigate('/change-password')}
+        >
+          <Lock size={17} /> Cambiar contraseña
+        </button>
         <button
           id="btn-logout-perfil"
           className="btn-perfil-action danger"

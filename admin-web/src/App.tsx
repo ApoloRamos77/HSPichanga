@@ -11,6 +11,7 @@ import { LandingPage } from './pages/LandingPage';
 import { LandingManagerPage } from './pages/LandingManagerPage';
 import { PlayerPortalPage } from './pages/PlayerPortalPage';
 import { WhatsAppSettingsPage } from './pages/WhatsAppSettingsPage';
+import { ForceChangePassword } from './pages/ForceChangePassword';
 
 const queryClient = new QueryClient();
 
@@ -30,6 +31,8 @@ const AdminRoute = ({ children }: { children: React.ReactNode }) => {
   const token = localStorage.getItem('token');
   if (!token) return <Navigate to="/login" replace />;
   const user = getStoredUser();
+  if (user?.requiereCambioPassword) return <ForceChangePassword />;
+  
   const rol = user?.rol?.toLowerCase?.() ?? '';
   if (rol !== 'administrador' && rol !== 'delegado') {
     // Si es jugador, redirigir a su portal
@@ -43,6 +46,8 @@ const PlayerRoute = ({ children }: { children: React.ReactNode }) => {
   const token = localStorage.getItem('token');
   if (!token) return <Navigate to="/login" replace />;
   const user = getStoredUser();
+  if (user?.requiereCambioPassword) return <ForceChangePassword />;
+
   const rol = user?.rol?.toLowerCase?.() ?? '';
   if (rol === 'administrador' || rol === 'delegado') {
     // Si es admin, redirigir a su dashboard
@@ -60,6 +65,7 @@ function App() {
           <Route path="/" element={<LandingPage />} />
           <Route path="/login" element={<LoginPage />} />
           <Route path="/register" element={<LandingPage />} />
+          <Route path="/change-password" element={<ForceChangePassword />} />
 
           {/* ── Portal del Jugador ── */}
           <Route
