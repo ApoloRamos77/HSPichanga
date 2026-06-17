@@ -89,12 +89,13 @@ public class Usuario
         ResetTokenExpiry = null;
     }
     
-    public void ActualizarPerfil(string nombre, string telefono, RolUsuario rol, string? alias = null)
+    public void ActualizarPerfil(string nombre, string telefono, RolUsuario rol, string? alias = null, string? email = null)
     {
         NombreCompleto = nombre;
         Telefono = telefono;
         Rol = rol;
         Alias = alias;
+        Email = email?.ToLowerInvariant();
     }
 
     public void ActualizarDatosCobro(string? yapeNum, string? yapeUrl, string? plinNum, string? plinUrl)

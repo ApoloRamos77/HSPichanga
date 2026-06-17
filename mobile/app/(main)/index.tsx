@@ -8,7 +8,7 @@ import { Ionicons } from '@expo/vector-icons';
 import { router } from 'expo-router';
 import { useQuery } from '@tanstack/react-query';
 import { SafeAreaView } from 'react-native-safe-area-context';
-import { partidosService, PartidoDto } from '../../src/services/api';
+import { partidosService, api, PartidoDto } from '../../src/services/api';
 import { useAuthStore } from '../../src/stores/authStore';
 import { PartidoCard } from '../../src/components/PartidoCard';
 import { Colors, Spacing, Radius, Typography } from '../../src/theme';
@@ -41,6 +41,15 @@ export default function HomeScreen() {
       coords?.longitude
     ).then(r => r.data),
     enabled: !locLoading,
+  });
+
+  const { data: misReservas = [], refetch: refetchReservas } = useQuery({
+    queryKey: ['misReservas', usuario?.id],
+    queryFn: () => {
+      // Usamos el servicio de api que debemos importar
+      return api.get(`/Reservas/usuario/${usuario?.id}`).then(r => r.data);
+    },
+    enabled: !!usuario?.id,
   });
 
   const filtrados = (partidos ?? []).filter((p) =>
@@ -179,13 +188,17 @@ export default function HomeScreen() {
               </Text>
             </View>
           ) : (
-            filtrados.map((partido) => (
-              <PartidoCard
-                key={partido.id}
-                partido={partido}
-                onPress={() => router.push(`/(main)/reservas/${partido.id}` as any)}
-              />
-            ))
+            filtrados.map((partido) => {
+              const miReserva = misReservas.find((r: any) => r.partidoId === partido.id);
+              return (
+                <PartidoCard
+                  key={partido.id}
+                  partido={partido}
+                  miReserva={miReserva}
+                  onPress={() => router.push(`/(main)/reservas/${partido.id}` as any)}
+                />
+              );
+            })
           )}
         </View>
       </ScrollView>

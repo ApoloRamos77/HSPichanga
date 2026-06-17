@@ -32,8 +32,9 @@ export const UsersPage = () => {
   const [search, setSearch]               = useState('');
   const [selectedUser, setSelectedUser]   = useState<Usuario | null>(null);
   const [showCreate, setShowCreate]       = useState(false);
-  const [formData, setFormData]           = useState({ nombreCompleto: '', alias: '', telefono: '', rol: 'Jugador' });
+  const [formData, setFormData]           = useState({ nombreCompleto: '', alias: '', email: '', telefono: '', rol: 'Jugador' });
   const [createForm, setCreateForm]       = useState({ nombreCompleto: '', alias: '', email: '', telefono: '', rol: 'Jugador' });
+  const [showResetModal, setShowResetModal] = useState<Usuario | null>(null);
   const [toast, setToast]                 = useState<{ msg: string; type: 'success' | 'error' } | null>(null);
 
   const showToast = (msg: string, type: 'success' | 'error' = 'success') => {
@@ -106,11 +107,12 @@ export const UsersPage = () => {
   });
 
   const resetPassMutation = useMutation({
-    mutationFn: (id: string) => usuariosService.resetPasswordAdmin(id),
-    onSuccess: () => {
+    mutationFn: ({ id, canal }: { id: string; canal: 'Email' | 'WhatsApp' }) => usuariosService.resetPasswordAdmin(id, canal),
+    onSuccess: (_, { canal }) => {
       queryClient.invalidateQueries({ queryKey: ['usuarios-admin'] });
-      showToast('Clave restablecida. Se envió un email al usuario con la clave temporal.');
+      showToast(`Clave restablecida. Se envió un mensaje por ${canal} con la clave temporal.`);
       if (selectedUser) setSelectedUser(prev => prev ? { ...prev, requiereCambioPassword: true } : null);
+      setShowResetModal(null);
     },
     onError: (err: any) => showToast('Error al resetear: ' + (err.response?.data?.mensaje ?? err.message), 'error'),
   });
@@ -144,7 +146,7 @@ export const UsersPage = () => {
 
   const handleEditClick = (u: Usuario) => {
     setSelectedUser(u);
-    setFormData({ nombreCompleto: u.nombreCompleto, alias: u.alias || '', telefono: u.telefono || '', rol: u.rol });
+    setFormData({ nombreCompleto: u.nombreCompleto, alias: u.alias || '', email: u.email || '', telefono: u.telefono || '', rol: u.rol });
   };
 
   return (
@@ -455,7 +457,7 @@ export const UsersPage = () => {
               onSubmit={(e) => {
                 e.preventDefault();
                 const rolMap: Record<string, number> = { Jugador: 2, Administrador: 1 };
-                updateMutation.mutate({ id: selectedUser.id, nombreCompleto: formData.nombreCompleto, alias: formData.alias, telefono: formData.telefono, rol: rolMap[formData.rol] ?? 2 });
+                updateMutation.mutate({ id: selectedUser.id, nombreCompleto: formData.nombreCompleto, alias: formData.alias, email: formData.email || undefined, telefono: formData.telefono, rol: rolMap[formData.rol] ?? 2 });
               }}
               style={{ display: 'flex', flexDirection: 'column', gap: '14px', marginTop: '4px' }}
             >
@@ -465,9 +467,9 @@ export const UsersPage = () => {
                   onChange={(e) => setFormData({ ...formData, nombreCompleto: e.target.value })} required />
               </div>
               <div>
-                <label style={labelStyle}>Correo (Solo lectura)</label>
-                <input type="text" className="form-input" value={selectedUser.email || 'Sin correo'} disabled
-                  style={{ backgroundColor: 'var(--surface-light)', cursor: 'not-allowed' }} />
+                <label style={labelStyle}>Correo Electrónico</label>
+                <input type="email" className="form-input" value={formData.email}
+                  onChange={(e) => setFormData({ ...formData, email: e.target.value })} placeholder="usuario@email.com" />
               </div>
               <div>
                 <label style={labelStyle}>Alias (Opcional)</label>
@@ -560,11 +562,7 @@ export const UsersPage = () => {
               <button
                 type="button"
                 disabled={resetPassMutation.isPending}
-                onClick={() => {
-                  if (confirm(`¿Resetear la contraseña de ${selectedUser.nombreCompleto}?\n\nSe enviará un email con una clave temporal.`)) {
-                    resetPassMutation.mutate(selectedUser.id);
-                  }
-                }}
+                onClick={() => setShowResetModal(selectedUser)}
                 style={{
                   padding: '11px 14px', borderRadius: '8px', border: 'none', cursor: 'pointer',
                   fontWeight: '600', fontSize: '0.85rem',
@@ -574,13 +572,61 @@ export const UsersPage = () => {
                 }}
               >
                 <Key size={15} />
-                {resetPassMutation.isPending ? 'Reseteando...' : 'Resetear Clave'}
+                Resetear Clave
               </button>
             </div>
 
             <p style={{ fontSize: '0.75rem', color: 'var(--text-muted)', marginTop: '10px', textAlign: 'center' }}>
-              Al resetear la clave, el usuario recibirá un email y deberá cambiarla al iniciar sesión.
+              Al resetear la clave, el usuario recibirá un código y deberá cambiarla al iniciar sesión.
             </p>
+          </div>
+        </div>
+      )}
+
+      {/* ════════════════════════════════════════════════════
+          MODAL: Reset Password Channel Selector
+      ════════════════════════════════════════════════════ */}
+      {showResetModal && (
+        <div style={overlayStyle}>
+          <div className="premium-card glass" style={{ ...modalStyle, maxWidth: '400px' }}>
+            <div style={modalHeaderStyle}>
+              <h2 style={{ fontSize: '1.1rem', fontWeight: 'bold', display: 'flex', alignItems: 'center', gap: '8px' }}>
+                <Key size={18} color="#f59e0b" /> Restablecer Contraseña
+              </h2>
+              <button onClick={() => setShowResetModal(null)} style={closeBtnStyle}><X size={20} color="var(--text-muted)" /></button>
+            </div>
+            <p style={{ fontSize: '0.85rem', color: 'var(--text-secondary)', marginBottom: '20px' }}>
+              ¿Por qué medio deseas enviar la clave temporal a <strong>{showResetModal.nombreCompleto}</strong>?
+            </p>
+            <div style={{ display: 'flex', flexDirection: 'column', gap: '10px' }}>
+              <button
+                disabled={resetPassMutation.isPending || !showResetModal.telefono}
+                onClick={() => resetPassMutation.mutate({ id: showResetModal.id, canal: 'WhatsApp' })}
+                style={{
+                  padding: '12px', borderRadius: '8px', border: 'none', cursor: showResetModal.telefono ? 'pointer' : 'not-allowed',
+                  fontWeight: '600', backgroundColor: '#25D36622', color: '#25D366',
+                  display: 'flex', alignItems: 'center', justifyContent: 'center', gap: '8px'
+                }}
+              >
+                <Phone size={18} /> Por WhatsApp
+                {!showResetModal.telefono && <span style={{ fontSize: '0.7rem', color: 'var(--text-muted)' }}>(No tiene teléfono)</span>}
+              </button>
+              <button
+                disabled={resetPassMutation.isPending || !showResetModal.email}
+                onClick={() => resetPassMutation.mutate({ id: showResetModal.id, canal: 'Email' })}
+                style={{
+                  padding: '12px', borderRadius: '8px', border: 'none', cursor: showResetModal.email ? 'pointer' : 'not-allowed',
+                  fontWeight: '600', backgroundColor: 'var(--primary-light)', color: 'var(--primary)',
+                  display: 'flex', alignItems: 'center', justifyContent: 'center', gap: '8px'
+                }}
+              >
+                <Mail size={18} /> Por Correo
+                {!showResetModal.email && <span style={{ fontSize: '0.7rem', color: 'var(--text-muted)' }}>(No tiene correo)</span>}
+              </button>
+            </div>
+            <div style={{ display: 'flex', justifyContent: 'center', marginTop: '16px' }}>
+              <button onClick={() => setShowResetModal(null)} style={cancelBtnStyle}>Cancelar</button>
+            </div>
           </div>
         </div>
       )}

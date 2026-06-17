@@ -87,8 +87,7 @@ export const usuariosService = {
   }) => api.post('/Usuarios', data),
   update: (id: string, data: any) => api.put(`/Usuarios/${id}`, data),
   toggleActivo: (id: string) => api.patch(`/Usuarios/${id}/toggle-activo`),
-  resetPasswordAdmin: (id: string) =>
-    api.post(`/Usuarios/${id}/reset-password-admin`),
+  resetPasswordAdmin: (id: string, canal: 'Email' | 'WhatsApp' = 'Email') => api.post(`/usuarios/${id}/reset-password-admin?canal=${canal}`),
   changePassword: (newPassword: string) =>
     api.post('/Usuarios/change-password', { newPassword }),
 };

@@ -10,6 +10,7 @@ public record EditUsuarioCommand(
     string Telefono,
     RolUsuario Rol,
     string? Alias = null,
+    string? Email = null,
     string? YapeNumero = null,
     string? YapeQrUrl = null,
     string? PlinNumero = null,
@@ -26,7 +27,22 @@ public class EditUsuarioCommandHandler : IRequestHandler<EditUsuarioCommand, boo
         var usuario = await _uow.Usuarios.GetByIdAsync(request.Id, cancellationToken);
         if (usuario == null) return false;
 
-        usuario.ActualizarPerfil(request.NombreCompleto, request.Telefono, request.Rol, request.Alias);
+        // Validar si el email o teléfono ya están en uso por otro usuario
+        if (!string.IsNullOrWhiteSpace(request.Email) && request.Email.ToLowerInvariant() != usuario.Email?.ToLowerInvariant())
+        {
+            var emailExists = await _uow.Usuarios.GetByEmailOrPhoneAsync(request.Email, cancellationToken);
+            if (emailExists != null && emailExists.Id != usuario.Id)
+                throw new HSPichanga.Domain.Exceptions.DomainException("El correo electrónico ya está en uso.");
+        }
+
+        if (!string.IsNullOrWhiteSpace(request.Telefono) && request.Telefono != usuario.Telefono)
+        {
+            var phoneExists = await _uow.Usuarios.GetByEmailOrPhoneAsync(request.Telefono, cancellationToken);
+            if (phoneExists != null && phoneExists.Id != usuario.Id)
+                throw new HSPichanga.Domain.Exceptions.DomainException("El número de teléfono ya está en uso.");
+        }
+
+        usuario.ActualizarPerfil(request.NombreCompleto, request.Telefono, request.Rol, request.Alias, request.Email);
 
         // Si es administrador, actualizar sus datos de cobro
         if (request.Rol == RolUsuario.Administrador)
@@ -39,7 +55,6 @@ public class EditUsuarioCommandHandler : IRequestHandler<EditUsuarioCommand, boo
             );
         }
 
-        // _uow.Usuarios.Update(usuario); // EF Core ya trackea la entidad
         await _uow.SaveChangesAsync();
         
         return true;

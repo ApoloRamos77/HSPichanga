@@ -4,7 +4,8 @@ import { authService } from '../services/api';
 import { LogIn, Lock, Mail } from 'lucide-react';
 
 export const LoginPage = () => {
-  const [email, setEmail] = useState('');
+  const [loginType, setLoginType] = useState<'email' | 'phone'>('email');
+  const [identificador, setIdentificador] = useState('');
   const [password, setPassword] = useState('');
   const [error, setError] = useState('');
   const [loading, setLoading] = useState(false);
@@ -15,7 +16,7 @@ export const LoginPage = () => {
     setLoading(true);
     setError('');
     try {
-      const { data } = await authService.login({ identificador: email, password });
+      const { data } = await authService.login({ identificador, password });
       localStorage.setItem('token', data.token);
       localStorage.setItem('user', JSON.stringify(data.usuario));
 
@@ -74,19 +75,81 @@ export const LoginPage = () => {
         </div>
 
         <form onSubmit={handleLogin}>
+          {/* Tabs para seleccionar método */}
+          <div style={{ display: 'flex', gap: '8px', marginBottom: '20px' }}>
+            <button
+              type="button"
+              onClick={() => { setLoginType('email'); setIdentificador(''); }}
+              style={{
+                flex: 1, padding: '8px', borderRadius: '8px', border: 'none', cursor: 'pointer',
+                backgroundColor: loginType === 'email' ? 'var(--primary-light)' : 'var(--surface-light)',
+                color: loginType === 'email' ? 'var(--primary)' : 'var(--text-muted)',
+                fontWeight: loginType === 'email' ? 'bold' : 'normal', transition: 'all 0.2s'
+              }}
+            >
+              Con Correo
+            </button>
+            <button
+              type="button"
+              onClick={() => { setLoginType('phone'); setIdentificador('+51 '); }}
+              style={{
+                flex: 1, padding: '8px', borderRadius: '8px', border: 'none', cursor: 'pointer',
+                backgroundColor: loginType === 'phone' ? 'var(--primary-light)' : 'var(--surface-light)',
+                color: loginType === 'phone' ? 'var(--primary)' : 'var(--text-muted)',
+                fontWeight: loginType === 'phone' ? 'bold' : 'normal', transition: 'all 0.2s'
+              }}
+            >
+              Con Celular
+            </button>
+          </div>
+
           <div className="input-group">
             <label style={{ color: '#1A4731', fontWeight: '600' }}>
               <Mail size={14} style={{ display: 'inline', marginRight: '6px', verticalAlign: 'middle' }} />
-              Correo o Celular
+              {loginType === 'email' ? 'Correo Electrónico' : 'Teléfono Celular'}
             </label>
-            <input
-              id="login-email"
-              type="text"
-              value={email}
-              onChange={(e) => setEmail(e.target.value)}
-              placeholder="correo@email.com o +51999999999"
-              required
-            />
+            
+            {loginType === 'email' ? (
+              <input
+                id="login-email"
+                type="email"
+                value={identificador}
+                onChange={(e) => setIdentificador(e.target.value)}
+                placeholder="correo@email.com"
+                required
+              />
+            ) : (
+              <div style={{ display: 'flex', gap: '8px' }}>
+                <select
+                  style={{ width: '100px', padding: '12px', borderRadius: '12px', border: '1px solid #D1D5DB', fontSize: '0.95rem' }}
+                  value={identificador.split(' ')[0] || '+51'}
+                  onChange={(e) => {
+                    const number = identificador.substring(identificador.indexOf(' ') + 1) || '';
+                    setIdentificador(`${e.target.value} ${number}`.trim());
+                  }}
+                >
+                  <option value="+51">🇵🇪 +51</option>
+                  <option value="+54">🇦🇷 +54</option>
+                  <option value="+56">🇨🇱 +56</option>
+                  <option value="+57">🇨🇴 +57</option>
+                  <option value="+52">🇲🇽 +52</option>
+                  <option value="+593">🇪🇨 +593</option>
+                  <option value="+591">🇧🇴 +591</option>
+                </select>
+                <input
+                  id="login-phone"
+                  type="tel"
+                  style={{ flex: 1, padding: '12px', borderRadius: '12px', border: '1px solid #D1D5DB', fontSize: '0.95rem' }}
+                  value={identificador.substring(identificador.indexOf(' ') + 1)}
+                  onChange={(e) => {
+                    const prefix = identificador.split(' ')[0] || '+51';
+                    setIdentificador(`${prefix} ${e.target.value}`.trim());
+                  }}
+                  placeholder="999 000 000"
+                  required
+                />
+              </div>
+            )}
           </div>
 
           <div className="input-group">

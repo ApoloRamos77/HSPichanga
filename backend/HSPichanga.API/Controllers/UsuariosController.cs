@@ -73,12 +73,12 @@ public class UsuariosController : ControllerBase
     /// <summary>Resetear contraseña desde el panel admin — envía email al usuario</summary>
     [HttpPost("{id}/reset-password-admin")]
     [Authorize(Roles = "Administrador")]
-    public async Task<IActionResult> ResetPasswordAdmin(Guid id)
+    public async Task<IActionResult> ResetPasswordAdmin(Guid id, [FromQuery] string canal = "Email")
     {
         try
         {
-            var tempPass = await _mediator.Send(new ResetPasswordAdminCommand(id));
-            return Ok(new { mensaje = "Contraseña restablecida. Se ha enviado un email al usuario.", tempPassword = tempPass });
+            var tempPass = await _mediator.Send(new ResetPasswordAdminCommand(id, canal));
+            return Ok(new { mensaje = $"Contraseña restablecida. Se ha enviado un mensaje por {canal}.", tempPassword = tempPass });
         }
         catch (InvalidOperationException ex)
         {
@@ -99,7 +99,7 @@ public class UsuariosController : ControllerBase
     [Authorize(Roles = "Administrador")]
     public async Task<IActionResult> GenerateTempPassword(Guid id)
     {
-        var tempPass = await _mediator.Send(new ResetPasswordAdminCommand(id));
+        var tempPass = await _mediator.Send(new ResetPasswordAdminCommand(id, "Email"));
         return Ok(new { password = tempPass });
     }
 

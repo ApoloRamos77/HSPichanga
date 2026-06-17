@@ -9,11 +9,12 @@ import type { PartidoDto } from '../services/api';
 
 interface Props {
   partido: PartidoDto;
+  miReserva?: any;
   onPress: () => void;
   style?: ViewStyle;
 }
 
-export function PartidoCard({ partido, onPress, style }: Props) {
+export function PartidoCard({ partido, miReserva, onPress, style }: Props) {
   const estadoColor = Colors.estadoColors[partido.estado] ?? Colors.textSecondary;
   const catColor    = Colors.categoryColors[partido.categoria] ?? Colors.accent;
   const fecha       = new Date(partido.fechaHora);
@@ -34,46 +35,64 @@ export function PartidoCard({ partido, onPress, style }: Props) {
         />
       )}
 
-      {/* Fondo con gradiente sutil y overlay oscurecido si hay imagen */}
+      {/* Fondo con gradiente sutil y overlay oscurecido si hay imagen o reserva */}
       <LinearGradient
         colors={partido.fotosUrls && partido.fotosUrls.length > 0 ? ['rgba(0,0,0,0.6)', 'rgba(0,0,0,0.9)'] : Colors.gradientCard}
         style={[StyleSheet.absoluteFillObject, { borderRadius: Radius.lg }]}
       />
+      {miReserva && (
+        <View style={[StyleSheet.absoluteFillObject, { backgroundColor: 'rgba(0,0,0,0.4)', borderRadius: Radius.lg, zIndex: 1 }]} />
+      )}
 
       {/* Header */}
-      <View style={styles.header}>
+      <View style={[styles.header, { zIndex: 2 }]}>
         <View style={styles.headerLeft}>
           <View style={[styles.dot, { backgroundColor: estadoColor }]} />
           <Text style={styles.estado}>{partido.estado.toUpperCase()}</Text>
         </View>
-        <View style={[styles.badge, { backgroundColor: catColor + '22', borderColor: catColor }]}>
-          <Text style={[styles.badgeText, { color: catColor }]}>
-            {formatCategoria(partido.categoria)}
-          </Text>
-        </View>
+        
+        {miReserva ? (
+          miReserva.estado === 'Confirmada' ? (
+            <View style={[styles.badge, { backgroundColor: '#22c55e22', borderColor: '#22c55e' }]}>
+              <Text style={[styles.badgeText, { color: '#22c55e' }]}>¡Inscrito! ✅</Text>
+            </View>
+          ) : (
+            <View style={[styles.badge, { backgroundColor: '#f59e0b22', borderColor: '#f59e0b' }]}>
+              <Text style={[styles.badgeText, { color: '#f59e0b' }]}>Verificando... ⏳</Text>
+            </View>
+          )
+        ) : (
+          <View style={[styles.badge, { backgroundColor: catColor + '22', borderColor: catColor }]}>
+            <Text style={[styles.badgeText, { color: catColor }]}>
+              {formatCategoria(partido.categoria)}
+            </Text>
+          </View>
+        )}
       </View>
 
       {/* Nombre cancha */}
-      <Text style={styles.canchaNombre}>{partido.canchaNombre}</Text>
-      <Text style={styles.zona}>
-        <Ionicons name="location-outline" size={12} color={Colors.textSecondary} />
-        {' '}{partido.direccion ? `${partido.direccion} - ${partido.zonaNombre}` : partido.zonaNombre}
-        {partido.distance !== undefined && partido.distance !== null && (
-          <Text style={styles.distanceText}>
-            {'  •  '}{partido.distance.toFixed(1)} km cerca
-          </Text>
-        )}
-      </Text>
+      <View style={{ zIndex: 2 }}>
+        <Text style={styles.canchaNombre}>{partido.canchaNombre}</Text>
+        <Text style={styles.zona}>
+          <Ionicons name="location-outline" size={12} color={Colors.textSecondary} />
+          {' '}{partido.direccion ? `${partido.direccion} - ${partido.zonaNombre}` : partido.zonaNombre}
+          {partido.distance !== undefined && partido.distance !== null && (
+            <Text style={styles.distanceText}>
+              {'  •  '}{partido.distance.toFixed(1)} km cerca
+            </Text>
+          )}
+        </Text>
 
-      {/* Info fila */}
-      <View style={styles.infoRow}>
-        <InfoChip icon="calendar-outline" label={formatFecha(fecha)} />
-        <InfoChip icon="time-outline" label={formatHora(fecha)} />
-        <InfoChip icon="football-outline" label={partido.modalidad} />
+        {/* Info fila */}
+        <View style={styles.infoRow}>
+          <InfoChip icon="calendar-outline" label={formatFecha(fecha)} />
+          <InfoChip icon="time-outline" label={formatHora(fecha)} />
+          <InfoChip icon="football-outline" label={partido.modalidad} />
+        </View>
       </View>
 
       {/* Barra de cupos */}
-      <View style={styles.cuposSection}>
+      <View style={[styles.cuposSection, { zIndex: 2 }]}>
         <View style={styles.cuposLabels}>
           <Text style={styles.cuposText}>
             {partido.cuposDisponibles} cupos disponibles

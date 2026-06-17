@@ -12,6 +12,7 @@ import { Button } from '../../src/components/Button';
 import { Colors, Spacing, Radius, Typography } from '../../src/theme';
 
 export default function LoginScreen() {
+  const [loginType, setLoginType] = useState<'email' | 'phone'>('email');
   const [identificador, setIdentificador] = useState('');
   const [password, setPassword] = useState('');
   const [showPass, setShowPass] = useState(false);
@@ -77,18 +78,40 @@ export default function LoginScreen() {
           <View style={styles.card}>
             <Text style={styles.cardTitle}>Iniciar Sesión</Text>
 
-            {/* Email */}
+            {/* Tabs para seleccionar método */}
+            <View style={{ flexDirection: 'row', gap: 8, marginBottom: Spacing.md }}>
+              <TouchableOpacity
+                onPress={() => { setLoginType('email'); setIdentificador(''); }}
+                style={[
+                  styles.tabBtn,
+                  loginType === 'email' ? styles.tabBtnActive : {}
+                ]}
+              >
+                <Text style={[styles.tabText, loginType === 'email' ? styles.tabTextActive : {}]}>Con Correo</Text>
+              </TouchableOpacity>
+              <TouchableOpacity
+                onPress={() => { setLoginType('phone'); setIdentificador('+51 '); }}
+                style={[
+                  styles.tabBtn,
+                  loginType === 'phone' ? styles.tabBtnActive : {}
+                ]}
+              >
+                <Text style={[styles.tabText, loginType === 'phone' ? styles.tabTextActive : {}]}>Con Celular</Text>
+              </TouchableOpacity>
+            </View>
+
+            {/* Email o Celular */}
             <View style={styles.inputGroup}>
-              <Text style={styles.label}>Correo electrónico o Celular</Text>
+              <Text style={styles.label}>{loginType === 'email' ? 'Correo Electrónico' : 'Teléfono Celular'}</Text>
               <View style={styles.inputContainer}>
-                <Ionicons name="mail-outline" size={18} color={Colors.textMuted} style={styles.inputIcon} />
+                <Ionicons name={loginType === 'email' ? 'mail-outline' : 'call-outline'} size={18} color={Colors.textMuted} style={styles.inputIcon} />
                 <TextInput
                   style={styles.input}
                   value={identificador}
                   onChangeText={setIdentificador}
-                  placeholder="tu@correo.com o +51999..."
+                  placeholder={loginType === 'email' ? "tu@correo.com" : "+51 999000000"}
                   placeholderTextColor={Colors.textMuted}
-                  keyboardType="default"
+                  keyboardType={loginType === 'email' ? 'email-address' : 'phone-pad'}
                   autoCapitalize="none"
                 />
               </View>
@@ -207,6 +230,21 @@ const styles = StyleSheet.create({
     fontWeight: Typography.weight.bold,
     marginBottom: Spacing.lg,
     textAlign: 'center',
+  },
+  tabBtn: {
+    flex: 1, paddingVertical: 10, borderRadius: Radius.md,
+    backgroundColor: Colors.background, alignItems: 'center',
+    borderWidth: 1, borderColor: Colors.border,
+  },
+  tabBtnActive: {
+    backgroundColor: Colors.primaryLight,
+    borderColor: Colors.accent,
+  },
+  tabText: {
+    fontSize: Typography.size.sm, color: Colors.textMuted, fontWeight: Typography.weight.medium,
+  },
+  tabTextActive: {
+    color: Colors.accent, fontWeight: Typography.weight.bold,
   },
   inputGroup: { marginBottom: Spacing.md },
   label: {

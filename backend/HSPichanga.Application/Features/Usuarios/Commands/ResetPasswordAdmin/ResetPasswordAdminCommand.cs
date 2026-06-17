@@ -3,19 +3,21 @@ using MediatR;
 
 namespace HSPichanga.Application.Features.Usuarios.Commands.ResetPasswordAdmin;
 
-public record ResetPasswordAdminCommand(Guid Id) : IRequest<string>;
+public record ResetPasswordAdminCommand(Guid Id, string Canal = "Email") : IRequest<string>;
 
 public class ResetPasswordAdminCommandHandler : IRequestHandler<ResetPasswordAdminCommand, string>
 {
     private readonly IUnitOfWork _uow;
     private readonly IEmailService _email;
     private readonly ISmsService _sms;
+    private readonly IWhatsAppService _whatsapp;
 
-    public ResetPasswordAdminCommandHandler(IUnitOfWork uow, IEmailService email, ISmsService sms)
+    public ResetPasswordAdminCommandHandler(IUnitOfWork uow, IEmailService email, ISmsService sms, IWhatsAppService whatsapp)
     {
         _uow = uow;
         _email = email;
         _sms = sms;
+        _whatsapp = whatsapp;
     }
 
     public async Task<string> Handle(ResetPasswordAdminCommand request, CancellationToken cancellationToken)
@@ -29,7 +31,12 @@ public class ResetPasswordAdminCommandHandler : IRequestHandler<ResetPasswordAdm
 
         await _uow.SaveChangesAsync();
 
-        if (usuario.Email != null)
+        if (request.Canal == "WhatsApp" && !string.IsNullOrWhiteSpace(usuario.Telefono))
+        {
+            var msg = $"Hola *{usuario.NombreCompleto}*, el administrador ha restablecido tu contraseña en HSPichanga.\n\nClave temporal: *{tempPass}*\n\n⚠️ Al iniciar sesión deberás cambiar esta contraseña por una nueva.";
+            await _whatsapp.SendMessageAsync(usuario.Telefono, msg);
+        }
+        else if (usuario.Email != null)
         {
             // Enviar email de notificación de reseteo
             var html = $"""
