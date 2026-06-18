@@ -243,13 +243,15 @@ export default function ReservaDetailScreen() {
               <View style={styles.walletTabs}>
                 <TouchableOpacity 
                   style={[styles.walletTab, metodoPago === 2 && styles.walletTabActiveYape]} 
-                  onPress={() => setMetodoPago(2)}
+                  onPress={() => !yaReservado && setMetodoPago(2)}
+                  disabled={yaReservado}
                 >
                   <Text style={[styles.walletTabText, metodoPago === 2 && { color: '#fff' }]}>YAPE</Text>
                 </TouchableOpacity>
                 <TouchableOpacity 
                   style={[styles.walletTab, metodoPago === 3 && styles.walletTabActivePlin]} 
-                  onPress={() => setMetodoPago(3)}
+                  onPress={() => !yaReservado && setMetodoPago(3)}
+                  disabled={yaReservado}
                 >
                   <Text style={[styles.walletTabText, metodoPago === 3 && { color: '#fff' }]}>PLIN</Text>
                 </TouchableOpacity>
@@ -273,17 +275,19 @@ export default function ReservaDetailScreen() {
                 </Text>
                 
                 <TextInput
-                  style={styles.inputStyle}
+                  style={[styles.inputStyle, yaReservado && { opacity: 0.5 }]}
                   placeholder="N° de Operación (Opcional)"
                   placeholderTextColor={Colors.textMuted}
                   value={numeroOperacion}
                   onChangeText={setNumeroOperacion}
                   keyboardType="numeric"
+                  editable={!yaReservado}
                 />
 
                 <TouchableOpacity 
-                  style={{ width: '100%', padding: Spacing.md, borderWidth: 1, borderColor: Colors.border, borderStyle: 'dashed', borderRadius: Radius.md, alignItems: 'center', backgroundColor: Colors.background, marginTop: Spacing.sm }}
-                  onPress={pickImage}
+                  style={{ width: '100%', padding: Spacing.md, borderWidth: 1, borderColor: Colors.border, borderStyle: 'dashed', borderRadius: Radius.md, alignItems: 'center', backgroundColor: Colors.background, marginTop: Spacing.sm, opacity: yaReservado ? 0.5 : 1 }}
+                  onPress={yaReservado ? undefined : pickImage}
+                  disabled={yaReservado}
                 >
                   <Ionicons name="image-outline" size={24} color={Colors.textSecondary} />
                   <Text style={{ color: Colors.textSecondary, marginTop: 4, fontSize: Typography.size.sm }}>
@@ -319,9 +323,11 @@ export default function ReservaDetailScreen() {
                 />
               )}
 
-              <Text style={styles.disclaimer}>
-                * La reserva quedará en Verificación hasta comprobar la transferencia.
-              </Text>
+              {!yaReservado && (
+                <Text style={styles.disclaimer}>
+                  * La reserva quedará en Verificación hasta comprobar la transferencia.
+                </Text>
+              )}
             </View>
           ) : (
             <View style={styles.sinCupos}>
