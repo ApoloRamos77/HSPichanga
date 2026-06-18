@@ -40,6 +40,15 @@
       "expo-router",
       "expo-secure-store",
       [
+        "expo-notifications",
+        {
+          "icon": "./assets/icon.png",
+          "color": "#2DD881",
+          "defaultChannel": "chat-messages",
+          "sounds": []
+        }
+      ],
+      [
         "expo-build-properties",
         {
           "android": {

@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import {
   View, Text, StyleSheet, ScrollView, FlatList,
   TouchableOpacity, TextInput, RefreshControl, ActivityIndicator,
@@ -13,6 +13,7 @@ import { useAuthStore } from '../../src/stores/authStore';
 import { PartidoCard } from '../../src/components/PartidoCard';
 import { Colors, Spacing, Radius, Typography } from '../../src/theme';
 import { useLocation } from '../../src/services/useLocation';
+import { registerForPushNotifications, setupNotificationTapListener } from '../../src/services/notificationService';
 
 const CATEGORIAS = [
   { label: 'Todos', value: undefined },
@@ -30,6 +31,15 @@ export default function HomeScreen() {
   const { coords, loading: locLoading } = useLocation();
   const [catActiva, setCatActiva] = useState<string | undefined>(undefined);
   const [busqueda, setBusqueda]   = useState('');
+
+  // ─── Registrar push token y escuchar taps al iniciar ────────────────────
+  useEffect(() => {
+    // Registrar el dispositivo para recibir notificaciones push
+    registerForPushNotifications();
+    // Configurar listener: al tocar una notificación de chat → navegar al chat
+    const cleanup = setupNotificationTapListener();
+    return cleanup;
+  }, []);
 
   const { data: partidos, isLoading, isError, refetch, isRefetching } = useQuery({
     queryKey: ['partidos', catActiva, coords?.latitude, coords?.longitude],

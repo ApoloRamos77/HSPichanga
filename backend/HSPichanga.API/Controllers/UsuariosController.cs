@@ -4,9 +4,12 @@ using HSPichanga.Application.Features.Usuarios.Commands.EditUsuario;
 using HSPichanga.Application.Features.Usuarios.Commands.ResetPasswordAdmin;
 using HSPichanga.Application.Features.Usuarios.Commands.ToggleActivo;
 using HSPichanga.Application.Features.Usuarios.Queries.GetUsuarios;
+using HSPichanga.Domain.Entities;
+using HSPichanga.Infrastructure.Persistence;
 using MediatR;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.EntityFrameworkCore;
 using System.Security.Claims;
 
 namespace HSPichanga.API.Controllers;
@@ -16,8 +19,13 @@ namespace HSPichanga.API.Controllers;
 public class UsuariosController : ControllerBase
 {
     private readonly IMediator _mediator;
+    private readonly AppDbContext _db;
 
-    public UsuariosController(IMediator mediator) => _mediator = mediator;
+    public UsuariosController(IMediator mediator, AppDbContext db)
+    {
+        _mediator = mediator;
+        _db = db;
+    }
 
     /// <summary>Listar todos los usuarios</summary>
     [HttpGet]
@@ -94,7 +102,7 @@ public class UsuariosController : ControllerBase
         }
     }
 
-    /// <summary>Generar clave temporal (método legacy — ahora usa reset-password-admin)</summary>
+    /// <summary>Generar clave temporal (método legacy)</summary>
     [HttpPost("{id}/temp-password")]
     [Authorize(Roles = "Administrador")]
     public async Task<IActionResult> GenerateTempPassword(Guid id)
@@ -128,6 +136,32 @@ public class UsuariosController : ControllerBase
             return StatusCode(500, new { mensaje = $"ERROR INTERNO: {ex.Message} | {ex.StackTrace}" });
         }
     }
+
+    /// <summary>
+    /// Registra o actualiza el Expo Push Token del usuario autenticado.
+    /// La app móvil llama a este endpoint al iniciar sesión.
+    /// </summary>
+    [HttpPost("push-token")]
+    [Authorize]
+    public async Task<IActionResult> SavePushToken([FromBody] PushTokenRequest request)
+    {
+        var userIdStr = User.FindFirstValue(ClaimTypes.NameIdentifier)
+                     ?? User.FindFirstValue("sub");
+
+        if (!Guid.TryParse(userIdStr, out var userId))
+            return Unauthorized(new { mensaje = "Token inválido." });
+
+        var existing = await _db.PushTokens.FirstOrDefaultAsync(pt => pt.UsuarioId == userId);
+
+        if (existing is not null)
+            existing.ActualizarToken(request.Token);
+        else
+            _db.PushTokens.Add(PushToken.Crear(userId, request.Token));
+
+        await _db.SaveChangesAsync();
+        return Ok(new { mensaje = "Push token registrado." });
+    }
 }
 
 public record ChangePasswordRequest(string NewPassword);
+public record PushTokenRequest(string Token);

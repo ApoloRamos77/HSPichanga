@@ -18,6 +18,7 @@ public class AppDbContext : DbContext
     public DbSet<Calificacion> Calificaciones => Set<Calificacion>();
     public DbSet<Mensaje> Mensajes => Set<Mensaje>();
     public DbSet<ConfiguracionLanding> ConfiguracionesLanding => Set<ConfiguracionLanding>();
+    public DbSet<PushToken> PushTokens => Set<PushToken>();
 
     protected override void OnModelCreating(ModelBuilder modelBuilder)
     {

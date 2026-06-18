@@ -24,6 +24,15 @@ builder.Services.AddMediatR(cfg => {
 builder.Services.AddControllers();
 builder.Services.AddSignalR();
 
+// ─── Expo Push Notifications ──────────────────────────────────────────────────
+builder.Services.AddHttpClient("expo", c =>
+{
+    c.BaseAddress = new Uri("https://exp.host");
+    c.DefaultRequestHeaders.Add("Accept", "application/json");
+    c.DefaultRequestHeaders.Add("Accept-Encoding", "gzip, deflate");
+});
+builder.Services.AddSingleton<HSPichanga.API.Services.ExpoPushService>();
+
 // ─── Configuración para Subida de Archivos Grandes (APK) ────────────────────
 builder.Services.Configure<Microsoft.AspNetCore.Http.Features.FormOptions>(options =>
 {

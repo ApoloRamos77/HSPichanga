@@ -35,7 +35,8 @@ export default function ReservaDetailScreen() {
 
   const yaReservado = misReservas?.some((r: any) => r.partidoId === id && r.estadoPago !== 'Devuelto');
   const miReserva = misReservas?.find((r: any) => r.partidoId === id);
-  const isConfirmed = miReserva && (miReserva.estadoPago?.toLowerCase() === 'pagado' || miReserva.estadoPago?.toLowerCase() === 'confirmado');
+  const isConfirmed = usuario?.rol === 'Administrador' ||
+    (miReserva && (miReserva.estadoPago?.toLowerCase() === 'pagado' || miReserva.estadoPago?.toLowerCase() === 'confirmado'));
 
   const partido = partidos?.find(p => p.id === id);
 
@@ -236,6 +237,14 @@ export default function ReservaDetailScreen() {
                   variant="accent"
                 />
               </View>
+              {/* Botón de chat para el administrador */}
+              <Button
+                title="ABRIR CHAT DEL PARTIDO"
+                onPress={() => router.push(`/(main)/reservas/chat?id=${id}` as any)}
+                variant="outline"
+                size="md"
+                leftIcon={<Ionicons name="chatbubbles-outline" size={20} color={Colors.accent} />}
+              />
             </View>
           ) : partido.estado === 'Abierto' && partido.cuposDisponibles > 0 ? (
             <View style={styles.paymentSection}>
