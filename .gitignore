@@ -30,8 +30,5 @@ ehthumbs.db
 **/wwwroot/uploads/*
 !**/wwwroot/uploads/.gitkeep
 
-# Build Outputs
-**/publish/
-
 # WhatsApp Auth
 whatsapp-service/.wwebjs_auth/
