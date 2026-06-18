@@ -22,6 +22,7 @@ builder.Services.AddMediatR(cfg => {
 
 // ─── Controllers ──────────────────────────────────────────────────────────────
 builder.Services.AddControllers();
+builder.Services.AddSignalR();
 
 // ─── Configuración para Subida de Archivos Grandes (APK) ────────────────────
 builder.Services.Configure<Microsoft.AspNetCore.Http.Features.FormOptions>(options =>
@@ -189,6 +190,7 @@ app.UseStaticFiles(new StaticFileOptions
 app.UseAuthentication();
 app.UseAuthorization();
 app.MapControllers();
+app.MapHub<HSPichanga.API.Hubs.ChatHub>("/chathub");
 
 app.MapGet("/", context =>
 {

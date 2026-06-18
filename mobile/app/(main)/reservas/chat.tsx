@@ -7,9 +7,10 @@ import { useLocalSearchParams, router } from 'expo-router';
 import { Ionicons } from '@expo/vector-icons';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
-import { chatService } from '../../../src/services/api';
+import { chatService, API_BASE_URL } from '../../../src/services/api';
 import { useAuthStore } from '../../../src/stores/authStore';
 import { Colors, Spacing, Radius, Typography } from '../../../src/theme';
+import * as signalR from '@microsoft/signalr';
 
 export default function ChatScreen() {
   const { id: partidoId } = useLocalSearchParams<{ id: string }>();
@@ -20,14 +21,42 @@ export default function ChatScreen() {
   const { data: mensajes, isLoading } = useQuery({
     queryKey: ['chat', partidoId],
     queryFn: () => chatService.getMessages(partidoId!).then(r => r.data),
-    refetchInterval: 3000, // Polling cada 3s para simular tiempo real
   });
+
+  useEffect(() => {
+    if (!partidoId) return;
+
+    const connection = new signalR.HubConnectionBuilder()
+      .withUrl(API_BASE_URL.replace('/api', '/chathub'))
+      .withAutomaticReconnect()
+      .build();
+
+    connection.start()
+      .then(() => {
+        return connection.invoke('JoinMatchGroup', partidoId);
+      })
+      .catch(err => console.error('SignalR start error:', err));
+
+    connection.on('ReceiveMessage', (newMessage) => {
+      queryClient.setQueryData(['chat', partidoId], (oldData: any) => {
+        if (!oldData) return [newMessage];
+        if (oldData.some((m: any) => m.id === newMessage.id)) return oldData;
+        return [...oldData, newMessage];
+      });
+    });
+
+    return () => {
+      if (connection.state === signalR.HubConnectionState.Connected) {
+        connection.invoke('LeaveMatchGroup', partidoId).catch(console.error);
+        connection.stop();
+      }
+    };
+  }, [partidoId]);
 
   const mutation = useMutation({
     mutationFn: () => chatService.sendMessage(partidoId!, usuario!.id, mensaje),
     onSuccess: () => {
       setMensaje('');
-      queryClient.invalidateQueries({ queryKey: ['chat', partidoId] });
     }
   });
 

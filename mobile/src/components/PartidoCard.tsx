@@ -52,15 +52,19 @@ export function PartidoCard({ partido, miReserva, onPress, style }: Props) {
         </View>
         
         {miReserva ? (
-          miReserva.estado === 'Confirmada' ? (
-            <View style={[styles.badge, { backgroundColor: '#22c55e22', borderColor: '#22c55e' }]}>
-              <Text style={[styles.badgeText, { color: '#22c55e' }]}>¡Inscrito! ✅</Text>
-            </View>
-          ) : (
-            <View style={[styles.badge, { backgroundColor: '#f59e0b22', borderColor: '#f59e0b' }]}>
-              <Text style={[styles.badgeText, { color: '#f59e0b' }]}>Verificando... ⏳</Text>
-            </View>
-          )
+          (() => {
+            const lower = miReserva.estadoPago?.toLowerCase() || '';
+            const isConfirmed = lower === 'pagado' || lower === 'confirmado';
+            return isConfirmed ? (
+              <View style={[styles.badge, { backgroundColor: '#22c55e22', borderColor: '#22c55e' }]}>
+                <Text style={[styles.badgeText, { color: '#22c55e' }]}>¡Inscrito! ✅</Text>
+              </View>
+            ) : (
+              <View style={[styles.badge, { backgroundColor: '#f59e0b22', borderColor: '#f59e0b' }]}>
+                <Text style={[styles.badgeText, { color: '#f59e0b' }]}>Verificando... ⏳</Text>
+              </View>
+            );
+          })()
         ) : (
           <View style={[styles.badge, { backgroundColor: catColor + '22', borderColor: catColor }]}>
             <Text style={[styles.badgeText, { color: catColor }]}>
@@ -75,7 +79,7 @@ export function PartidoCard({ partido, miReserva, onPress, style }: Props) {
         <Text style={styles.canchaNombre}>{partido.canchaNombre}</Text>
         <Text style={styles.zona}>
           <Ionicons name="location-outline" size={12} color={Colors.textSecondary} />
-          {' '}{partido.direccion ? `${partido.direccion} - ${partido.zonaNombre}` : partido.zonaNombre}
+          {' '}{partido.direccion ? partido.direccion : partido.zonaNombre}
           {partido.distance !== undefined && partido.distance !== null && (
             <Text style={styles.distanceText}>
               {'  •  '}{partido.distance.toFixed(1)} km cerca

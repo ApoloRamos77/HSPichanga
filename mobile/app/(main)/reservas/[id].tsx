@@ -34,7 +34,8 @@ export default function ReservaDetailScreen() {
   });
 
   const yaReservado = misReservas?.some((r: any) => r.partidoId === id && r.estadoPago !== 'Devuelto');
-
+  const miReserva = misReservas?.find((r: any) => r.partidoId === id);
+  const isConfirmed = miReserva && (miReserva.estadoPago?.toLowerCase() === 'pagado' || miReserva.estadoPago?.toLowerCase() === 'confirmado');
 
   const partido = partidos?.find(p => p.id === id);
 
@@ -136,7 +137,7 @@ export default function ReservaDetailScreen() {
             <TouchableOpacity onPress={openMaps}>
               <Text style={styles.zona}>
                 <Ionicons name="location-outline" size={14} color={Colors.textSecondary} />
-                {' '}{partido.direccion ? `${partido.direccion} - ${partido.zonaNombre}` : partido.zonaNombre} - Ver Mapa
+                {' '}{partido.direccion ? partido.direccion : partido.zonaNombre} - Ver Mapa
               </Text>
             </TouchableOpacity>
           </View>
@@ -307,14 +308,16 @@ export default function ReservaDetailScreen() {
                 />
               )}
 
-              <Button
-                title="ABRIR CHAT DEL PARTIDO"
-                onPress={() => router.push(`/(main)/reservas/chat?id=${id}` as any)}
-                variant="outline"
-                size="md"
-                style={{ marginTop: Spacing.sm }}
-                leftIcon={<Ionicons name="chatbubbles-outline" size={20} color={Colors.accent} />}
-              />
+              {isConfirmed && (
+                <Button
+                  title="ABRIR CHAT DEL PARTIDO"
+                  onPress={() => router.push(`/(main)/reservas/chat?id=${id}` as any)}
+                  variant="outline"
+                  size="md"
+                  style={{ marginTop: Spacing.sm }}
+                  leftIcon={<Ionicons name="chatbubbles-outline" size={20} color={Colors.accent} />}
+                />
+              )}
 
               <Text style={styles.disclaimer}>
                 * La reserva quedará en Verificación hasta comprobar la transferencia.
