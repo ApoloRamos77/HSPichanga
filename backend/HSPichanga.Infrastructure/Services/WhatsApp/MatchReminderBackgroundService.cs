@@ -29,7 +29,8 @@ public class MatchReminderBackgroundService : BackgroundService
         {
             try
             {
-                var now = DateTime.Now;
+                var peruTimeZone = TimeZoneInfo.FindSystemTimeZoneById("SA Pacific Standard Time");
+                var now = TimeZoneInfo.ConvertTimeFromUtc(DateTime.UtcNow, peruTimeZone);
                 int reminderHour = 8; // Default
 
                 using (var scope = _serviceProvider.CreateScope())
@@ -86,14 +87,17 @@ public class MatchReminderBackgroundService : BackgroundService
         var defaultMsg = "¡Hola {Nombre}! ⚽\n\nEste es un recordatorio de que *HOY* tienes tu pichanga en *{Cancha}* a las *{Hora}*.\n\n¡Te esperamos, no faltes!";
         var mensajeTemplate = !string.IsNullOrWhiteSpace(templateValor) ? templateValor : defaultMsg;
 
-        // Obtener la fecha de hoy
-        var today = DateTime.UtcNow.Date;
+        // Obtener la fecha de hoy en Perú
+        var peruTimeZone = TimeZoneInfo.FindSystemTimeZoneById("SA Pacific Standard Time");
+        var today = TimeZoneInfo.ConvertTimeFromUtc(DateTime.UtcNow, peruTimeZone).Date;
         
         // Obtener todos los partidos
         var partidosQuery = await unitOfWork.Partidos.GetAllAdminAsync(null, cancellationToken);
         
         var partidosHoy = partidosQuery
-            .Where(p => p.FechaHora.Date == today)
+            .Where(p => p.FechaHora.Date == today && 
+                        p.Estado != Domain.Enums.EstadoPartido.Finalizado && 
+                        p.Estado != Domain.Enums.EstadoPartido.Cancelado)
             .ToList();
 
         if (!partidosHoy.Any())
@@ -126,8 +130,8 @@ public class MatchReminderBackgroundService : BackgroundService
                 await whatsappService.SendMessageAsync(reserva.Jugador.Telefono, mensaje, cancellationToken);
                 totalEnviados++;
                 
-                // Pequeña pausa para no saturar la API de WhatsApp
-                await Task.Delay(1000, cancellationToken);
+                // Pausa de 1 minuto para no ser considerado spam
+                await Task.Delay(TimeSpan.FromMinutes(1), cancellationToken);
             }
         }
 
