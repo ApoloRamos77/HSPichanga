@@ -95,7 +95,7 @@ public class MatchReminderBackgroundService : BackgroundService
         var partidosQuery = await unitOfWork.Partidos.GetAllAdminAsync(null, cancellationToken);
         
         var partidosHoy = partidosQuery
-            .Where(p => p.FechaHora.Date == today && 
+            .Where(p => TimeZoneInfo.ConvertTimeFromUtc(p.FechaHora, peruTimeZone).Date == today && 
                         p.Estado != Domain.Enums.EstadoPartido.Finalizado && 
                         p.Estado != Domain.Enums.EstadoPartido.Cancelado)
             .ToList();
@@ -120,7 +120,8 @@ public class MatchReminderBackgroundService : BackgroundService
             {
                 if (string.IsNullOrWhiteSpace(reserva.Jugador?.Telefono)) continue;
 
-                var horaFormateada = partido.FechaHora.ToString("HH:mm");
+                var fechaPeru = TimeZoneInfo.ConvertTimeFromUtc(partido.FechaHora, peruTimeZone);
+                var horaFormateada = fechaPeru.ToString("HH:mm");
                 
                 var mensaje = mensajeTemplate
                     .Replace("{Nombre}", reserva.Jugador.NombreCompleto.Split(' ')[0])
